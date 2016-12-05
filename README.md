@@ -46,40 +46,40 @@ support for c++11 language features.
 The core code is compiled into a shared library libDirac.so by the
 command:
 
-$ make
+    $ make
 
 After this, it can be imported into a root session and used by client
 code, as illustrated here.
 
-$ root -l
-root [0] .L libDirac.so
-root [1] .L Brems.C+
-root [3] .L tests.C+
-root [4] TestThreeVectorReal()
-Zero(): TThreeVectorReal(0,0,0)
-Set to 1,2,3: TThreeVectorReal(1,2,3)
-Initialized to 4,5,6: TThreeVectorReal(4,5,6)
-Initialized to (Float_t *) 7,8,9: TThreeVectorReal(7,8,9)
-Initialized to (Double_t *) 10,11,12: TThreeVectorReal(10,11,12)
-Initialized to (TThreeVectorReal) 1,2,3: TThreeVectorReal(1,2,3)
-SpaceInv(): TThreeVectorReal(-1,-2,-3)
-Normalize(1): TThreeVectorReal(-0.267261,-0.534522,-0.801784)
-SetPolar(10,2.5,-1.2) : GetPolar(10,2.5,-1.2)
-z == z ? yes!
-z != w ? yes!
-Rotate(phi,theta,0) gets back z axis? yes!
-(w cross x) != 0 ? yes!
-w dot (w cross x) == 0 ? yes!
-w cross (w - x) == x cross w ? yes!
-root [5]
+    $ root -l
+    root [0] .L libDirac.so
+    root [1] .L Brems.C+
+    root [3] .L tests.C+
+    root [4] TestThreeVectorReal()
+    Zero(): TThreeVectorReal(0,0,0)
+    Set to 1,2,3: TThreeVectorReal(1,2,3)
+    Initialized to 4,5,6: TThreeVectorReal(4,5,6)
+    Initialized to (Float_t *) 7,8,9: TThreeVectorReal(7,8,9)
+    Initialized to (Double_t *) 10,11,12: TThreeVectorReal(10,11,12)
+    Initialized to (TThreeVectorReal) 1,2,3: TThreeVectorReal(1,2,3)
+    SpaceInv(): TThreeVectorReal(-1,-2,-3)
+    Normalize(1): TThreeVectorReal(-0.267261,-0.534522,-0.801784)
+    SetPolar(10,2.5,-1.2) : GetPolar(10,2.5,-1.2)
+    z == z ? yes!
+    z != w ? yes!
+    Rotate(phi,theta,0) gets back z axis? yes!
+    (w cross x) != 0 ? yes!
+    w dot (w cross x) == 0 ? yes!
+    w cross (w - x) == x cross w ? yes!
+    root [5]
 
 ## Documentation
 
 See comments at the head of specific process implementation sources:
-  (1) Brems.C - bremsstrahlung process
-  (2) Compton.C - Compton scattering process
-  (3) Pairs.C - coherent pair production process
-  (4) Triplets.C - incoherent pair production process
+1. Brems.C - bremsstrahlung process
+2. Compton.C - Compton scattering process
+3. Pairs.C - coherent pair production process
+4. Triplets.C - incoherent pair production process
 
 ## Troubleshooting
 
