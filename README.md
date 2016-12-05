@@ -38,7 +38,7 @@ See the comments within those source files for details.
 ## Dependencies
 
 You need to have installed cern/root version 6 or greater 
-see http://root.cern.ch) and a working c++ compiler with
+(see http://root.cern.ch) and a working c++ compiler with
 support for c++11 language features.
 
 ## Building instructions
