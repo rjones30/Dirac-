@@ -28,9 +28,11 @@
 #include <TCanvas.h>
 #include <TFile.h>
 #include <TTree.h>
+#include <TH2D.h>
 #include <TF1.h>
 
 inline Double_t sqr(Double_t x) { return x*x; }
+inline LDouble_t sqr(LDouble_t x) { return x*x; }
 inline Complex_t sqr(Complex_t x) { return x*x; }
 
 const TThreeVectorReal zeroVector(0,0,0);
@@ -42,43 +44,65 @@ const TThreeVectorReal posZhat(0,0,1);
 const TThreeVectorReal negZhat(0,0,-1);
 
 TRandom2 random_gen(0);
+TH2D *random_bias2D_u0u1 = 0;
+
+//#define H_DIPOLE_FORM_FACTOR 1
+LDouble_t FFberyllium(LDouble_t qR);
 
 Double_t Triplets(Double_t *var, Double_t *par)
 {
-   Double_t kin=par[0];
-   Double_t Epos=par[1];
-   Double_t phi12=par[2];
-   Double_t Mpair=par[3];
-   Double_t qR2=par[4];
-   Double_t phiR=par[5]=var[0];
+   LDouble_t kin=par[0];
+   LDouble_t Epos=par[1];
+   LDouble_t phi12=par[2];
+   LDouble_t Mpair=par[3];
+   LDouble_t qR2=par[4];
+   LDouble_t phiR=par[5]=var[0];
 
    // Solve for the 4-vector qR
-   Double_t qR=sqrt(qR2);
-   Double_t E3=sqrt(qR2+sqr(mElectron));
-   Double_t costhetaR=(sqr(Mpair)/2 + (kin+mElectron)*(E3-mElectron))/(kin*qR);
+   if (kin < 0 || Epos < mElectron || Mpair < 2 * mElectron || qR2 < 0) {
+      // cout << "no kinematic solution, input parameters out of range"
+      //      << endl;
+      return 0;
+   }
+   LDouble_t qR=sqrt(qR2);
+   LDouble_t E3=sqrt(qR2+sqr(mElectron));
+   LDouble_t costhetaR=(sqr(Mpair)/2 + (kin+mElectron)*(E3-mElectron))/(kin*qR);
    if (fabs(costhetaR) > 1) {
       // cout << "no kinematic solution because |costhetaR| > 1" << endl;
       return 0;
    }
-   Double_t qRperp=qR*sqrt(1-sqr(costhetaR));
-   Double_t qRlong=qR*costhetaR;
+   LDouble_t qRperp=qR*sqrt(1-sqr(costhetaR));
+   LDouble_t qRlong=qR*costhetaR;
    TFourVectorReal q3(E3,qRperp*cos(phiR),qRperp*sin(phiR),qRlong);
 
    // Solve for the c.m. momentum of e+ in the pair 1,2 rest frame
-   Double_t k12star2=sqr(Mpair/2)-sqr(mElectron);
+   LDouble_t k12star2=sqr(Mpair/2)-sqr(mElectron);
    if (k12star2 < 0) {
       // cout << "no kinematic solution because k12star2 < 0" << endl;
       return 0;
    }
-   Double_t k12star=sqrt(k12star2);
-   Double_t E12=kin+mElectron-E3;
-   Double_t q12mag=sqrt(sqr(E12)-sqr(Mpair));
-   Double_t costhetastar=(Epos-E12/2)*Mpair/(k12star*q12mag);
-   if (fabs(costhetastar) > 1) {
+   LDouble_t k12star=sqrt(k12star2);
+   LDouble_t E12=kin+mElectron-E3;
+   if (E12 < Mpair) {
+      // cout << "no kinematic solution because E12 < Mpair" << endl;
+      return 0;
+   }
+   LDouble_t q12mag=sqrt(sqr(E12)-sqr(Mpair));
+   LDouble_t costhetastar=(Epos-E12/2)*Mpair/(k12star*q12mag);
+   if (Epos < mElectron) {
+      // cout << "no kinematic solution because Epos < mElectron" << endl;
+      return 0;
+   }
+   else if (Epos > E12 - mElectron) {
+      // cout << "no kinematic solution because Epos > E12 - mElectron"
+      //      << endl;
+      return 0;
+   }
+   else if (fabs(costhetastar) > 1) {
       // cout << "no kinematic solution because |costhetastar| > 1" << endl;
       return 0;
    }
-   Double_t sinthetastar=sqrt(1-sqr(costhetastar));
+   LDouble_t sinthetastar=sqrt(1-sqr(costhetastar));
    TThreeVectorReal k12(k12star*sinthetastar*cos(phi12),
                         k12star*sinthetastar*sin(phi12),
                         k12star*costhetastar);
@@ -87,6 +111,13 @@ Double_t Triplets(Double_t *var, Double_t *par)
    TLorentzBoost pairCMtolab(q3[1]/E12,q3[2]/E12,(q3[3]-kin)/E12);
    q1.Boost(pairCMtolab);
    q2.Boost(pairCMtolab);
+
+   // To avoid double-counting, return zero if recoil electron
+   // momentum is greater than the momentum of the pair electron.
+   if (q2.Length() < qR) {
+      // cout << "recoil/pair electrons switched, returning 0" << endl;
+      return 0;
+   }
 
    // Define the particle objects
    TPhoton g0;
@@ -105,8 +136,20 @@ Double_t Triplets(Double_t *var, Double_t *par)
    e2.AllPol();
    e3.AllPol();
 
-   Double_t result = TCrossSection::TripletProduction(g0,e0,e1,e2,e3);
-   return result;
+   LDouble_t result = TCrossSection::TripletProduction(g0,e0,e1,e2,e3);
+   LDouble_t Q2 = 2*mElectron*(E3 - mElectron);
+   LDouble_t FF = FFberyllium(sqrt(Q2));
+   return result * (1 - FF*FF);
+}
+
+void set_bias2D_u0u1(TH2D *bias2D)
+{
+   random_bias2D_u0u1 = bias2D;
+}
+
+TH2D *get_bias2D_u0u1(TH2D *bias2D)
+{
+   return random_bias2D_u0u1;
 }
 
 Int_t demoTriplets(Double_t E0=9.,
@@ -150,8 +193,10 @@ Int_t genTriplets(Int_t N, Double_t kin=9., TFile *hfile=0, TTree *tree=0, Int_t
       Double_t diffXS;
       Double_t weight;
       Double_t weightedXS;
+      Double_t urand[5];
    } event;
-   TString leaflist("E0/D:Epos/D:phi12/D:Mpair/D:qR2/D:phiR/D:thetaR/D:diffXS/D:weight/D:weightedXS");
+   TString leaflist("E0/D:Epos/D:phi12/D:Mpair/D:qR2/D:phiR/D:thetaR/D:"
+                    "diffXS/D:weight/D:weightedXS/D:urand[5]/D");
    event.E0 = kin;
 
    if (hfile != 0) {
@@ -163,37 +208,51 @@ Int_t genTriplets(Int_t N, Double_t kin=9., TFile *hfile=0, TTree *tree=0, Int_t
       tree->Branch("event",&event,leaflist,65536);
    }
 
-   Double_t sum=0;
-   Double_t sum2=0;
+   LDouble_t sum0=0;
+   LDouble_t sum1=0;
+   LDouble_t sum2=0;
    for (int n=1; n<=N; n++) { 
       event.weight = 1;
+      random_gen.RndmArray(5, event.urand);
+      if (random_bias2D_u0u1) {
+         random_bias2D_u0u1->GetRandom2(event.urand[0], event.urand[1]);
+         static LDouble_t fmean = 0;
+         if (fmean == 0) {
+            fmean = random_bias2D_u0u1->Integral() /
+                    random_bias2D_u0u1->GetNbinsX() /
+                    random_bias2D_u0u1->GetNbinsY();
+         }
+         int i0 = random_bias2D_u0u1->GetXaxis()->FindBin(event.urand[0]);
+         int i1 = random_bias2D_u0u1->GetYaxis()->FindBin(event.urand[1]);
+         event.weight = fmean / random_bias2D_u0u1->GetBinContent(i0,i1);
+      }
 
       // generate E+ uniform on [0,E0]
-      event.Epos = random_gen.Uniform(event.E0);
+      event.Epos = event.urand[2] * event.E0;
       event.weight *= event.E0;
    
       // generate phi12 uniform on [0,2pi]
-      event.phi12 = random_gen.Uniform(2*PI_);
+      event.phi12 = event.urand[3] * 2*PI_;
       event.weight *= 2*PI_;
 
       // generate phiR uniform on [0,2pi]
-      event.phiR = random_gen.Uniform(2*PI_);
+      event.phiR = event.urand[4] * 2*PI_;
       event.weight *= 2*PI_;
    
       // generate Mpair with weight (1/M) / (Mcut^2 + M^2)
-      Double_t Mmin=2*mElectron;
-      Double_t Mcut=5e-3; // 5 MeV cutoff parameter
-      Double_t um0 = 1+sqr(Mcut/Mmin);
-      Double_t um = pow(um0,random_gen.Uniform(1));
+      LDouble_t Mmin=2*mElectron;
+      LDouble_t Mcut=5e-3; // 5 MeV cutoff parameter
+      LDouble_t um0 = 1+sqr(Mcut/Mmin);
+      LDouble_t um = pow(um0, event.urand[0]);
       event.Mpair = Mcut/sqrt(um-1);
       event.weight *= event.Mpair*(sqr(Mcut)+sqr(event.Mpair))
                       *log(um0)/(2*sqr(Mcut));
 
       // generate qR^2 with weight (1/qR^2) / sqrt(qRcut^2 + qR^2)
-      Double_t qRmin = sqr(event.Mpair)/(2*event.E0);
-      Double_t qRcut = 1e-3; // 1 MeV/c cutoff parameter
-      Double_t uq0 = qRmin/(qRcut+sqrt(sqr(qRcut)+sqr(qRmin)));
-      Double_t uq = pow(uq0,random_gen.Uniform(1));
+      LDouble_t qRmin = sqr(event.Mpair)/(2*event.E0);
+      LDouble_t qRcut = 1e-3; // 1 MeV/c cutoff parameter
+      LDouble_t uq0 = qRmin/(qRcut+sqrt(sqr(qRcut)+sqr(qRmin)));
+      LDouble_t uq = pow(uq0, event.urand[1]);
       event.qR2 = sqr(2*qRcut*uq/sqr(1-sqr(uq)));
       event.weight *= event.qR2*sqrt(1+event.qR2/sqr(qRcut))
                       *(-2*log(uq0));
@@ -202,12 +261,12 @@ Int_t genTriplets(Int_t N, Double_t kin=9., TFile *hfile=0, TTree *tree=0, Int_t
       event.weight *= event.Mpair/(2*event.E0);
 
       // compute recoil polar angle thetaR
-      Double_t E3 = sqrt(event.qR2+sqr(mElectron));
-      Double_t costhetaR = (sqr(event.Mpair)/2 + (kin+mElectron)*(E3-mElectron)
+      LDouble_t E3 = sqrt(event.qR2+sqr(mElectron));
+      LDouble_t costhetaR = (sqr(event.Mpair)/2 + (kin+mElectron)*(E3-mElectron)
                            )/(kin*sqrt(event.qR2));
       if (fabs(costhetaR) > 1) {
          // cout << "no kinematic solution because |costhetaR| > 1" << endl;
-         event.thetaR = 99;
+         continue;
       }
       else {
          event.thetaR = acos(costhetaR);
@@ -217,16 +276,27 @@ Int_t genTriplets(Int_t N, Double_t kin=9., TFile *hfile=0, TTree *tree=0, Int_t
       Double_t *var=&event.phiR;
       event.diffXS = Triplets(var,par);
       event.weightedXS = event.diffXS*event.weight;
+      if (event.weight <= 0) {
+         cout << "non-positive event weight " << event.weight << endl;
+         continue;
+      }
+      else if (event.diffXS < 0) {
+         cout << "negative differential cross section " << event.diffXS 
+              << ", weight = " << event.weight << endl;
+         continue;
+      }
 
-      if (tree != 0) {
+      if (tree != 0 && event.weightedXS > 0) {
          tree->Fill();
       }
 
-      sum += event.weightedXS;
+      sum0 += 1;
+      sum1 += event.weightedXS;
       sum2 += sqr(event.weightedXS);
       if (n/prescale*prescale == n) {
          cout << "est. total cross section after " << n << " events : "
-              << sum/n << " +/- " << sqrt(sum2-sqr(sum)/n)/n << " ub" << endl;
+              << sum1/sum0 << " +/- " << sqrt(sum2-sqr(sum1)/sum0)/sum0 
+              << " ub" << endl;
       }
    }
 
@@ -237,4 +307,36 @@ Int_t genTriplets(Int_t N, Double_t kin=9., TFile *hfile=0, TTree *tree=0, Int_t
       hfile->Write();
    }
    return 0;
+}
+
+LDouble_t FFberyllium(LDouble_t qR)
+{
+   // return the atomic form factor of 4Be normalized to unity
+   // at large momentum transfer qR (GeV/c).
+
+#if H_DIPOLE_FORM_FACTOR
+
+   LDouble_t a0Bohr = 0.529177 / 1.97327e-6;
+   LDouble_t ff = 1 / pow(1 + pow(a0Bohr * qR, 2) / 4, 2);
+
+#else
+
+   // parameterization given by online database at
+   // http://lampx.tugraz.at/~hadley/ss1/crystaldiffraction\
+   //      /atomicformfactors/formfactors.php
+
+   LDouble_t acoeff[] = {1.5919, 1.1278, 0.5391, 0.7029};
+   LDouble_t bcoeff[] = {43.6427, 1.8623, 103.483, 0.5420};
+   LDouble_t ccoeff[] = {0.0385};
+
+   LDouble_t q_invA = qR / 1.97327e-6;
+   LDouble_t ff = ccoeff[0];
+   for (int i=0; i < 4; ++i) {
+      ff += acoeff[i] * exp(-bcoeff[i] * pow(q_invA / (4 * M_PI), 2));
+   }
+   ff /= 4;
+
+#endif
+
+   return ff;
 }

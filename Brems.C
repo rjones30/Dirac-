@@ -20,6 +20,7 @@
 #include <TF1.h>
 
 inline Double_t sqr(Double_t x) { return x*x; }
+inline LDouble_t sqr(LDouble_t x) { return x*x; }
 inline Complex_t sqr(Complex_t x) { return x*x; }
 
 const TThreeVectorReal zeroVector(0,0,0);
@@ -32,19 +33,19 @@ const TThreeVectorReal negZhat(0,0,-1);
 
 Double_t Brems(Double_t *var, Double_t *par)
 {
-   Double_t kout=var[0];
+   LDouble_t kout=var[0];
    TThreeVectorReal qRecoil(9.83425e-6,0.,par[0]);
-   Double_t phi=par[1];
-   Double_t pin=par[2];
+   LDouble_t phi=par[1];
+   LDouble_t pin=par[2];
 
    TLepton eIn(mElectron), eOut(mElectron);
    TPhoton gOut;
 
    // Solve for the rest of the kinematics
-   Double_t pout = pin-kout;
+   LDouble_t pout = pin-kout;
    TThreeVectorReal p;
    eIn.SetMom(p.SetPolar(pin,0,0));
-   Double_t theta=0, thetaSqr;
+   LDouble_t theta=0, thetaSqr;
    for (Int_t i=0; i<5; i++) {
       thetaSqr = (pout/kout)*(2*pin*qRecoil[3])/sqr(mElectron) -1
                 -(pin/kout)*(qRecoil.LengthSqr())/sqr(mElectron)
@@ -63,21 +64,21 @@ Double_t Brems(Double_t *var, Double_t *par)
    eOut.AllPol();
 
    // Multiply the basic cross section by the form factors
-   Double_t result=TCrossSection::Bremsstrahlung(eIn,eOut,gOut);
-   const Double_t Z=6;
-   const Double_t Sff=8*Z;
-   const Double_t Aphonon=0.5e9;			// in /GeV**2
-   const Double_t Gff=exp(-Aphonon*qRecoil.LengthSqr()/2);
-   const Double_t beta=111*pow(Z,-1/3.)/mElectron;	// ff cutoff in /GeV
-   const Double_t Fff=1/(1+sqr(beta)*qRecoil.LengthSqr());
-   const Double_t hbarc=1.97327e-6;			// in GeV.Angstroms
-   const Double_t Vcell=45.5;				// in Angstroms**3
-   const Double_t XffSqr_d3q=pow(2*PI_*hbarc,3)/Vcell;
+   LDouble_t result=TCrossSection::Bremsstrahlung(eIn,eOut,gOut);
+   const LDouble_t Z=6;
+   const LDouble_t Sff=8*Z;
+   const LDouble_t Aphonon=0.5e9;			// in /GeV**2
+   const LDouble_t Gff=exp(-Aphonon*qRecoil.LengthSqr()/2);
+   const LDouble_t beta=111*pow(Z,-1/3.)/mElectron;	// ff cutoff in /GeV
+   const LDouble_t Fff=1/(1+sqr(beta)*qRecoil.LengthSqr());
+   const LDouble_t hbarc=1.97327e-6;			// in GeV.Angstroms
+   const LDouble_t Vcell=45.5;				// in Angstroms**3
+   const LDouble_t XffSqr_d3q=pow(2*PI_*hbarc,3)/Vcell;
    result *= sqr(Sff) * sqr(Gff) * sqr(1-Fff) * XffSqr_d3q;
 
    // Multiply the cross section by target thickness
    result *= 1e-34;					// from ub to m**2
-   const Double_t t=20e-6;				// in m
+   const LDouble_t t=20e-6;				// in m
    result *= t/(Vcell*1e-30);
 result *= 2.2e-6/1.6e-19;
 result *= 2*PI_;
@@ -105,18 +106,18 @@ Int_t demoBrems(Double_t phi=0)
 Double_t BremsPolarization(Double_t *var, Double_t *par)
 {
    TThreeVectorReal qRecoil(9.83425e-6,0.,par[0]);
-   Double_t kout=par[1];
-   Double_t phi=var[0];
-   Double_t pin=par[2];
+   LDouble_t kout=par[1];
+   LDouble_t phi=var[0];
+   LDouble_t pin=par[2];
 
    TLepton eIn(mElectron), eOut(mElectron);
    TPhoton gOut;
 
    // Solve for the rest of the kinematics
-   Double_t pout = pin-kout;
+   LDouble_t pout = pin-kout;
    TThreeVectorReal p;
    eIn.SetMom(p.SetPolar(pin,0,0));
-   Double_t theta=0, thetaSqr;
+   LDouble_t theta=0, thetaSqr;
    for (Int_t i=0; i<5; i++) {
       thetaSqr = (pout/kout)*(2*pin*qRecoil[3])/sqr(mElectron) -1
                 -(pin/kout)*(qRecoil.LengthSqr())/sqr(mElectron)
@@ -136,9 +137,9 @@ Double_t BremsPolarization(Double_t *var, Double_t *par)
    xhat.SetPolar(1,PI_/2,-phi);
    yhat.SetPolar(1,PI_/2,-phi+PI_/2);
    gOut.SetPol(xhat);
-   Double_t Xrate=TCrossSection::Bremsstrahlung(eIn,eOut,gOut);
+   LDouble_t Xrate=TCrossSection::Bremsstrahlung(eIn,eOut,gOut);
    gOut.SetPol(yhat);
-   Double_t Yrate=TCrossSection::Bremsstrahlung(eIn,eOut,gOut);
+   LDouble_t Yrate=TCrossSection::Bremsstrahlung(eIn,eOut,gOut);
 
    return (Xrate-Yrate)/(Xrate+Yrate);
 }

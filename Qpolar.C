@@ -19,6 +19,7 @@
 #include <TF1.h>
 
 inline Double_t sqr(Double_t x) { return x*x; }
+inline LDouble_t sqr(LDouble_t x) { return x*x; }
 inline Complex_t sqr(Complex_t x) { return x*x; }
 
 const TThreeVectorReal zeroVector(0,0,0);
@@ -27,25 +28,25 @@ const TThreeVectorReal negZhat(0,0,-1);
 
 Complex_t Qpolar(Double_t *var, Double_t *par)
 {
-   Double_t thetai=var[0];  // angle of incident quark wrt the photon axis (r)
-   Double_t pin=par[0];     // momentum of the incident quark [GeV/c]
-   Double_t Q2=par[1];      // Q^2 of the virtual photon [GeV^2]
-   Double_t sigeIn=par[2];  // polarization state of initial quark
+   LDouble_t thetai=var[0];  // angle of incident quark wrt the photon axis (r)
+   LDouble_t pin=par[0];     // momentum of the incident quark [GeV/c]
+   LDouble_t Q2=par[1];      // Q^2 of the virtual photon [GeV^2]
+   LDouble_t sigeIn=par[2];  // polarization state of initial quark
 
-   const double mQuark(0);
+   const LDouble_t mQuark(0);
 
    TLepton qIn(mQuark), qFi(mQuark);
    TPhoton gIn;
 
    // Solve for the rest of the kinematics
-   Double_t Ein=sqrt(pin*pin+mQuark*mQuark);
+   LDouble_t Ein=sqrt(pin*pin+mQuark*mQuark);
    TFourVectorReal pIn(Ein,pin*sin(thetai),0,-pin*cos(thetai));
-   Double_t A=pIn[0]*pIn[0]-pIn[3]*pIn[3];
-   Double_t B=-Q2*pIn[3];
-   Double_t C=-Q2*(pIn[0]*pIn[0]+Q2/4);
-   Double_t D=B*B-4*A*C;
-   Double_t qin1=(D > 0)? (-B-sqrt(D))/(2*A) : 0;
-   Double_t qin2=(D > 0)? (-B+sqrt(D))/(2*A) : 0;
+   LDouble_t A=pIn[0]*pIn[0]-pIn[3]*pIn[3];
+   LDouble_t B=-Q2*pIn[3];
+   LDouble_t C=-Q2*(pIn[0]*pIn[0]+Q2/4);
+   LDouble_t D=B*B-4*A*C;
+   LDouble_t qin1=(D > 0)? (-B-sqrt(D))/(2*A) : 0;
+   LDouble_t qin2=(D > 0)? (-B+sqrt(D))/(2*A) : 0;
    TFourVectorReal phIn(0,0,0,0);
    if ((qin1 > 1e-6) && (qin1*qin1 > Q2)) {
      phIn = TFourVectorReal(sqrt(qin1*qin1-Q2),0,0,qin1);
@@ -99,7 +100,7 @@ Complex_t Qpolar(Double_t *var, Double_t *par)
 // AslashStar.Print();
 // cur.Print();
 
-// double ans;
+// LDouble_t ans;
 // cout << "continue? ";
 // cin >> ans;
 

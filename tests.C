@@ -43,9 +43,9 @@ void TestThreeVectorReal()
    TThreeVectorReal v3x(aarray);
    std::cout << "Initialized to (Float_t *) 7,8,9: "; v3x.Print();
 
-   Double_t darray[]={10,11,12,13};
+   LDouble_t darray[]={10,11,12,13};
    TThreeVectorReal v3y(darray);
-   std::cout << "Initialized to (Double_t *) 10,11,12: "; v3y.Print();
+   std::cout << "Initialized to (LDouble_t *) 10,11,12: "; v3y.Print();
 
    TThreeVectorReal v3z(v3v);
    std::cout << "Initialized to (TThreeVectorReal) 1,2,3: "; v3z.Print();
@@ -64,7 +64,7 @@ void TestThreeVectorReal()
    std::cout << "z != w ? " << ((v3z != v3w) ? "yes!" : "no!") << std::endl;
 
    v3z.Rotate(-1.2,2.5,0);
-   Double_t v3zhat[]={0,0,10};
+   LDouble_t v3zhat[]={0,0,10};
    std::cout << "Rotate(phi,theta,0) gets back z axis? ";
    std::cout << ((v3z == v3zhat) ? "yes!" : "no!" ) << std::endl;
 
@@ -96,9 +96,9 @@ void TestThreeVectorComplex()
    TThreeVectorComplex v3x(farray);
    std::cout << "Initialized to (Float_t *) 7,8,9: "; v3x.Print();
 
-   Double_t darray[]={10,11,12,13};
+   LDouble_t darray[]={10,11,12,13};
    TThreeVectorComplex v3y(darray);
-   std::cout << "Initialized to (Double_t *) 10,11,12: "; v3y.Print();
+   std::cout << "Initialized to (LDouble_t *) 10,11,12: "; v3y.Print();
 
    TThreeVectorComplex v3z(v3v);
    std::cout << "Initialized to (TThreeVectorComplex) 1,2,3: "; v3z.Print();
@@ -115,7 +115,7 @@ void TestThreeVectorComplex()
    TThreeVectorReal v3r(242.99,-485,0.6666);
    v3z = v3r.Normalize(10);
    v3z.Rotate(v3r.Phi(),v3r.Theta(),0);
-   Double_t v3zhat[]={0,0,10};
+   LDouble_t v3zhat[]={0,0,10};
    std::cout << "Rotate(phi,theta,0) gets back z axis? ";
    std::cout << ((v3z == v3zhat) ? "yes!" : "no!" ) << std::endl;
 
@@ -147,9 +147,9 @@ void TestFourVectorReal()
    TFourVectorReal v4x(aarray);
    std::cout << "Initialized to (Float_t *) 7,8,9,10: "; v4x.Print();
 
-   Double_t darray[]={10,11,12,13};
+   LDouble_t darray[]={10,11,12,13};
    TFourVectorReal v4y(darray);
-   std::cout << "Initialized to (Double_t *) 10,11,12,13: "; v4y.Print();
+   std::cout << "Initialized to (LDouble_t *) 10,11,12,13: "; v4y.Print();
 
    TFourVectorReal v4z(v4v);
    std::cout << "Initialized to (TFourVectorReal) 10,1,2,3: "; v4z.Print();
@@ -189,9 +189,9 @@ void TestFourVectorComplex()
    TFourVectorComplex v4x(aarray);
    std::cout << "Initialized to (Float_t *) 7,8,9,10: "; v4x.Print();
 
-   Double_t darray[]={10,11,12,13};
+   LDouble_t darray[]={10,11,12,13};
    TFourVectorComplex v4y(darray);
-   std::cout << "Initialized to (Double_t *) 10,11,12,13: "; v4y.Print();
+   std::cout << "Initialized to (LDouble_t *) 10,11,12,13: "; v4y.Print();
 
    TFourVectorComplex v4z(v4v);
    std::cout << "Initialized to (TFourVectorComplex) 10,1,2,3: "; v4z.Print();
@@ -222,7 +222,7 @@ void TestRotation()
    TThreeVectorReal w3(0,0,-1.557);
    TThreeRotation r1(w1), r2(w2), r3(w3);
    TThreeRotation r123=r3*r2*r1;
-   Double_t phi=0,theta=0,psi=0;
+   LDouble_t phi=0,theta=0,psi=0;
    r123.GetEuler(phi,theta,psi);
    std::cout << "First rotate 1.2 radians about z axis" <<std::endl;
    std::cout << "Then rotate 0.887 radians about y' axis" <<std::endl;
@@ -333,7 +333,7 @@ void TestPauliMatrix()
    std::cout << "Does the product of rotation equal the rotation product? "
         << ((b.ImagPart()==ahat) ? "yes" : "no")
         << " and "
-        << ((abs(2.0*acos(a)-axis.Length())<axis.Resolution())
+        << ((abs(2.0L*acos(a)-axis.Length())<axis.Resolution())
            ? "yes!" : "no!") << std::endl;
 }
 
@@ -380,7 +380,7 @@ void TestDiracSpinor()
 
 void TestDiracMatrix()
 {
-   TDiracMatrix dm1(1.0);
+   TDiracMatrix dm1(1.0L);
    std::cout << "Does TDiracMatrix(1.0) give identity matrix? "
         << (dm1.IsIdentity() ? "yes! " : " no!") << std::endl;
 
@@ -388,7 +388,7 @@ void TestDiracMatrix()
    dm1.SetUUbar(p);
    TDiracMatrix dm2;
    dm2.Slash(p);
-   Double_t m=p.Invariant();
+   LDouble_t m=p.Invariant();
    dm2 += m;
    std::cout << "Is the UUbar-projector equal to pSlash+m ? "
         << (dm1==dm2 ? "yes!" : "no!") << std::endl;
@@ -396,7 +396,7 @@ void TestDiracMatrix()
    TDiracMatrix sigma3(kDiracSigma3);
    TDiracMatrix gamma1(kDiracGamma1),gamma2(kDiracGamma2);
    Complex_t i_(0,1);
-   TDiracMatrix commutator12=(i_/2.)*(gamma1*gamma2-gamma2*gamma1);
+   TDiracMatrix commutator12=(i_/2.L)*(gamma1*gamma2-gamma2*gamma1);
    std::cout << "Is Sigma_3 equal to (i/2)[gamma_1,gamma_2] ? "
         << (commutator12==sigma3 ? "yes!" : "no!") << std::endl;
 
