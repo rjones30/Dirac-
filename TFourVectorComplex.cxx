@@ -37,7 +37,7 @@
 //
 // Rotations may be specified either by Euler angles or by a rotation
 // axis.  All angles are assumed to be in radians.  Vector classes are
-// defined for both Real_t and Complex_t generic types.  For complex
+// defined for both Double_t and Complex_t generic types.  For complex
 // vectors there are several additional member functions to deal with
 // operations that are specific to complex numbers.
 //
@@ -82,16 +82,16 @@ TFourVectorComplex &TFourVectorComplex::Boost
    return (*this = temp);
 }
 
-TFourVectorComplex &TFourVectorComplex::Boost(const Double_t betaX,
-                                              const Double_t betaY,
-                                              const Double_t betaZ)
+TFourVectorComplex &TFourVectorComplex::Boost(const LDouble_t betaX,
+                                              const LDouble_t betaY,
+                                              const LDouble_t betaZ)
 {
    TLorentzBoost boostOp(betaX,betaY,betaZ);
    return Boost(boostOp);
 }
 
 TFourVectorComplex &TFourVectorComplex::Boost
-                   (const TUnitVector &bhat, const Double_t beta)
+                   (const TUnitVector &bhat, const LDouble_t beta)
 {
    TLorentzBoost boostOp(bhat,beta);
    return Boost(boostOp);
@@ -100,13 +100,25 @@ TFourVectorComplex &TFourVectorComplex::Boost
 void TFourVectorComplex::Streamer(TBuffer &buf)
 {
    // Put/get a complex four-vector to/from stream buffer buf.
-   // This method assumes that complex is stored in memory as double[2].
+   // This method assumes that complex is stored in memory as LDouble_t[2].
 
-   double *p = (double *) &fVector[0];
+   Double_t vector[8];
    if (buf.IsReading()) {
-      buf.ReadStaticArray(p);
+      buf.ReadStaticArray(vector);
+      fVector[0] = Complex_t(vector[0], vector[1]);
+      fVector[1] = Complex_t(vector[2], vector[3]);
+      fVector[2] = Complex_t(vector[4], vector[5]);
+      fVector[3] = Complex_t(vector[6], vector[7]);
    } else {
-      buf.WriteArray(p, 8);
+      vector[0] = fVector[0].real();
+      vector[1] = fVector[0].imag();
+      vector[2] = fVector[1].real();
+      vector[3] = fVector[1].imag();
+      vector[4] = fVector[2].real();
+      vector[5] = fVector[2].imag();
+      vector[6] = fVector[3].real();
+      vector[7] = fVector[3].imag();
+      buf.WriteArray(vector, 8);
    }
 }
 

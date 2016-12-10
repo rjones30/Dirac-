@@ -35,7 +35,7 @@ ClassImp(TLepton)
 TThreeVectorReal TLepton::Pol() const
 {
    TThreeVectorReal pol;
-   Double_t cons;
+   LDouble_t cons;
    fSpinDensity.Decompose(cons,pol);
    return (pol *= 2);
 }

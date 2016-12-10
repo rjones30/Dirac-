@@ -51,9 +51,9 @@ TThreeVectorReal TPhoton::Pol() const
    //   3) length is p.
 
    TThreeVectorReal pol;
-   Double_t cons;
+   LDouble_t cons;
    fSpinDensity.Decompose(cons,pol);
-   Double_t r(0),theta(0),phi(0);
+   LDouble_t r(0),theta(0),phi(0);
    pol.GetPolar(r,theta,phi);
    r /= cons; phi /= 2;
    pol.SetPolar(r,theta,phi);
@@ -70,7 +70,7 @@ TPhoton &TPhoton::SetPol(const TThreeVectorReal &polar)
    //   3) length of polar is degree of polarization between 0 and 1.
 
    TThreeVectorReal pol;
-   Double_t r(0),theta(0),phi(0);
+   LDouble_t r(0),theta(0),phi(0);
    polar.GetPolar(r,theta,phi);
    phi *= 2;
    pol.SetPolar(r,theta,phi);
@@ -114,7 +114,7 @@ TFourVectorComplex TPhoton::Eps(const Int_t mode) const
       yhat[1]=0; yhat[2]=1; yhat[3]=0;
    }
 
-   const Double_t sqrt2=sqrt(2.);
+   const LDouble_t sqrt2=sqrt(2.);
    const Complex_t i_(0,1);
    TFourVectorComplex eps(fMomentum);
    switch (mode) {
@@ -132,7 +132,7 @@ TFourVectorComplex TPhoton::Eps(const Int_t mode) const
       eps[0] = fMomentum.Length();
       eps.Normalize(fMomentum[0]);
    case 4:	// ghost mode (absent in Lorentz gauge)
-      Double_t norm=eps.InvariantSqr();
+      LDouble_t norm=eps.InvariantSqr();
       if (norm > 0)
          eps /= sqrt(norm);
       else if (norm < 0)

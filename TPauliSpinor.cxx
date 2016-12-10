@@ -59,10 +59,10 @@ using namespace std;
 ClassImp(TPauliSpinor)
 
 
-Double_t TPauliSpinor::fResolution = 1e-12;
+LDouble_t TPauliSpinor::fResolution = 1e-12;
 
 TPauliSpinor &TPauliSpinor::SetPolar
-                    (const Double_t &theta, const Double_t &phi)
+                    (const LDouble_t &theta, const LDouble_t &phi)
 {
 // This representation for the state with a polarization vector along
 // the direction (theta,phi) is defined by
@@ -73,10 +73,10 @@ TPauliSpinor &TPauliSpinor::SetPolar
 // along the +z axis.
 
    const Complex_t i_(0,1);
-   Double_t sinHalfTheta = sin(theta/2);
-   Double_t cosHalfTheta = cos(theta/2);
-   Double_t sinHalfPhi = sin(phi/2);
-   Double_t cosHalfPhi = cos(phi/2);
+   LDouble_t sinHalfTheta = sin(theta/2);
+   LDouble_t cosHalfTheta = cos(theta/2);
+   LDouble_t sinHalfPhi = sin(phi/2);
+   LDouble_t cosHalfPhi = cos(phi/2);
    fSpinor[0] = cosHalfTheta * (cosHalfPhi - i_*sinHalfPhi);
    fSpinor[1] = sinHalfTheta * (cosHalfPhi + i_*sinHalfPhi);
    return *this;
@@ -106,9 +106,9 @@ TPauliSpinor &TPauliSpinor::Rotate(const TThreeRotation &rotOp)
    return *this;
 }
 
-TPauliSpinor &TPauliSpinor::Rotate(const Double_t &phi,
-                                   const Double_t &theta,
-                                   const Double_t &psi)
+TPauliSpinor &TPauliSpinor::Rotate(const LDouble_t &phi,
+                                   const LDouble_t &theta,
+                                   const LDouble_t &psi)
 {
    TPauliMatrix pmR;
    pmR.SetRotation(phi,theta,psi);
@@ -125,7 +125,7 @@ TPauliSpinor &TPauliSpinor::Rotate(const TThreeVectorReal &axis)
 }
 
 TPauliSpinor &TPauliSpinor::Rotate(const TUnitVector &axis,
-                                   const Double_t angle)
+                                   const LDouble_t angle)
 {
    TPauliMatrix pmR;
    pmR.SetRotation(axis,angle);
@@ -136,13 +136,19 @@ TPauliSpinor &TPauliSpinor::Rotate(const TUnitVector &axis,
 void TPauliSpinor::Streamer(TBuffer &buf)
 {
    // Put/get a Pauli spinor to/from stream buffer buf.
-   // This method assmes that Complex_t is stored as double[2].
+   // This method assmes that Complex_t is stored as LDouble_t[2].
 
-   Double_t *p = (Double_t *)&fSpinor[0];
+   Double_t vector[4];
    if (buf.IsReading()) {
-      buf.ReadStaticArray(p);
+      buf.ReadStaticArray(vector);
+      fSpinor[0] = Complex_t(vector[0], vector[1]);
+      fSpinor[1] = Complex_t(vector[2], vector[3]);
    } else {
-      buf.WriteArray(p, 4);
+      vector[0] = fSpinor[0].real();
+      vector[1] = fSpinor[0].imag();
+      vector[2] = fSpinor[1].real();
+      vector[3] = fSpinor[1].imag();
+      buf.WriteArray(vector, 4);
    }
 }
 

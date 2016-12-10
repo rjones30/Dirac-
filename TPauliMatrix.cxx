@@ -59,7 +59,7 @@ using namespace std;
 ClassImp(TPauliMatrix)
 
 
-Double_t TPauliMatrix::fResolution = 1e-12;
+LDouble_t TPauliMatrix::fResolution = 1e-12;
 
 TPauliMatrix::TPauliMatrix(const EPauliIndex i)
 {
@@ -92,7 +92,7 @@ TPauliMatrix::TPauliMatrix(const EPauliIndex i)
    }
 }
 
-void TPauliMatrix::Decompose(Double_t &a, TThreeVectorReal &b) const
+void TPauliMatrix::Decompose(LDouble_t &a, TThreeVectorReal &b) const
 {
    if (! IsHermetian()) {
       Error("TPauliMatrix::Decompose",
@@ -109,10 +109,10 @@ void TPauliMatrix::Decompose(Double_t &a, TThreeVectorReal &b) const
 void TPauliMatrix::Decompose(Complex_t &a, TThreeVectorComplex &b) const
 {
    const Complex_t i_(0,1);
-   a    = (fMatrix[0][0] + fMatrix[1][1])/2.;
-   b[1] = (fMatrix[1][0] + fMatrix[0][1])/2.;
-   b[2] = (fMatrix[1][0] - fMatrix[0][1])/(2.*i_);
-   b[3] = (fMatrix[0][0] - fMatrix[1][1])/2.;
+   a    = (fMatrix[0][0] + fMatrix[1][1])/2.L;
+   b[1] = (fMatrix[1][0] + fMatrix[0][1])/2.L;
+   b[2] = (fMatrix[1][0] - fMatrix[0][1])/(2.L*i_);
+   b[3] = (fMatrix[0][0] - fMatrix[1][1])/2.L;
 }
 
 TPauliMatrix &TPauliMatrix::operator*=(const TPauliMatrix &source)
@@ -131,7 +131,7 @@ TPauliMatrix &TPauliMatrix::operator*=(const TPauliMatrix &source)
 
 Bool_t TPauliMatrix::IsDiagonal() const
 {
-   Double_t limit = Resolution();
+   LDouble_t limit = Resolution();
    if (abs(fMatrix[0][1]) >= limit ||
        abs(fMatrix[1][0]) >= limit )
       return 0;
@@ -166,7 +166,7 @@ TPauliMatrix &TPauliMatrix::Invert()
 }
 
 TPauliMatrix &TPauliMatrix::Compose
-             (const Double_t a, const TThreeVectorReal &polar)
+             (const LDouble_t a, const TThreeVectorReal &polar)
 {
    const Complex_t i_(0,1);
    fMatrix[0][0] = a + polar[3];
@@ -199,14 +199,14 @@ TPauliMatrix &TPauliMatrix::SetRotation(const TThreeRotation &rotOp)
 // yields an additional phase factor of -1.
 
    TUnitVector axis;
-   Double_t angle(0);
+   LDouble_t angle(0);
    rotOp.GetAxis(axis,angle);
    return SetRotation(axis,angle);
 }
 
-TPauliMatrix &TPauliMatrix::SetRotation(const Double_t phi,
-                                        const Double_t theta,
-                                        const Double_t psi)
+TPauliMatrix &TPauliMatrix::SetRotation(const LDouble_t phi,
+                                        const LDouble_t theta,
+                                        const LDouble_t psi)
 {
    TPauliMatrix pmR;
    const TUnitVector yhat(0,1,0), zhat(0,0,1);
@@ -217,7 +217,7 @@ TPauliMatrix &TPauliMatrix::SetRotation(const Double_t phi,
 }
 
 TPauliMatrix &TPauliMatrix::SetRotation
-             (const TUnitVector &axis, const Double_t angle)
+             (const TUnitVector &axis, const LDouble_t angle)
 {
    const Complex_t i_(0,1);
    Complex_t a = cos(angle/2);
@@ -251,13 +251,25 @@ TPauliMatrix &TPauliMatrix::UniTransform(const TPauliMatrix &m)
 void TPauliMatrix::Streamer(TBuffer &buf)
 {
    // Put/get a Pauli matrix to/from stream buffer buf.
-   // This method assumes that Complex_t is stored as double[2].
+   // This method assumes that Complex_t is stored as LDouble_t[2].
 
-   Double_t *p = (Double_t *)&fMatrix[0][0];
+   Double_t vector[8];
    if (buf.IsReading()) {
-      buf.ReadStaticArray(p);
+      buf.ReadStaticArray(vector);
+      fMatrix[0][0] = Complex_t(vector[0], vector[1]);
+      fMatrix[0][1] = Complex_t(vector[2], vector[3]);
+      fMatrix[1][0] = Complex_t(vector[4], vector[5]);
+      fMatrix[1][1] = Complex_t(vector[6], vector[7]);
    } else {
-      buf.WriteArray(p, 8);
+      vector[0] = fMatrix[0][0].real();
+      vector[1] = fMatrix[0][0].imag();
+      vector[2] = fMatrix[0][1].real();
+      vector[3] = fMatrix[0][1].imag();
+      vector[4] = fMatrix[1][0].real();
+      vector[5] = fMatrix[1][0].imag();
+      vector[6] = fMatrix[1][1].real();
+      vector[7] = fMatrix[1][1].imag();
+      buf.WriteArray(vector, 8);
    }
 }
 

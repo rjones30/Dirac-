@@ -37,7 +37,7 @@
 //
 // Rotations may be specified either by Euler angles or by a rotation
 // axis.  All angles are assumed to be in radians.  Vector classes are
-// defined for both Real_t and Complex_t generic types.  For complex
+// defined for both Double_t and Complex_t generic types.  For complex
 // vectors there are several additional member functions to deal with
 // operations that are specific to complex numbers.
 //
@@ -68,7 +68,7 @@ using namespace std;
 ClassImp(TThreeVectorComplex)
 
 
-Double_t TThreeVectorComplex::fResolution = 1e-12;
+LDouble_t TThreeVectorComplex::fResolution = 1e-12;
 
 TThreeVectorComplex &TThreeVectorComplex::Rotate(const TThreeRotation &rotOp)
 {
@@ -76,16 +76,16 @@ TThreeVectorComplex &TThreeVectorComplex::Rotate(const TThreeRotation &rotOp)
    return (*this = temp);
 }
 
-TThreeVectorComplex &TThreeVectorComplex::Rotate(const Double_t phi,
-                                                 const Double_t theta,
-                                                 const Double_t psi)
+TThreeVectorComplex &TThreeVectorComplex::Rotate(const LDouble_t phi,
+                                                 const LDouble_t theta,
+                                                 const LDouble_t psi)
 {
    TThreeRotation rotOp(phi,theta,psi);
    return Rotate(rotOp);
 }
 
 TThreeVectorComplex &TThreeVectorComplex::Rotate
-                   (const TUnitVector &ahat, const Double_t angle)
+                   (const TUnitVector &ahat, const LDouble_t angle)
 {
    TThreeRotation rotOp(ahat,angle);
    return Rotate(rotOp);
@@ -94,13 +94,22 @@ TThreeVectorComplex &TThreeVectorComplex::Rotate
 void TThreeVectorComplex::Streamer(TBuffer &buf)
 {
    // Put/get a complex three-vector to/from stream buffer buf.
-   // This method assumes that complex is stored in memory as double[2]
+   // This method assumes that complex is stored in memory as LDouble_t[2]
 
-   double *p = (double *)&fVector[1];
+   Double_t vector[6];
    if (buf.IsReading()) {
-      buf.ReadStaticArray(p);
+      buf.ReadStaticArray(vector);
+      fVector[1] = Complex_t(vector[0], vector[1]);
+      fVector[2] = Complex_t(vector[2], vector[3]);
+      fVector[3] = Complex_t(vector[4], vector[5]);
    } else {
-      buf.WriteArray(p, 6);
+      vector[0] = fVector[1].real();
+      vector[1] = fVector[1].imag();
+      vector[2] = fVector[2].real();
+      vector[3] = fVector[2].imag();
+      vector[4] = fVector[3].real();
+      vector[5] = fVector[3].imag();
+      buf.WriteArray(vector, 6);
    }
 }
 

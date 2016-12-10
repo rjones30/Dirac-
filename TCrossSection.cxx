@@ -32,18 +32,18 @@
 //    density and matrix element factors are each individually Lorentz
 //    scalars under boosts along the beam-target axis.
 //
-//    			                       2
-//    				        | M   |
-//    				    4      fi
-//    		d[sigma]  =  ( 2pi )   --------- d[rho(final)]
-//    		                         F(in)
+//                                            2
+//                                    | M   |
+//                                4          fi
+//            d[sigma]  =  ( 2pi )   --------- d[rho(final)]
+//                                     F(in)
 //
 // 3. F(in) is equal to the product [ 4 E(beam) E(target) ] times the
 //    relative velocity between beam and target in the initial state.
 //
 // 4. rho(final) is calculated in whatever frame the user has chosen
 //    to specify the kinematics.  It consists of a term of the form
-//		   -1     -3   3
+//           -1     -3   3
 //             (2E)   (2pi)   d p
 //    for each final-state fermion or photon, accompanied by a four-
 //    dimensional delta function expressing momentum conservation.
@@ -58,8 +58,8 @@
 //    back to the beginning:
 //
 //    * write down the factor Ubar(p,s) if the line terminates in a
-//	final-state fermion, or Vbar(p,s) if it ends with an initial-
-//	state antifermion, using the appropriate p,s for this state;
+//    final-state fermion, or Vbar(p,s) if it ends with an initial-
+//    state antifermion, using the appropriate p,s for this state;
 //    * at each vertex write down a factor gamma(mu) for the current;
 //    * for each intermediate segment include a propagator of the form
 //      1/(pSlash - m) where p is obtained by enforcing momentum
@@ -107,12 +107,12 @@ ClassImp(TCrossSection)
 #include "TLepton.h"
 #include "TLorentzBoost.h"
 
-const Double_t PI_=2*atan2(1.,0.);
+const LDouble_t PI_=2*atan2(1.,0.);
 
-inline Double_t sqr(Double_t x) { return x*x; }
+inline LDouble_t sqr(LDouble_t x) { return x*x; }
 inline Complex_t sqr(Complex_t x) { return x*x; }
 
-Double_t TCrossSection::Compton(const TPhoton &gIn, const TLepton &eIn,
+LDouble_t TCrossSection::Compton(const TPhoton &gIn, const TLepton &eIn,
                                 const TPhoton &gOut, const TLepton &eOut)
 {
    // Calculates the Compton differential cross section for scattering of
@@ -138,7 +138,7 @@ Double_t TCrossSection::Compton(const TPhoton &gIn, const TLepton &eIn,
    TDiracMatrix chiIn, chiOut;
    chiIn.SetUUbar(eI->Mom(),eI->SDM());
    chiOut.SetUUbar(eF->Mom(),eF->SDM());
-   const Double_t mLepton=eI->Mass();
+   const LDouble_t mLepton=eI->Mass();
 
    // Obtain the electron propagators for the two diagrams
    TDiracMatrix ePropagator1, ePropagator2, dm;
@@ -189,17 +189,17 @@ Double_t TCrossSection::Compton(const TPhoton &gIn, const TLepton &eIn,
    // corresponding particle, and N is the number of final state particles.
    //    (3) absorb two powers of 4*PI_ into sqr(alphaQED)
 
-   const Double_t fluxIn = 4*gI->Mom()[0]*(eI->Mom().Length()+eI->Mom()[0]);
-   const Double_t rhoFin = sqr(gF->Mom()[0])/eF->Mom().ScalarProd(gF->Mom())/4;
-   const Double_t kinFactor = 4*rhoFin/fluxIn;
+   const LDouble_t fluxIn = 4*gI->Mom()[0]*(eI->Mom().Length()+eI->Mom()[0]);
+   const LDouble_t rhoFin = sqr(gF->Mom()[0])/eF->Mom().ScalarProd(gF->Mom())/4;
+   const LDouble_t kinFactor = 4*rhoFin/fluxIn;
 
-   Double_t diffXsect = hbarcSqr*sqr(alphaQED)*real(ampSquared)*kinFactor;
+   LDouble_t diffXsect = hbarcSqr*sqr(alphaQED)*real(ampSquared)*kinFactor;
 
    return diffXsect;
 
    // The unpolarized Klein Nishina formula is here for comparison
-   Double_t sinSqrTheta = 1 - sqr(gF->Mom()[3]/gF->Mom()[0]);
-   Double_t KleinNishinaResult = sqr(alphaQED/mLepton)/2;
+   LDouble_t sinSqrTheta = 1 - sqr(gF->Mom()[3]/gF->Mom()[0]);
+   LDouble_t KleinNishinaResult = sqr(alphaQED/mLepton)/2;
    KleinNishinaResult *= sqr(gF->Mom()[0]/gI->Mom()[0]);
    KleinNishinaResult *= (gF->Mom()[0]/gI->Mom()[0]) +
                          (gI->Mom()[0]/gF->Mom()[0]) - sinSqrTheta;
@@ -207,7 +207,7 @@ Double_t TCrossSection::Compton(const TPhoton &gIn, const TLepton &eIn,
    return KleinNishinaResult;
 }
 
-Double_t TCrossSection::Bremsstrahlung(
+LDouble_t TCrossSection::Bremsstrahlung(
                         const TLepton &eIn, const TLepton &eOut,
                         const TPhoton &gOut)
 {
@@ -232,7 +232,7 @@ Double_t TCrossSection::Bremsstrahlung(
    TDiracMatrix chiIn, chiOut;
    chiIn.SetUUbar(eI->Mom(),eI->SDM());
    chiOut.SetUUbar(eF->Mom(),eF->SDM());
-   const Double_t mLepton=eI->Mass();
+   const LDouble_t mLepton=eI->Mass();
    TFourVectorReal qRecoil(eI->Mom() - eF->Mom() - gF->Mom());
 
    // Obtain the electron propagators for the two diagrams
@@ -284,13 +284,13 @@ Double_t TCrossSection::Bremsstrahlung(
    // the momentum axis of the final electron+photon, rather than
    // the incoming electron direction.
 
-   Double_t kinFactor = 1/sqr(2*PI_*eI->Mom()[0]); // |qRecoil| << mElectron
-   Double_t diffXsect = hbarcSqr*pow(alphaQED,3)*real(ampSquared)
+   LDouble_t kinFactor = 1/sqr(2*PI_*eI->Mom()[0]); // |qRecoil| << mElectron
+   LDouble_t diffXsect = hbarcSqr*pow(alphaQED,3)*real(ampSquared)
                        *kinFactor/sqr(qRecoil.InvariantSqr());
    return diffXsect;
 }
 
-Double_t TCrossSection::PairProduction(
+LDouble_t TCrossSection::PairProduction(
                         const TPhoton &gIn,
                         const TLepton &eOut, const TLepton &pOut)
 {
@@ -315,7 +315,7 @@ Double_t TCrossSection::PairProduction(
    TDiracMatrix chiEle, chiPos;
    chiEle.SetUUbar(eF->Mom(),eF->SDM());
    chiPos.SetVVbar(pF->Mom(),pF->SDM());
-   const Double_t mLepton=eF->Mass();
+   const LDouble_t mLepton=eF->Mass();
    TFourVectorReal qRecoil(gI->Mom() - eF->Mom() - pF->Mom());
 
    // Obtain the electron propagators for the two diagrams
@@ -366,13 +366,13 @@ Double_t TCrossSection::PairProduction(
    // I redefined the solid angle for the outgoing electron around
    // the momentum axis of the pair, rather than the incoming photon.
 
-   Double_t kinFactor = 1/sqr(2*PI_*gI->Mom()[0]);
-   Double_t diffXsect = hbarcSqr*pow(alphaQED,3)*real(ampSquared)
+   LDouble_t kinFactor = 1/sqr(2*PI_*gI->Mom()[0]);
+   LDouble_t diffXsect = hbarcSqr*pow(alphaQED,3)*real(ampSquared)
                        *kinFactor/sqr(qRecoil.InvariantSqr());
    return diffXsect;
 }
 
-Double_t TCrossSection::TripletProduction(
+LDouble_t TCrossSection::TripletProduction(
                         const TPhoton &gIn, const TLepton &eIn,
                         const TLepton &pOut, const TLepton &eOut2,
                         const TLepton &eOut3)
@@ -395,7 +395,7 @@ Double_t TCrossSection::TripletProduction(
    TLepton eOutgoing2(eOut2), *e2=&eOutgoing2;
    TLepton eOutgoing3(eOut3), *e3=&eOutgoing3;
 
-   const Double_t mLepton=e0->Mass();
+   const LDouble_t mLepton=e0->Mass();
 
    // Obtain the four lepton state matrices
    TDiracMatrix chi0,chi1,chi2,chi3;
@@ -434,7 +434,7 @@ Double_t TCrossSection::TripletProduction(
    // Lorentz component (mu=3), photon spin component (j=0).
    //
    // The plan for computing the sums is as follows:
-   //	1. compute all Dirac matrix chains for each leg of each diagram
+   //   1. compute all Dirac matrix chains for each leg of each diagram
    //   2. compute the adjoint pair for each of the above (xxxBar matrices)
    //   3. append chi matrices for the u(p) or v(p) spinor factors to each
    //   4. take traces of chains of two xxx[mu][j] and two xxxBar[nu][jj]
@@ -446,22 +446,22 @@ Double_t TCrossSection::TripletProduction(
    TDiracMatrix dm;
    TDiracMatrix epropCD2a = (dm.Slash(g0->Mom() + e0->Mom()) + mLepton) /
                             (2*g0->Mom().ScalarProd(e0->Mom()));
-   TDiracMatrix epropCD2b = (dm.Slash(e3->Mom() - g0->Mom()) + mLepton) /
-                            (-2*g0->Mom().ScalarProd(e3->Mom()));
+   TDiracMatrix epropCD2b = (dm.Slash(e2->Mom() - g0->Mom()) + mLepton) /
+                            (-2*g0->Mom().ScalarProd(e2->Mom()));
    TDiracMatrix epropBH2a = (dm.Slash(g0->Mom() - e1->Mom()) + mLepton) /
                             (-2*g0->Mom().ScalarProd(e1->Mom()));
-   TDiracMatrix epropBH2b = (dm.Slash(e2->Mom() - g0->Mom()) + mLepton) /
-                            (-2*g0->Mom().ScalarProd(e2->Mom()));
+   TDiracMatrix epropBH2b = (dm.Slash(e3->Mom() - g0->Mom()) + mLepton) /
+                            (-2*g0->Mom().ScalarProd(e3->Mom()));
    TDiracMatrix epropCD3a(epropCD2a);
    TDiracMatrix epropCD3b(epropBH2b);
    TDiracMatrix epropBH3a(epropBH2a);
    TDiracMatrix epropBH3b(epropCD2b);
 
    // Pre-compute the photon propagators (no a,b suffix needed)
-   Double_t gpropCD2 = 1/(e1->Mom()+e2->Mom()).InvariantSqr();
-   Double_t gpropBH2 = 1/(e0->Mom()-e3->Mom()).InvariantSqr();
-   Double_t gpropCD3 = 1/(e1->Mom()+e3->Mom()).InvariantSqr();
-   Double_t gpropBH3 = 1/(e0->Mom()-e2->Mom()).InvariantSqr();
+   LDouble_t gpropCD2 = 1/(e1->Mom()+e3->Mom()).InvariantSqr();
+   LDouble_t gpropBH2 = 1/(e0->Mom()-e2->Mom()).InvariantSqr();
+   LDouble_t gpropCD3 = 1/(e1->Mom()+e2->Mom()).InvariantSqr();
+   LDouble_t gpropBH3 = 1/(e0->Mom()-e3->Mom()).InvariantSqr();
 
    // Evaluate the leading order Feynman amplitude
    const TDiracMatrix gamma0(kDiracGamma0);
@@ -531,57 +531,72 @@ Double_t TCrossSection::TripletProduction(
          dmCD20Bar[mu][j] = dmCD20[mu][j];
          dmCD20Bar[mu][j].Adjoint();
          dmCD20Bar[mu][j].UniTransform(gamma0);
-         dmCD20Bar[mu][j] *= chi3;
+         dmCD20Bar[mu][j] *= chi2;
          dmCD20[mu][j] *= chi0;
          dmCD21Bar[mu][j] = dmCD21[mu][j];
          // dmCD21Bar[mu][j].Adjoint();
          // dmCD21Bar[mu][j].UniTransform(gamma0);
-         dmCD21Bar[mu][j] *= chi2;
+         dmCD21Bar[mu][j] *= chi3;
          dmCD21[mu][j] *= chi1;
  
          dmBH20Bar[mu][j] = dmBH20[mu][j];
          // dmBH20Bar[mu][j].Adjoint();
          // dmBH20Bar[mu][j].UniTransform(gamma0);
-         dmBH20Bar[mu][j] *= chi3;
+         dmBH20Bar[mu][j] *= chi2;
          dmBH20[mu][j] *= chi0;
          dmBH21Bar[mu][j] = dmBH21[mu][j];
          dmBH21Bar[mu][j].Adjoint();
          dmBH21Bar[mu][j].UniTransform(gamma0);
-         dmBH21Bar[mu][j] *= chi2;
+         dmBH21Bar[mu][j] *= chi3;
          dmBH21[mu][j] *= chi1;
  
          dmCD30Bar[mu][j] = dmCD30[mu][j];
          dmCD30Bar[mu][j].Adjoint();
          dmCD30Bar[mu][j].UniTransform(gamma0);
-         dmCD30Bar[mu][j] *= chi2;
+         dmCD30Bar[mu][j] *= chi3;
          dmCD30[mu][j] *= chi0;
          dmCD31Bar[mu][j] = dmCD31[mu][j];
          // dmCD31Bar[mu][j].Adjoint();
          // dmCD31Bar[mu][j].UniTransform(gamma0);
-         dmCD31Bar[mu][j] *= chi3;
+         dmCD31Bar[mu][j] *= chi2;
          dmCD31[mu][j] *= chi1;
  
          dmBH30Bar[mu][j] = dmBH30[mu][j];
          // dmBH30Bar[mu][j].Adjoint();
          // dmBH30Bar[mu][j].UniTransform(gamma0);
-         dmBH30Bar[mu][j] *= chi2;
+         dmBH30Bar[mu][j] *= chi3;
          dmBH30[mu][j] *= chi0;
          dmBH31Bar[mu][j] = dmBH31[mu][j];
          dmBH31Bar[mu][j].Adjoint();
          dmBH31Bar[mu][j].UniTransform(gamma0);
-         dmBH31Bar[mu][j] *= chi3;
+         dmBH31Bar[mu][j] *= chi2;
          dmBH31[mu][j] *= chi1;
       }
    }
 
    // Finally, the sums over traces
    Complex_t Mfi2[2][2]; 
-   Mfi2[0][0] = Mfi2[0][1] = Mfi2[1][0] = Mfi2[1][1] = Complex_t(0,0);
+   Complex_t CD2CD2bar[2][2];
+   Complex_t CD2BH2bar[2][2];
+   Complex_t CD2CD3bar[2][2];
+   Complex_t CD2BH3bar[2][2];
+   Complex_t BH2CD2bar[2][2];
+   Complex_t BH2BH2bar[2][2];
+   Complex_t BH2CD3bar[2][2];
+   Complex_t BH2BH3bar[2][2];
+   Complex_t CD3CD2bar[2][2];
+   Complex_t CD3BH2bar[2][2];
+   Complex_t CD3CD3bar[2][2];
+   Complex_t CD3BH3bar[2][2];
+   Complex_t BH3CD2bar[2][2];
+   Complex_t BH3BH2bar[2][2];
+   Complex_t BH3CD3bar[2][2];
+   Complex_t BH3BH3bar[2][2];
    for (Int_t j=0; j<2; j++) {
       for (Int_t jj=0; jj<2; jj++) {
          for (Int_t mu=0; mu<4; mu++) {
             for (Int_t nu=0; nu<4; nu++) {
-               Double_t sign;
+               LDouble_t sign;
                sign = (mu == 0)? 1 : -1;
                sign *= (nu == 0)? 1 : -1;
                TDiracMatrix dm0,dm1;
@@ -590,99 +605,107 @@ Double_t TCrossSection::TripletProduction(
                dm0 *= dmCD20Bar[nu][jj];
                dm1 = dmCD21[mu][j];
                dm1 *= dmCD21Bar[nu][jj];
-               Mfi2[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropCD2*gpropCD2;
+               CD2CD2bar[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropCD2*gpropCD2;
                // CD2 * BH2Bar
                dm0 = dmCD20[mu][j];
                dm0 *= dmBH20Bar[nu][jj];
                dm1 = dmCD21[mu][j];
                dm1 *= dmBH21Bar[nu][jj];
-               Mfi2[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropCD2*gpropBH2;
+               CD2BH2bar[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropCD2*gpropBH2;
                // CD2 * CD3Bar
                dm0 = dmCD20[mu][j];
                dm0 *= dmCD30Bar[nu][jj];
                dm0 *= dmCD21[mu][j];
                dm0 *= dmCD31Bar[nu][jj];
-               Mfi2[j][jj] -= sign*dm0.Trace()*gpropCD2*gpropCD3;
+               CD2CD3bar[j][jj] -= sign*dm0.Trace()*gpropCD2*gpropCD3;
                // CD2 * BH3Bar
                dm0 = dmCD20[mu][j];
                dm0 *= dmBH30Bar[nu][jj];
                dm0 *= dmCD21[mu][j];
                dm0 *= dmBH31Bar[nu][jj];
-               Mfi2[j][jj] -= sign*dm0.Trace()*gpropCD2*gpropBH3;
+               CD2BH3bar[j][jj] -= sign*dm0.Trace()*gpropCD2*gpropBH3;
                // BH2 * CD2Bar
                dm0 = dmBH20[mu][j];
                dm0 *= dmCD20Bar[nu][jj];
                dm1 = dmBH21[mu][j];
                dm1 *= dmCD21Bar[nu][jj];
-               Mfi2[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropCD2*gpropBH2;
+               BH2CD2bar[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropCD2*gpropBH2;
                // BH2 * BH2Bar
                dm0 = dmBH20[mu][j];
                dm0 *= dmBH20Bar[nu][jj];
                dm1 = dmBH21[mu][j];
                dm1 *= dmBH21Bar[nu][jj];
-               Mfi2[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropBH2*gpropBH2;
+               BH2BH2bar[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropBH2*gpropBH2;
                // BH2 * CD3Bar
                dm0 = dmBH20[mu][j];
                dm0 *= dmCD30Bar[nu][jj];
                dm0 *= dmBH21[mu][j];
                dm0 *= dmCD31Bar[nu][jj];
-               Mfi2[j][jj] -= sign*dm0.Trace()*gpropBH2*gpropCD3;
+               BH2CD3bar[j][jj] -= sign*dm0.Trace()*gpropBH2*gpropCD3;
                // BH2 * BH3Bar
                dm0 = dmBH20[mu][j];
                dm0 *= dmBH30Bar[nu][jj];
                dm0 *= dmBH21[mu][j];
                dm0 *= dmBH31Bar[nu][jj];
-               Mfi2[j][jj] -= sign*dm0.Trace()*gpropBH2*gpropBH3;
+               BH2BH3bar[j][jj] -= sign*dm0.Trace()*gpropBH2*gpropBH3;
                // CD3 * CD2Bar
                dm0 = dmCD30[mu][j];
                dm0 *= dmCD20Bar[nu][jj];
                dm0 *= dmCD31[mu][j];
                dm0 *= dmCD21Bar[nu][jj];
-               Mfi2[j][jj] -= sign*dm0.Trace()*gpropCD2*gpropCD3;
+               CD3CD2bar[j][jj] -= sign*dm0.Trace()*gpropCD2*gpropCD3;
                // CD3 * BH2Bar
                dm0 = dmCD30[mu][j];
                dm0 *= dmBH20Bar[nu][jj];
                dm0 *= dmCD31[mu][j];
                dm0 *= dmBH21Bar[nu][jj];
-               Mfi2[j][jj] -= sign*dm0.Trace()*gpropBH2*gpropCD3;
+               CD3BH2bar[j][jj] -= sign*dm0.Trace()*gpropBH2*gpropCD3;
                // CD3 * CD3Bar
                dm0 = dmCD30[mu][j];
                dm0 *= dmCD30Bar[nu][jj];
                dm1 = dmCD31[mu][j];
                dm1 *= dmCD31Bar[nu][jj];
-               Mfi2[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropCD3*gpropCD3;
+               CD3CD3bar[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropCD3*gpropCD3;
                // CD3 * BH3Bar
                dm0 = dmCD30[mu][j];
                dm0 *= dmBH30Bar[nu][jj];
                dm1 = dmCD31[mu][j];
                dm1 *= dmBH31Bar[nu][jj];
-               Mfi2[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropCD3*gpropBH3;
+               CD3BH3bar[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropCD3*gpropBH3;
                // BH3 * CD2Bar
                dm0 = dmBH30[mu][j];
                dm0 *= dmCD20Bar[nu][jj];
                dm0 *= dmBH31[mu][j];
                dm0 *= dmCD21Bar[nu][jj];
-               Mfi2[j][jj] -= sign*dm0.Trace()*gpropBH3*gpropCD2;
+               BH3CD2bar[j][jj] -= sign*dm0.Trace()*gpropBH3*gpropCD2;
                // BH3 * BH2Bar
                dm0 = dmBH30[mu][j];
                dm0 *= dmBH20Bar[nu][jj];
                dm0 *= dmBH31[mu][j];
                dm0 *= dmBH21Bar[nu][jj];
-               Mfi2[j][jj] -= sign*dm0.Trace()*gpropBH3*gpropBH2;
+               BH3BH2bar[j][jj] -= sign*dm0.Trace()*gpropBH3*gpropBH2;
                // BH3 * CD3Bar
-               dm0 = dmCD30[mu][j];
-               dm0 *= dmBH30Bar[nu][jj];
-               dm1 = dmCD31[mu][j];
-               dm1 *= dmBH31Bar[nu][jj];
-               Mfi2[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropCD3*gpropBH3;
+               dm0 = dmBH30[mu][j];
+               dm0 *= dmCD30Bar[nu][jj];
+               dm1 = dmBH31[mu][j];
+               dm1 *= dmCD31Bar[nu][jj];
+               BH3CD3bar[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropCD3*gpropBH3;
                // BH3 * BH3Bar
                dm0 = dmBH30[mu][j];
                dm0 *= dmBH30Bar[nu][jj];
                dm1 = dmBH31[mu][j];
                dm1 *= dmBH31Bar[nu][jj];
-               Mfi2[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropBH3*gpropBH3;
+               BH3BH3bar[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropBH3*gpropBH3;
             }
          }
+         Mfi2[j][jj] = CD2CD2bar[j][jj] + CD2BH2bar[j][jj] + 
+                       CD2CD3bar[j][jj] + CD2BH3bar[j][jj] +
+                       BH2CD2bar[j][jj] + BH2BH2bar[j][jj] + 
+                       BH2CD3bar[j][jj] + BH2BH3bar[j][jj] +
+                       CD3CD2bar[j][jj] + CD3BH2bar[j][jj] + 
+                       CD3CD3bar[j][jj] + CD3BH3bar[j][jj] +
+                       BH3CD2bar[j][jj] + BH3BH2bar[j][jj] + 
+                       BH3CD3bar[j][jj] + BH3BH3bar[j][jj];
       }
    }
 
@@ -694,6 +717,81 @@ Double_t TCrossSection::TripletProduction(
       }
    }
 
+#if DEBUGGING
+   if (real(ampSquared) < 0 || fabs(ampSquared.imag()) > fabs(ampSquared / 1e8L))
+   {
+      std::cout << "Summary of triplets amplitude products:" << std::endl
+                << "  These guys should be all real positive:" << std::endl
+                << "    ampSquared = " << ampSquared << std::endl
+                << "    CD2CD2bar[0][0] = " << CD2CD2bar[0][0] << std::endl
+                << "    CD2CD2bar[1][1] = " << CD2CD2bar[1][1] << std::endl
+                << "    BH2BH2bar[0][0] = " << BH2BH2bar[0][0] << std::endl
+                << "    BH2BH2bar[1][1] = " << BH2BH2bar[1][1] << std::endl
+                << "    CD3CD3bar[0][0] = " << CD3CD3bar[0][0] << std::endl
+                << "    CD3CD3bar[1][1] = " << CD3CD3bar[1][1] << std::endl
+                << "    BH3BH3bar[0][0] = " << BH3BH3bar[0][0] << std::endl
+                << "    BH3BH3bar[1][1] = " << BH3BH3bar[1][1] << std::endl
+                << "  The rest of these should be conjugate pairs:" << std::endl
+                << "    CD2CD2bar[i][j]: " << CD2CD2bar[0][1] << ", "
+                                           << CD2CD2bar[1][0] <<  std::endl
+                << "    BH2BH2bar[i][j]: " << BH2BH2bar[0][1] << ", "
+                                           << BH2BH2bar[1][0] <<  std::endl
+                << "    CD3CD3bar[i][j]: " << CD3CD3bar[0][1] << ", "
+                                           << CD3CD3bar[1][0] <<  std::endl
+                << "    BH3BH3bar[i][j]: " << BH3BH3bar[0][1] << ", "
+                                           << BH3BH3bar[1][0] <<  std::endl
+                << "    CD2BH2bar[0][0]: " << CD2BH2bar[0][0] << ", "
+                                           << BH2CD2bar[0][0] <<  std::endl
+                << "    CD2BH2bar[1][1]: " << CD2BH2bar[1][1] << ", "
+                                           << BH2CD2bar[1][1] <<  std::endl
+                << "    CD2BH2bar[1][0]: " << CD2BH2bar[1][0] << ", "
+                                           << BH2CD2bar[0][1] <<  std::endl
+                << "    CD2BH2bar[0][1]: " << CD2BH2bar[0][1] << ", "
+                                           << BH2CD2bar[1][0] <<  std::endl
+                << "    CD2CD3bar[0][0]: " << CD2CD3bar[0][0] << ", "
+                                           << CD3CD2bar[0][0] <<  std::endl
+                << "    CD2CD3bar[1][1]: " << CD2CD3bar[1][1] << ", "
+                                           << CD3CD2bar[1][1] <<  std::endl
+                << "    CD2CD3bar[1][0]: " << CD2CD3bar[1][0] << ", "
+                                           << CD3CD2bar[0][1] <<  std::endl
+                << "    CD2CD3bar[0][1]: " << CD2CD3bar[0][1] << ", "
+                                           << CD3CD2bar[1][0] <<  std::endl
+                << "    CD2BH3bar[0][0]: " << CD2BH3bar[0][0] << ", "
+                                           << BH3CD2bar[0][0] <<  std::endl
+                << "    CD2BH3bar[1][1]: " << CD2BH3bar[1][1] << ", "
+                                           << BH3CD2bar[1][1] <<  std::endl
+                << "    CD2BH3bar[1][0]: " << CD2BH3bar[1][0] << ", "
+                                           << BH3CD2bar[0][1] <<  std::endl
+                << "    CD2BH3bar[0][1]: " << CD2BH3bar[0][1] << ", "
+                                           << BH3CD2bar[1][0] <<  std::endl
+                << "    BH2CD3bar[0][0]: " << BH2CD3bar[0][0] << ", "
+                                           << CD3BH2bar[0][0] <<  std::endl
+                << "    BH2CD3bar[1][1]: " << BH2CD3bar[1][1] << ", "
+                                           << CD3BH2bar[1][1] <<  std::endl
+                << "    BH2CD3bar[1][0]: " << BH2CD3bar[1][0] << ", "
+                                           << CD3BH2bar[0][1] <<  std::endl
+                << "    BH2CD3bar[0][1]: " << BH2CD3bar[0][1] << ", "
+                                           << CD3BH2bar[1][0] <<  std::endl
+                << "    BH2BH3bar[0][0]: " << BH2BH3bar[0][0] << ", "
+                                           << BH3BH2bar[0][0] <<  std::endl
+                << "    BH2BH3bar[1][1]: " << BH2BH3bar[1][1] << ", "
+                                           << BH3BH2bar[1][1] <<  std::endl
+                << "    BH2BH3bar[1][0]: " << BH2BH3bar[1][0] << ", "
+                                           << BH3BH2bar[0][1] <<  std::endl
+                << "    BH2BH3bar[0][1]: " << BH2BH3bar[0][1] << ", "
+                                           << BH3BH2bar[1][0] <<  std::endl
+                << "    CD3BH3bar[0][0]: " << CD3BH3bar[0][0] << ", "
+                                           << BH3CD3bar[0][0] <<  std::endl
+                << "    CD3BH3bar[1][1]: " << CD3BH3bar[1][1] << ", "
+                                           << BH3CD3bar[1][1] <<  std::endl
+                << "    CD3BH3bar[1][0]: " << CD3BH3bar[1][0] << ", "
+                                           << BH3CD3bar[0][1] <<  std::endl
+                << "    CD3BH3bar[0][1]: " << CD3BH3bar[0][1] << ", "
+                                           << BH3CD3bar[1][0] <<  std::endl
+                ;
+   }
+#endif
+
    // Obtain the kinematical factors:
    //    (1) 1/flux from initial state 1/(4 kin [p0 + E0])
    //    (2) rho from density of final states factor
@@ -704,10 +802,10 @@ Double_t TCrossSection::TripletProduction(
    // corresponding particle, and N is the number of final state particles.
    //    (3) absorb three powers of 4*PI_ into pow(alphaQED,3)
 
-   Double_t fluxFactor = 4*g0->Mom()[0]*(e0->Mom().Length()+e0->Mom()[0]);
-   Double_t rhoFactor = 1/(8*e3->Mom()[0]*(e1->Mom()+e2->Mom()).Length());
-   Double_t piFactor = pow(2*PI_,4-9)*pow(4*PI_,3);
-   Double_t diffXsect = hbarcSqr * pow(alphaQED,3) * real(ampSquared)
+   LDouble_t fluxFactor = 4*g0->Mom()[0]*(e0->Mom().Length()+e0->Mom()[0]);
+   LDouble_t rhoFactor = 1/(8*e3->Mom()[0]*(e1->Mom()+e2->Mom()).Length());
+   LDouble_t piFactor = pow(2*PI_,4-9)*pow(4*PI_,3);
+   LDouble_t diffXsect = hbarcSqr * pow(alphaQED,3) * real(ampSquared)
                         / fluxFactor * rhoFactor * piFactor;
    return diffXsect;
 }

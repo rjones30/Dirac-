@@ -37,7 +37,7 @@
 //
 // Rotations may be specified either by Euler angles or by a rotation
 // axis.  All angles are assumed to be in radians.  Vector classes are
-// defined for both Real_t and Complex_t generic types.  For complex
+// defined for both Double_t and Complex_t generic types.  For complex
 // vectors there are several additional member functions to deal with
 // operations that are specific to complex numbers.
 //
@@ -81,16 +81,16 @@ TFourVectorReal &TFourVectorReal::Boost(const TLorentzBoost &boostOp)
    return (*this = temp);
 }
 
-TFourVectorReal &TFourVectorReal::Boost(const Double_t betaX,
-                                        const Double_t betaY,
-                                        const Double_t betaZ)
+TFourVectorReal &TFourVectorReal::Boost(const LDouble_t betaX,
+                                        const LDouble_t betaY,
+                                        const LDouble_t betaZ)
 {
    TLorentzBoost boostOp(betaX,betaY,betaZ);
    return Boost(boostOp);
 }
 
 TFourVectorReal &TFourVectorReal::Boost
-                (const TUnitVector &bhat, const Double_t beta)
+                (const TUnitVector &bhat, const LDouble_t beta)
 {
    TLorentzBoost boostOp(bhat,beta);
    return Boost(boostOp);
@@ -100,10 +100,19 @@ void TFourVectorReal::Streamer(TBuffer &buf)
 {
    // Put/get four-vector from stream buffer buf.
 
+   Double_t vector[4];
    if (buf.IsReading()) {
-      buf.ReadStaticArray(fVector);
+      buf.ReadStaticArray(vector);
+      fVector[0] = vector[0];
+      fVector[1] = vector[1];
+      fVector[2] = vector[2];
+      fVector[3] = vector[3];
    } else {
-      buf.WriteArray(fVector, 4);
+      vector[0] = fVector[0];
+      vector[1] = fVector[1];
+      vector[2] = fVector[2];
+      vector[3] = fVector[3];
+      buf.WriteArray(vector, 4);
    }
 }
 

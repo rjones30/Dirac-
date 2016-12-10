@@ -37,7 +37,7 @@
 //
 // Rotations may be specified either by Euler angles or by a rotation
 // axis.  All angles are assumed to be in radians.  Vector classes are
-// defined for both Real_t and Complex_t generic types.  For complex
+// defined for both Double_t and Complex_t generic types.  For complex
 // vectors there are several additional member functions to deal with
 // operations that are specific to complex numbers.
 //
@@ -67,7 +67,7 @@
 ClassImp(TThreeVectorReal)
 
 
-Double_t TThreeVectorReal::fResolution = 1e-12;
+LDouble_t TThreeVectorReal::fResolution = 1e-12;
 
 TThreeVectorReal &TThreeVectorReal::Rotate(const TThreeRotation &rotOp)
 {
@@ -78,7 +78,7 @@ TThreeVectorReal &TThreeVectorReal::Rotate(const TThreeRotation &rotOp)
 }
 
 TThreeVectorReal &TThreeVectorReal::Rotate
-                 (const Double_t phi, const Double_t theta, const Double_t psi)
+                 (const LDouble_t phi, const LDouble_t theta, const LDouble_t psi)
 {
    // Rotate  vector using Euler angles z:phi,y':theta,z'':psi.
 
@@ -87,7 +87,7 @@ TThreeVectorReal &TThreeVectorReal::Rotate
 }
 
 TThreeVectorReal &TThreeVectorReal::Rotate
-                 (const TUnitVector &ahat, const Double_t angle)
+                 (const TUnitVector &ahat, const LDouble_t angle)
 {
    // Rotate vector by angle degrees using ahat as the axis.
 
@@ -97,12 +97,19 @@ TThreeVectorReal &TThreeVectorReal::Rotate
 
 void TThreeVectorReal::Streamer(TBuffer &buf)
 {
-   // Put/get three Real_t values to/from stream buffer buf.
+   // Put/get three Double_t values to/from stream buffer buf.
 
+   Double_t vector[3];
    if (buf.IsReading()) {
-      buf.ReadStaticArray((Real_t *)&fVector[1]);
+      buf.ReadStaticArray(vector);
+      fVector[1] = vector[0];
+      fVector[2] = vector[1];
+      fVector[3] = vector[2];
    } else {
-      buf.WriteArray((Real_t *)&fVector[1], 3);
+      vector[0] = fVector[1];
+      vector[1] = fVector[2];
+      vector[2] = fVector[3];
+      buf.WriteArray(vector, 3);
    }
 }
 

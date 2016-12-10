@@ -67,7 +67,7 @@ using namespace std;
 ClassImp(TDiracSpinor)
 
 
-Double_t TDiracSpinor::fResolution = 1e-12;
+LDouble_t TDiracSpinor::fResolution = 1e-12;
 
 TPauliSpinor TDiracSpinor::Upper() const
 {
@@ -194,9 +194,9 @@ TDiracSpinor &TDiracSpinor::Rotate(const TThreeRotation &rotOp)
    return Operate(dmR);
 }
 
-TDiracSpinor &TDiracSpinor::Rotate(const Double_t &phi,
-                                   const Double_t &theta,
-                                   const Double_t &psi)
+TDiracSpinor &TDiracSpinor::Rotate(const LDouble_t &phi,
+                                   const LDouble_t &theta,
+                                   const LDouble_t &psi)
 {
    TDiracMatrix dmR;
    dmR.SetRotation(phi,theta,psi);
@@ -211,23 +211,23 @@ TDiracSpinor &TDiracSpinor::Rotate(const TThreeVectorReal &axis)
 }
 
 TDiracSpinor &TDiracSpinor::Rotate
-             (const TUnitVector &axis, const Double_t angle)
+             (const TUnitVector &axis, const LDouble_t angle)
 {
    TDiracMatrix dmR;
    dmR.SetRotation(axis,angle);
    return Operate(dmR);
 }
 
-TDiracSpinor &TDiracSpinor::Boost(const Double_t betaX,
-                                  const Double_t betaY,
-                                  const Double_t betaZ)
+TDiracSpinor &TDiracSpinor::Boost(const LDouble_t betaX,
+                                  const LDouble_t betaY,
+                                  const LDouble_t betaZ)
 {
    TDiracMatrix dmB;
    dmB.SetBoost(betaX,betaY,betaZ);
    return Operate(dmB);
 }
 
-TDiracSpinor &TDiracSpinor::Boost(const Double_t *beta)
+TDiracSpinor &TDiracSpinor::Boost(const LDouble_t *beta)
 {
    TDiracMatrix dmB;
    dmB.SetBoost((TThreeVectorReal)beta);
@@ -242,7 +242,7 @@ TDiracSpinor &TDiracSpinor::Boost(const TThreeVectorReal &beta)
 }
 
 TDiracSpinor &TDiracSpinor::Boost
-             (const TUnitVector &bhat, const Double_t beta)
+             (const TUnitVector &bhat, const LDouble_t beta)
 {
    TDiracMatrix dmB;
    dmB.SetBoost(bhat,beta);
@@ -273,11 +273,23 @@ void TDiracSpinor::Streamer(TBuffer &buf)
 {
    // Put/get a Dirac spinor to/from stream buffer buf.
 
-   Double_t *p = (Double_t *)&fSpinor[0];
+   Double_t vector[8];
    if (buf.IsReading()) {
-      buf.ReadStaticArray(p);
+      buf.ReadStaticArray(vector);
+      fSpinor[0] = Complex_t(vector[0], vector[1]);
+      fSpinor[1] = Complex_t(vector[2], vector[3]);
+      fSpinor[2] = Complex_t(vector[4], vector[5]);
+      fSpinor[3] = Complex_t(vector[6], vector[7]);
    } else {
-      buf.WriteArray(p, 8);
+      vector[0] = fSpinor[0].real();
+      vector[1] = fSpinor[0].imag();
+      vector[2] = fSpinor[1].real();
+      vector[3] = fSpinor[1].imag();
+      vector[4] = fSpinor[2].real();
+      vector[5] = fSpinor[2].imag();
+      vector[6] = fSpinor[3].real();
+      vector[7] = fSpinor[3].imag();
+      buf.WriteArray(vector, 8);
    }
 }
 

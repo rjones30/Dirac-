@@ -37,7 +37,7 @@
 //
 // Rotations may be specified either by Euler angles or by a rotation
 // axis.  All angles are assumed to be in radians.  Vector classes are
-// defined for both Real_t and Complex_t generic types.  For complex
+// defined for both Double_t and Complex_t generic types.  For complex
 // vectors there are several additional member functions to deal with
 // operations that are specific to complex numbers.
 //
@@ -72,13 +72,13 @@ ClassImp(TThreeRotation)
  
 TThreeVectorReal TThreeRotation::Axis() const
 {
-   Double_t angle(0);
+   LDouble_t angle(0);
    TThreeVectorReal axis;
    GetAxis(axis,angle);
    return (axis *= angle);
 }
 
-void TThreeRotation::GetAxis(TUnitVector &ahat, Double_t &angle) const
+void TThreeRotation::GetAxis(TUnitVector &ahat, LDouble_t &angle) const
 {
 //
 // A rotation is specified either by a angle about an axis in SetAxis()) or
@@ -96,7 +96,7 @@ void TThreeRotation::GetAxis(TUnitVector &ahat, Double_t &angle) const
 // observation that Trace(Matrix) = 1 + 2cos(w) to extract cos(w), and use
 // atan2 to extract w with good precision.
 //
-   Double_t traceM = fMatrix[1][1] + fMatrix[2][2] + fMatrix[3][3];
+   LDouble_t traceM = fMatrix[1][1] + fMatrix[2][2] + fMatrix[3][3];
    ahat.fVector[1] = fMatrix[2][3] - fMatrix[3][2];
    ahat.fVector[2] = fMatrix[3][1] - fMatrix[1][3];
    ahat.fVector[3] = fMatrix[1][2] - fMatrix[2][1];
@@ -105,7 +105,7 @@ void TThreeRotation::GetAxis(TUnitVector &ahat, Double_t &angle) const
 }
 
 void TThreeRotation::GetEuler
-            (Double_t &phi, Double_t &theta, Double_t &psi) const
+            (LDouble_t &phi, LDouble_t &theta, LDouble_t &psi) const
 {
 //
 // A rotation is specified either by a angle about an axis in SetAxis()) or
@@ -118,15 +118,15 @@ void TThreeRotation::GetEuler
    phi = atan2(v.fVector[2],v.fVector[1]);
    theta = atan2(v.Rho(),v.fVector[3]);
    psi = atan2(fMatrix[2][3],-fMatrix[1][3]);
-   Double_t cosPhi = cos(phi);
-   Double_t cosTheta = cos(theta);
-   Double_t cosPsi = cos(psi);
-   Double_t sinPhi = sin(phi);
-   Double_t sinPsi = sin(psi);
-   Double_t m11 = cosPhi*cosTheta*cosPsi - sinPhi*sinPsi;
-   Double_t dif = abs(m11 - fMatrix[1][1]);
+   LDouble_t cosPhi = cos(phi);
+   LDouble_t cosTheta = cos(theta);
+   LDouble_t cosPsi = cos(psi);
+   LDouble_t sinPhi = sin(phi);
+   LDouble_t sinPsi = sin(psi);
+   LDouble_t m11 = cosPhi*cosTheta*cosPsi - sinPhi*sinPsi;
+   LDouble_t dif = abs(m11 - fMatrix[1][1]);
    if (dif > Resolution()) {
-      Double_t sumPhiPsi = atan2(-fMatrix[2][1],fMatrix[1][1]);
+      LDouble_t sumPhiPsi = atan2(-fMatrix[2][1],fMatrix[1][1]);
       psi = sumPhiPsi - phi;
       psi += (psi > -M_PI) ? 0 : 2*M_PI;
       psi -= (psi <= M_PI) ? 0 : 2*M_PI;
@@ -144,7 +144,7 @@ TThreeRotation &TThreeRotation::operator*=(const TThreeRotation &source)
    TThreeRotation temp(*this);
    for (Int_t i=1; i<4; i++) {
       for (Int_t j=1; j<4; j++) {
-         Double_t sum=0;
+         LDouble_t sum=0;
          for (Int_t k=1; k<4; k++) {
             sum += temp.fMatrix[i][k]*source.fMatrix[k][j];
          }
@@ -182,7 +182,7 @@ TThreeRotation &TThreeRotation::SetAxis(const TThreeVectorReal &axis)
 }
 
 TThreeRotation &TThreeRotation::SetAxis(const TUnitVector &ahat,
-                                        const Double_t angle)
+                                        const LDouble_t angle)
 {
 //
 // This function is based upon the vector identity for a rotation of vector
@@ -192,9 +192,9 @@ TThreeRotation &TThreeRotation::SetAxis(const TUnitVector &ahat,
 //
    TUnitVector axis(ahat);
    axis.Normalize(1);
-   Double_t c0 = cos(angle);
-   Double_t c1 = -sin(angle);
-   Double_t c2 = 1-c0;
+   LDouble_t c0 = cos(angle);
+   LDouble_t c1 = -sin(angle);
+   LDouble_t c2 = 1-c0;
    fMatrix[0][0] = 1;
    fMatrix[0][1] = fMatrix[1][0] = 0;
    fMatrix[0][2] = fMatrix[2][0] = 0;
@@ -217,9 +217,9 @@ TThreeRotation &TThreeRotation::SetAxis(const TUnitVector &ahat,
    return *this;
 }
 
-TThreeRotation &TThreeRotation::SetEuler(const Double_t &phi,
-                               const Double_t &theta,
-                               const Double_t &psi)
+TThreeRotation &TThreeRotation::SetEuler(const LDouble_t &phi,
+                               const LDouble_t &theta,
+                               const LDouble_t &psi)
 {
 //
 // This function implements the y-convention for Euler angles, in common
@@ -230,12 +230,12 @@ TThreeRotation &TThreeRotation::SetEuler(const Double_t &phi,
 // of the relative advantages of different conventions, see Goldstein,
 // Classical Mechanics, p.147 and references therein.
 //
-   Double_t cosPhi = cos(phi);
-   Double_t cosTheta = cos(theta);
-   Double_t cosPsi = cos(psi);
-   Double_t sinPhi = sin(phi);
-   Double_t sinTheta = sin(theta);
-   Double_t sinPsi = sin(psi);
+   LDouble_t cosPhi = cos(phi);
+   LDouble_t cosTheta = cos(theta);
+   LDouble_t cosPsi = cos(psi);
+   LDouble_t sinPhi = sin(phi);
+   LDouble_t sinTheta = sin(theta);
+   LDouble_t sinPsi = sin(psi);
    fMatrix[0][0] = 1;
    fMatrix[0][1] = fMatrix[1][0] = 0;
    fMatrix[0][2] = fMatrix[2][0] = 0;
@@ -256,7 +256,7 @@ TThreeVectorReal TThreeRotation::operator*(const TThreeVectorReal &vec) const
 {
    TThreeVectorReal result;
    for (Int_t i=1; i<4; i++) {
-      Double_t sum=0;
+      LDouble_t sum=0;
       for (Int_t j=1; j<4; j++) {
          sum += fMatrix[i][j]*vec.fVector[j];
       }
@@ -284,7 +284,7 @@ TThreeRotation TThreeRotation::operator*(const TThreeRotation &rotOp) const
    TThreeRotation result;
    for (Int_t i=1; i<4; i++) {
       for (Int_t j=1; j<4; j++) {
-         Double_t sum=0;
+         LDouble_t sum=0;
          for (Int_t k=1; k<4; k++) {
             sum += fMatrix[i][k]*rotOp.fMatrix[k][j];
          }

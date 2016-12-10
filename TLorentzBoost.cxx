@@ -37,7 +37,7 @@
 //
 // Rotations may be specified either by Euler angles or by a rotation
 // axis.  All angles are assumed to be in radians.  Vector classes are
-// defined for both Real_t and Complex_t generic types.  For complex
+// defined for both Double_t and Complex_t generic types.  For complex
 // vectors there are several additional member functions to deal with
 // operations that are specific to complex numbers.
 //
@@ -71,14 +71,14 @@ ClassImp(TLorentzBoost)
  
 TLorentzBoost &TLorentzBoost::SetBeta(const TThreeVectorReal &beta)
 {
-   Double_t betaSqr = beta.LengthSqr();
+   LDouble_t betaSqr = beta.LengthSqr();
    if (betaSqr >= 1) {
       Error("TLorentzBoost::SetBeta()","attempt to boost outside light cone");
       return SetBeta(beta,0);
    }
-   Double_t gamma = 1/sqrt(1-betaSqr);
+   LDouble_t gamma = 1/sqrt(1-betaSqr);
    TThreeVectorReal eta = beta*gamma;
-   Double_t gammaPlusOne = gamma + 1;
+   LDouble_t gammaPlusOne = gamma + 1;
    fMatrix[0][0] = gamma;
    fMatrix[1][1] = 1 + eta.fVector[1]*eta.fVector[1]/gammaPlusOne;
    fMatrix[2][2] = 1 + eta.fVector[2]*eta.fVector[2]/gammaPlusOne;
@@ -93,7 +93,7 @@ TLorentzBoost &TLorentzBoost::SetBeta(const TThreeVectorReal &beta)
 }
 
 TLorentzBoost &TLorentzBoost::SetBeta
-              (const TUnitVector &bhat, const Double_t beta)
+              (const TUnitVector &bhat, const LDouble_t beta)
 {
    TThreeVectorReal betaV(bhat);
    betaV.Normalize(beta);

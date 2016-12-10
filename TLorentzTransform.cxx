@@ -37,7 +37,7 @@
 //
 // Rotations may be specified either by Euler angles or by a rotation
 // axis.  All angles are assumed to be in radians.  Vector classes are
-// defined for both Real_t and Complex_t generic types.  For complex
+// defined for both Double_t and Complex_t generic types.  For complex
 // vectors there are several additional member functions to deal with
 // operations that are specific to complex numbers.
 //
@@ -71,14 +71,14 @@ using namespace std;
 ClassImp(TLorentzTransform)
 
 
-Double_t TLorentzTransform::fResolution = 1e-12;
+LDouble_t TLorentzTransform::fResolution = 1e-12;
 
 Bool_t TLorentzTransform::IsNull()
 {
-   Double_t *p = fMatrix[0];
+   LDouble_t *p = fMatrix[0];
    for (Int_t i=0; i<4; i++) {
       for (Int_t j=0; j<4; j++) {
-         Double_t dif = *(p++) - (i==j ? 1 : 0);
+         LDouble_t dif = *(p++) - (i==j ? 1 : 0);
          if (abs(dif) > Resolution()) return 0;
       }
    }
@@ -119,13 +119,13 @@ Bool_t TLorentzTransform::IsIsochronous()
 
 Bool_t TLorentzTransform::IsProper()
 {
-   Double_t dif = Determ() - 1;
+   LDouble_t dif = Determ() - 1;
    return (abs(dif) < Resolution());
 }
 
 void TLorentzTransform::Factorize(TLorentzBoost &boost, TThreeRotation &rot) const
 {
-   TThreeVectorReal beta((Double_t *)&fMatrix[0][1]);
+   TThreeVectorReal beta((LDouble_t *)&fMatrix[0][1]);
    beta /= -fMatrix[0][0];
    boost.SetBeta(beta);
    TLorentzBoost xOp(-beta);
@@ -138,7 +138,7 @@ TFourVectorReal TLorentzTransform::operator*
 {
    TFourVectorReal result;
    for (Int_t i=0; i<4; i++) {
-      Double_t sum=0;
+      LDouble_t sum=0;
       for (Int_t j=0; j<4; j++) {
          sum += fMatrix[i][j]*vec.fVector[j];
       }
@@ -167,7 +167,7 @@ TLorentzTransform &TLorentzTransform::operator*=
    TLorentzTransform temp(*this);
    for (Int_t i=0; i<4; i++) {
       for (Int_t j=0; j<4; j++) {
-         Double_t sum=0;
+         LDouble_t sum=0;
          for (Int_t k=0; k<4; k++) {
             sum += temp.fMatrix[i][k]*source.fMatrix[k][j];
          }
@@ -183,7 +183,7 @@ TLorentzTransform TLorentzTransform::operator*
    TLorentzTransform result;
    for (Int_t i=0; i<4; i++) {
       for (Int_t j=0; j<4; j++) {
-         Double_t sum=0;
+         LDouble_t sum=0;
          for (Int_t k=0; k<4; k++) {
             sum += fMatrix[i][k]*xform.fMatrix[k][j];
          }
@@ -196,10 +196,10 @@ TLorentzTransform TLorentzTransform::operator*
 Bool_t TLorentzTransform::operator==
               (const TLorentzTransform &other) const
 {
-   Double_t *pThis = (Double_t *)&fMatrix[0][0];
-   Double_t *pOther = (Double_t *)&other.fMatrix[0][0];
+   LDouble_t *pThis = (LDouble_t *)&fMatrix[0][0];
+   LDouble_t *pOther = (LDouble_t *)&other.fMatrix[0][0];
    for (Int_t i=0; i< 16; i++, pThis++, pOther++) {
-      Double_t dif = *pThis - *pOther;
+      LDouble_t dif = *pThis - *pOther;
       if (abs(dif) > Resolution()) return 0;
    }
    return 1;
@@ -209,11 +209,17 @@ void TLorentzTransform::Streamer(TBuffer &buf)
 {
    // Put/get a Lorentz transform matrix to/from stream buffer buf.
 
-   Double_t *p = (Double_t *)&fMatrix[0][0];
+   Double_t matrix[4][4];
    if (buf.IsReading()) {
-      buf.ReadStaticArray(p);
+      buf.ReadStaticArray(&matrix[0][0]);
+      for (int mu=0; mu < 4; ++mu)
+         for (int nu=0; nu < 4; ++nu)
+            fMatrix[mu][nu] = matrix[mu][nu];
    } else {
-      buf.WriteArray(p, 16);
+      for (int mu=0; mu < 4; ++mu)
+         for (int nu=0; nu < 4; ++nu)
+            matrix[mu][nu] = fMatrix[mu][nu];
+      buf.WriteArray(&matrix[0][0], 16);
    }
 }
 
@@ -248,13 +254,13 @@ Float_t TDeterminor::Minor(const Float_t *matrix, const Int_t ncol)
    return result;
 }
 
-Double_t TDeterminor::Minor(const Double_t *matrix, const Int_t ncol)
+LDouble_t TDeterminor::Minor(const LDouble_t *matrix, const Int_t ncol)
 {
    // Use a recursive method to evaluate the determinant of matrix
    // with ncol columns.  The matrix can be stored row-wise or column-wise.
 
    if (ncol == 0) return matrix[fRow[0]];
-   Double_t result=0;
+   LDouble_t result=0;
    for (Int_t col=0; col<ncol; col++) {
       Swap(fRow[col],fRow[ncol]);
       result -= matrix[fRow[ncol]+ncol*fDim]*Minor(matrix,ncol-1);
@@ -327,7 +333,7 @@ Float_t *TInvertor::Invert(const Float_t *matrix, Float_t *inverse)
 
    for (Int_t row=0; row<fDim; row++) {		// copy to destination array
       Int_t r = fPivot[row];			// swapping rows as needed
-      Double_t norm = work[row*fDim+r];
+      LDouble_t norm = work[row*fDim+r];
       for (Int_t i=0; i<fDim; i++)
          inverse[r*fDim+i] = winv[row*fDim+i]/norm;
    }
@@ -336,21 +342,21 @@ Float_t *TInvertor::Invert(const Float_t *matrix, Float_t *inverse)
    return inverse;
 }
 
-Double_t *TInvertor::Invert(Double_t *matrix)
+LDouble_t *TInvertor::Invert(LDouble_t *matrix)
 {
    return Invert(matrix,matrix);
 }
 
-Double_t *TInvertor::Invert(const Double_t *matrix, Double_t *inverse)
+LDouble_t *TInvertor::Invert(const LDouble_t *matrix, LDouble_t *inverse)
 {
    // Invert matrix into inverse using a pivoting method. 
 
    const Int_t nelem = fDim*fDim;
-   Double_t *work = new Double_t[nelem];
-   Double_t *winv= new Double_t[nelem];
-   const Double_t *m = matrix;
-   Double_t *w = work;
-   Double_t *v = winv;
+   LDouble_t *work = new LDouble_t[nelem];
+   LDouble_t *winv= new LDouble_t[nelem];
+   const LDouble_t *m = matrix;
+   LDouble_t *w = work;
+   LDouble_t *v = winv;
    for (Int_t i=0; i<nelem; i++) {		// copy initial matrix
       *(w++) = *(m++);				// to work matrix
       *(v++) = 0;				// and zero work inverse
@@ -367,7 +373,7 @@ Double_t *TInvertor::Invert(const Double_t *matrix, Double_t *inverse)
 
    for (Int_t row=0; row<fDim; row++) {		// copy to destination array
       Int_t r = fPivot[row];			// swapping rows as needed
-      Double_t norm = work[row*fDim+r];
+      LDouble_t norm = work[row*fDim+r];
       for (Int_t i=0; i<fDim; i++)
          inverse[r*fDim+i] = winv[row*fDim+i]/norm;
    }
@@ -437,9 +443,9 @@ Int_t TInvertor::SetPivot(const Int_t row, const Float_t *matrix)
    return fPivot[row];
 }
 
-Int_t TInvertor::SetPivot(const Int_t row, const Double_t *matrix)
+Int_t TInvertor::SetPivot(const Int_t row, const LDouble_t *matrix)
 {
-   Double_t max=0;
+   LDouble_t max=0;
    Int_t rmax=-1;
    matrix += row*fDim;
    for (Int_t r=row; r<fDim; r++) {
@@ -459,7 +465,7 @@ Int_t TInvertor::SetPivot(const Int_t row, const Double_t *matrix)
 
 Int_t TInvertor::SetPivot(const Int_t row, const Complex_t *matrix)
 {
-   Double_t max=0;
+   LDouble_t max=0;
    Int_t rmax=-1;
    matrix += row*fDim;
    for (Int_t r=row; r<fDim; r++) {
@@ -488,7 +494,7 @@ void TInvertor::PivotRow
    Float_t *p1 = matrix + fDim*row1;
    Float_t *p2 = matrix + fDim*row2;
    Int_t jpivot = fPivot[row1];
-   Double_t pfactor = p2[jpivot]/p1[jpivot];
+   LDouble_t pfactor = p2[jpivot]/p1[jpivot];
    p2[jpivot] = 0;
    for (Int_t j=row1+1; j<fDim; j++) {
       Int_t jtarget = fPivot[j];
@@ -502,12 +508,12 @@ void TInvertor::PivotRow
 }
 
 void TInvertor::PivotRow
-            (Int_t row1, Int_t row2, Double_t *matrix, Double_t *inverse)
+            (Int_t row1, Int_t row2, LDouble_t *matrix, LDouble_t *inverse)
 {
-   Double_t *p1 = matrix + fDim*row1;
-   Double_t *p2 = matrix + fDim*row2;
+   LDouble_t *p1 = matrix + fDim*row1;
+   LDouble_t *p2 = matrix + fDim*row2;
    Int_t jpivot = fPivot[row1];
-   Double_t pfactor = p2[jpivot]/p1[jpivot];
+   LDouble_t pfactor = p2[jpivot]/p1[jpivot];
    p2[jpivot] = 0;
    for (Int_t j=row1+1; j<fDim; j++) {
       Int_t jtarget = fPivot[j];

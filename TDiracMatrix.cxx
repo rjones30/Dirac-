@@ -66,7 +66,7 @@ using namespace std;
 ClassImp(TDiracMatrix)
 
 
-Double_t TDiracMatrix::fResolution = 1e-12;
+LDouble_t TDiracMatrix::fResolution = 1e-12;
 
 TDiracMatrix::TDiracMatrix(const EDiracIndex i)
 {
@@ -173,7 +173,7 @@ TDiracMatrix::TDiracMatrix(const EDiracIndex i, const EDiracIndex j)
    const Complex_t i_(0,1);
    const TDiracMatrix a(i),b(j);
    *this = a*b - b*a;
-   *this *= i_/2.;
+   *this *= i_/2.L;
 }
 
 TDiracMatrix &TDiracMatrix::Transpose()
@@ -195,7 +195,7 @@ Complex_t TDiracMatrix::Determ() const
 
 TDiracMatrix &TDiracMatrix::Invert()
 {
-   if (Determ() == 0.) {
+   if (Determ() == 0.L) {
       Error("TDiracMatrix::Invert()","matrix is singular!");
       return *this;
    }
@@ -223,7 +223,7 @@ TDiracMatrix &TDiracMatrix::SetVVbar
 TDiracMatrix &TDiracMatrix::SetUUbar
              (const TFourVectorReal &p, const TThreeVectorReal &polar)
 {
-   Double_t degree=polar.Length();
+   LDouble_t degree=polar.Length();
    if (degree < polar.Resolution())
       SetUUbar(p);
    else {
@@ -239,7 +239,7 @@ TDiracMatrix &TDiracMatrix::SetUUbar
 TDiracMatrix &TDiracMatrix::SetVVbar
              (const TFourVectorReal &p, const TThreeVectorReal &polar)
 {
-   Double_t degree=polar.Length();
+   LDouble_t degree=polar.Length();
    if (degree < polar.Resolution())
       SetVVbar(p);
    else {
@@ -253,12 +253,12 @@ TDiracMatrix &TDiracMatrix::SetVVbar
 }
 
 TDiracMatrix &TDiracMatrix::SetRotation
-             (const TUnitVector &axis, const Double_t angle)
+             (const TUnitVector &axis, const LDouble_t angle)
 {
    const Complex_t i_(0,1);
    TThreeVectorReal rotator(axis);
-   Double_t cosHalfAngle = cos(angle/2);
-   Double_t sinHalfAngle = sin(angle/2);
+   LDouble_t cosHalfAngle = cos(angle/2);
+   LDouble_t sinHalfAngle = sin(angle/2);
    rotator.Normalize(sinHalfAngle);
    *this = cosHalfAngle;
    *this += i_*rotator[1]*TDiracMatrix(kDiracSigma1);
@@ -275,21 +275,21 @@ TDiracMatrix &TDiracMatrix::SetRotation(const TThreeRotation &rotOp)
 
 TDiracMatrix &TDiracMatrix::SetRotation(const TThreeVectorReal &axis)
 {
-   Double_t angle = axis.Length();
+   LDouble_t angle = axis.Length();
    return SetRotation(axis,angle);
 }
 
-TDiracMatrix &TDiracMatrix::SetRotation(const Double_t phi,
-                                        const Double_t theta,
-                                        const Double_t psi)
+TDiracMatrix &TDiracMatrix::SetRotation(const LDouble_t phi,
+                                        const LDouble_t theta,
+                                        const LDouble_t psi)
 {
    TThreeRotation rotOp(phi,theta,psi);
    return SetRotation(rotOp);
 }
 
-TDiracMatrix &TDiracMatrix::SetBoost(const Double_t betaX,
-                                     const Double_t betaY,
-                                     const Double_t betaZ)
+TDiracMatrix &TDiracMatrix::SetBoost(const LDouble_t betaX,
+                                     const LDouble_t betaY,
+                                     const LDouble_t betaZ)
 {
    TThreeVectorReal beta(betaX,betaY,betaZ);
    return SetBoost(beta);
@@ -307,7 +307,7 @@ TDiracMatrix &TDiracMatrix::SetBoost(const TLorentzBoost &boostOp)
 }
 
 TDiracMatrix &TDiracMatrix::SetBoost
-             (const TUnitVector &bhat, const Double_t &beta)
+             (const TUnitVector &bhat, const LDouble_t &beta)
 {
    const Complex_t i_(0,1);
    if (abs(beta) < fResolution) {
@@ -315,10 +315,10 @@ TDiracMatrix &TDiracMatrix::SetBoost
    }
    else
    {
-      Double_t eta = asinh(beta/sqrt(1-beta*beta));
+      LDouble_t eta = asinh(beta/sqrt(1-beta*beta));
       TThreeVectorReal booster(bhat);
-      Double_t coshHalfEta = cosh(eta/2);
-      Double_t sinhHalfEta = sinh(eta/2);
+      LDouble_t coshHalfEta = cosh(eta/2);
+      LDouble_t sinhHalfEta = sinh(eta/2);
       booster.Normalize(sinhHalfEta);
       *this = coshHalfEta;
       *this += i_*booster[1]*TDiracMatrix(kDiracKappa1);
@@ -366,11 +366,24 @@ void TDiracMatrix::Streamer(TBuffer &buf)
 {
    // Put/get a Dirac matrix to/from stream buffer buf.
 
-   Double_t *p = (Double_t *)&fMatrix[0][0];
+   Double_t vector[32];
    if (buf.IsReading()) {
-      buf.ReadStaticArray(p);
+      buf.ReadStaticArray(vector);
+      int n=0;
+      for (int mu=0; mu < 4; ++mu) {
+         for (int nu=0; nu < 4; ++nu, ++n) {
+            fMatrix[mu][nu] = Complex_t(vector[n], vector[n+1]);
+         }
+      }
    } else {
-      buf.WriteArray(p, 32);
+      int n=0;
+      for (int mu=0; mu < 4; ++mu) {
+         for (int nu=0; nu < 4; ++nu, ++n) {
+            vector[n] = fMatrix[mu][nu].real();
+            vector[n+1] = fMatrix[mu][nu].imag();
+         }
+      }
+      buf.WriteArray(vector, 32);
    }
 }
 
