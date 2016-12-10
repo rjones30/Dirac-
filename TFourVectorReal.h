@@ -8,6 +8,7 @@
 #ifndef ROOT_TFourVectorReal
 #define ROOT_TFourVectorReal
  
+#include "Double.h"
 #include "TBuffer.h"
 #include "TThreeVectorReal.h"
 #include "TError.h"
@@ -32,39 +33,39 @@ friend class TThreeRotation;
  
 public:
    TFourVectorReal() : TThreeVectorReal() { }
-   TFourVectorReal(const Double_t t, const Double_t x,
-                   const Double_t y, const Double_t z);
+   TFourVectorReal(const LDouble_t t, const LDouble_t x,
+                   const LDouble_t y, const LDouble_t z);
    TFourVectorReal(const Float_t *array);
-   TFourVectorReal(const Double_t *array);
+   TFourVectorReal(const LDouble_t *array);
    TFourVectorReal(const TFourVectorReal &another);
-   TFourVectorReal(const Double_t t, const TThreeVectorReal &r);
+   TFourVectorReal(const LDouble_t t, const TThreeVectorReal &r);
  
    virtual ~TFourVectorReal() { }
 
-   Double_t Resolution() const;
+   LDouble_t Resolution() const;
  
-   Double_t &operator[](const Int_t index) const;
+   LDouble_t &operator[](const Int_t index) const;
  
-   Double_t Invariant() const;		// uses the +--- metric
-   Double_t InvariantSqr() const;
-   void GetCoord(Double_t &t, Double_t &x, Double_t &y, Double_t &z) const;
-   void GetCoord(Double_t *array) const;
-   Double_t DistanceTo(const Double_t t, const Double_t x,
-                       const Double_t y, const Double_t z) const;
-   Double_t DistanceTo(const Double_t *array) const;
-   Double_t DistanceTo(const TFourVectorReal &vec2) const;
+   LDouble_t Invariant() const;		// uses the +--- metric
+   LDouble_t InvariantSqr() const;
+   void GetCoord(LDouble_t &t, LDouble_t &x, LDouble_t &y, LDouble_t &z) const;
+   void GetCoord(LDouble_t *array) const;
+   LDouble_t DistanceTo(const LDouble_t t, const LDouble_t x,
+                       const LDouble_t y, const LDouble_t z) const;
+   LDouble_t DistanceTo(const LDouble_t *array) const;
+   LDouble_t DistanceTo(const TFourVectorReal &vec2) const;
  
    TFourVectorReal &operator=(const TFourVectorReal &source);
    TFourVectorReal &operator=(const Float_t *array);
-   TFourVectorReal &operator=(const Double_t *array);
+   TFourVectorReal &operator=(const LDouble_t *array);
    TFourVectorReal &operator+=(const TFourVectorReal &source);
    TFourVectorReal &operator+=(const Float_t *array);
-   TFourVectorReal &operator+=(const Double_t *array);
+   TFourVectorReal &operator+=(const LDouble_t *array);
    TFourVectorReal &operator-=(const TFourVectorReal &source);
    TFourVectorReal &operator-=(const Float_t *array);
-   TFourVectorReal &operator-=(const Double_t *array);
-   TFourVectorReal &operator*=(const Double_t factor);
-   TFourVectorReal &operator/=(const Double_t factor);
+   TFourVectorReal &operator-=(const LDouble_t *array);
+   TFourVectorReal &operator*=(const LDouble_t factor);
+   TFourVectorReal &operator/=(const LDouble_t factor);
  
    Bool_t operator==(const TFourVectorReal &other) const;
    Bool_t operator!=(const TFourVectorReal &other) const;
@@ -72,11 +73,11 @@ public:
    TFourVectorReal &Zero();
    TFourVectorReal &Transform(const TLorentzTransform &xformOp);
    TFourVectorReal &Boost(const TLorentzBoost &boostOp);
-   TFourVectorReal &Boost(const Double_t betaX,
-                          const Double_t betaY,
-                          const Double_t betaZ);
-   TFourVectorReal &Boost(const TUnitVector &bhat, const Double_t beta);
-   Double_t ScalarProd(const TFourVectorReal &other);
+   TFourVectorReal &Boost(const LDouble_t betaX,
+                          const LDouble_t betaY,
+                          const LDouble_t betaZ);
+   TFourVectorReal &Boost(const TUnitVector &bhat, const LDouble_t beta);
+   LDouble_t ScalarProd(const TFourVectorReal &other);
  
    TFourVectorReal operator-() const;
    friend TFourVectorReal operator+(const TFourVectorReal &v1,
@@ -84,11 +85,11 @@ public:
    friend TFourVectorReal operator-(const TFourVectorReal &v1,
                                     const TFourVectorReal &v2);
    friend TFourVectorReal operator*(const TFourVectorReal &vec,
-                                    const Double_t factor);
-   friend TFourVectorReal operator*(const Double_t factor,
+                                    const LDouble_t factor);
+   friend TFourVectorReal operator*(const LDouble_t factor,
                                     const TFourVectorReal &vec);
    friend TFourVectorReal operator/(const TFourVectorReal &vec,
-                                    const Double_t factor);
+                                    const LDouble_t factor);
 
    friend TBuffer &operator>>(TBuffer &buf, TFourVectorReal *&vec);
    friend TBuffer &operator<<(TBuffer &buf, const TFourVectorReal *vec);
@@ -100,7 +101,7 @@ public:
 //----- inlines ----------------------------------------------------------------
  
 inline TFourVectorReal::TFourVectorReal
-       (const Double_t t, const Double_t x, const Double_t y, const Double_t z)
+       (const LDouble_t t, const LDouble_t x, const LDouble_t y, const LDouble_t z)
  : TThreeVectorReal()
 {
    fVector[0] = t;
@@ -118,7 +119,7 @@ inline TFourVectorReal::TFourVectorReal(const Float_t *array)
    fVector[3] = *array;
 }
 
-inline TFourVectorReal::TFourVectorReal(const Double_t *array)
+inline TFourVectorReal::TFourVectorReal(const LDouble_t *array)
  : TThreeVectorReal()
 {
    fVector[0] = *(array++);
@@ -134,33 +135,33 @@ inline TFourVectorReal::TFourVectorReal(const TFourVectorReal &another)
 }
  
 inline TFourVectorReal::TFourVectorReal
-                        (const Double_t t, const TThreeVectorReal &another)
+                        (const LDouble_t t, const TThreeVectorReal &another)
  : TThreeVectorReal(another)
 {
    fVector[0] = t;
 }
  
-inline Double_t TFourVectorReal::Resolution() const
+inline LDouble_t TFourVectorReal::Resolution() const
 {
-   Double_t scale = sqrt(fVector[0]*fVector[0] + LengthSqr());
+   LDouble_t scale = sqrt(fVector[0]*fVector[0] + LengthSqr());
    if (scale > 0)
       return fResolution*scale;
    else
       return fResolution;
 }
  
-inline Double_t &TFourVectorReal::operator[](const Int_t index) const
+inline LDouble_t &TFourVectorReal::operator[](const Int_t index) const
 {
    if (index < 0 || index > 3) {
       Error("TFourVectorReal::operator[]","index out of range");
-      return (Double_t &)fVector[0];
+      return (LDouble_t &)fVector[0];
    }
-   return (Double_t &)fVector[index];
+   return (LDouble_t &)fVector[index];
 }
  
-inline Double_t TFourVectorReal::Invariant() const
+inline LDouble_t TFourVectorReal::Invariant() const
 {
-   Double_t inv2 = InvariantSqr();
+   LDouble_t inv2 = InvariantSqr();
    if (inv2 > 0)
       return sqrt(inv2);
    else if (inv2 > -Resolution())
@@ -171,13 +172,13 @@ inline Double_t TFourVectorReal::Invariant() const
    return -1;
 }
 
-inline Double_t TFourVectorReal::InvariantSqr() const
+inline LDouble_t TFourVectorReal::InvariantSqr() const
 {
    return (fVector[0]*fVector[0] - LengthSqr());
 }
 
 inline void TFourVectorReal::GetCoord
-            (Double_t &t, Double_t &x, Double_t &y, Double_t &z) const
+            (LDouble_t &t, LDouble_t &x, LDouble_t &y, LDouble_t &z) const
 {
    t = fVector[0];
    x = fVector[1];
@@ -185,7 +186,7 @@ inline void TFourVectorReal::GetCoord
    z = fVector[3];
 }
 
-inline void TFourVectorReal::GetCoord(Double_t *array) const
+inline void TFourVectorReal::GetCoord(LDouble_t *array) const
 {
    *(array++) = fVector[0];
    *(array++) = fVector[1];
@@ -193,11 +194,11 @@ inline void TFourVectorReal::GetCoord(Double_t *array) const
    *array     = fVector[3];
 }
  
-inline Double_t TFourVectorReal::DistanceTo
-                (const Double_t t, const Double_t x,
-                 const Double_t y, const Double_t z) const
+inline LDouble_t TFourVectorReal::DistanceTo
+                (const LDouble_t t, const LDouble_t x,
+                 const LDouble_t y, const LDouble_t z) const
 {
-   Double_t tloc(t), xloc(x), yloc(y), zloc(z);
+   LDouble_t tloc(t), xloc(x), yloc(y), zloc(z);
    tloc -= fVector[0];
    xloc -= fVector[1];
    yloc -= fVector[2];
@@ -205,22 +206,22 @@ inline Double_t TFourVectorReal::DistanceTo
    return sqrt(tloc*tloc + xloc*xloc + yloc*yloc + zloc*zloc);
 }
 
-inline Double_t TFourVectorReal::DistanceTo(const Double_t *array) const
+inline LDouble_t TFourVectorReal::DistanceTo(const LDouble_t *array) const
 {
-   Double_t t = fVector[0] - *(array++);
-   Double_t x = fVector[1] - *(array++);
-   Double_t y = fVector[2] - *(array++);
-   Double_t z = fVector[3] - *array;
+   LDouble_t t = fVector[0] - *(array++);
+   LDouble_t x = fVector[1] - *(array++);
+   LDouble_t y = fVector[2] - *(array++);
+   LDouble_t z = fVector[3] - *array;
    return sqrt(t*t + x*x + y*y + z*z);
 }
 
-inline Double_t TFourVectorReal::DistanceTo
+inline LDouble_t TFourVectorReal::DistanceTo
                 (const TFourVectorReal &vec2) const
 {
-   Double_t t = fVector[0] - vec2.fVector[0];
-   Double_t x = fVector[1] - vec2.fVector[1];
-   Double_t y = fVector[2] - vec2.fVector[2];
-   Double_t z = fVector[3] - vec2.fVector[3];
+   LDouble_t t = fVector[0] - vec2.fVector[0];
+   LDouble_t x = fVector[1] - vec2.fVector[1];
+   LDouble_t y = fVector[2] - vec2.fVector[2];
+   LDouble_t z = fVector[3] - vec2.fVector[3];
    return sqrt(t*t + x*x + y*y + z*z);
 }
 
@@ -243,7 +244,7 @@ inline TFourVectorReal &TFourVectorReal::operator=(const Float_t *array)
    return *this;
 }
 
-inline TFourVectorReal &TFourVectorReal::operator=(const Double_t *array)
+inline TFourVectorReal &TFourVectorReal::operator=(const LDouble_t *array)
 {
    fVector[0] = *(array++);
    fVector[1] = *(array++);
@@ -271,7 +272,7 @@ inline TFourVectorReal &TFourVectorReal::operator+=(const Float_t *array)
    return *this;
 }
 
-inline TFourVectorReal &TFourVectorReal::operator+=(const Double_t *array)
+inline TFourVectorReal &TFourVectorReal::operator+=(const LDouble_t *array)
 {
    fVector[0] += *(array++);
    fVector[1] += *(array++);
@@ -299,7 +300,7 @@ inline TFourVectorReal &TFourVectorReal::operator-=(const Float_t *array)
    return *this;
 }
 
-inline TFourVectorReal &TFourVectorReal::operator-=(const Double_t *array)
+inline TFourVectorReal &TFourVectorReal::operator-=(const LDouble_t *array)
 {
    fVector[0] -= *(array++);
    fVector[1] -= *(array++);
@@ -308,7 +309,7 @@ inline TFourVectorReal &TFourVectorReal::operator-=(const Double_t *array)
    return *this;
 }
 
-inline TFourVectorReal &TFourVectorReal::operator*=(const Double_t factor)
+inline TFourVectorReal &TFourVectorReal::operator*=(const LDouble_t factor)
 {
    fVector[0] *= factor;
    fVector[1] *= factor;
@@ -317,7 +318,7 @@ inline TFourVectorReal &TFourVectorReal::operator*=(const Double_t factor)
    return *this;
 }
 
-inline TFourVectorReal &TFourVectorReal::operator/=(const Double_t factor)
+inline TFourVectorReal &TFourVectorReal::operator/=(const LDouble_t factor)
 {
    fVector[0] /= factor;
    fVector[1] /= factor;
@@ -345,9 +346,9 @@ inline TFourVectorReal &TFourVectorReal::Zero()
    return *this;
 }
 
-inline Double_t TFourVectorReal::ScalarProd(const TFourVectorReal &other)
+inline LDouble_t TFourVectorReal::ScalarProd(const TFourVectorReal &other)
 {
-   return  Double_t(fVector[0] * other.fVector[0] -
+   return  LDouble_t(fVector[0] * other.fVector[0] -
                     fVector[1] * other.fVector[1] -
                     fVector[2] * other.fVector[2] -
                     fVector[3] * other.fVector[3]);
@@ -378,21 +379,21 @@ inline TFourVectorReal operator-
 }
 
 inline TFourVectorReal operator*
-       (const TFourVectorReal &vec, const Double_t factor)
+       (const TFourVectorReal &vec, const LDouble_t factor)
 {
    TFourVectorReal result(vec);
    return (result *= factor);
 }
 
 inline TFourVectorReal operator*
-       (const Double_t factor, const TFourVectorReal &vec)
+       (const LDouble_t factor, const TFourVectorReal &vec)
 {
    TFourVectorReal result(vec);
    return (result *= factor);
 }
 
 inline TFourVectorReal operator/
-       (const TFourVectorReal &vec, const Double_t factor)
+       (const TFourVectorReal &vec, const LDouble_t factor)
 {
    TFourVectorReal result(vec);
    return (result /= factor);
@@ -400,13 +401,23 @@ inline TFourVectorReal operator/
 
 inline TBuffer &operator>>(TBuffer &buf, TFourVectorReal *&obj)
 {
-   buf.ReadStaticArray(obj->fVector);
+   Double_t vector[4];
+   buf.ReadStaticArray(vector);
+   obj->fVector[0] = vector[0];
+   obj->fVector[1] = vector[1];
+   obj->fVector[2] = vector[2];
+   obj->fVector[3] = vector[3];
    return buf;
 }
 
 inline TBuffer &operator<<(TBuffer &buf, const TFourVectorReal *obj)
 {
-   buf.WriteArray(obj->fVector, 4);
+   Double_t vector[4];
+   vector[0] = obj->fVector[0];
+   vector[1] = obj->fVector[1];
+   vector[2] = obj->fVector[2];
+   vector[3] = obj->fVector[3];
+   buf.WriteArray(vector, 4);
    return buf;
 }
 

@@ -8,6 +8,7 @@
 #ifndef ROOT_TPauliMatrix
 #define ROOT_TPauliMatrix
  
+#include "Double.h"
 #include "TThreeVectorComplex.h"
 #include "TError.h"
  
@@ -29,13 +30,13 @@ friend class TPauliSpinor;
 
 protected:
    Complex_t       fMatrix[2][2];   // complex matrix allocated on stack
-   static Double_t fResolution;	    // matrix resolving "distance"
+   static LDouble_t fResolution;	    // matrix resolving "distance"
 
 public:
    TPauliMatrix() { }
    TPauliMatrix(const EPauliIndex i);
    TPauliMatrix(const Int_t a);
-   TPauliMatrix(const Double_t a);
+   TPauliMatrix(const LDouble_t a);
    TPauliMatrix(const Complex_t &a);
    TPauliMatrix(const Complex_t &a, const TThreeVectorComplex &b);
    TPauliMatrix(const TPauliMatrix &another);
@@ -44,8 +45,8 @@ public:
 
    Complex_t *operator[](Int_t row) const;
 
-   static void SetResolution(const Double_t resolution);
-   Double_t Resolution() const;
+   static void SetResolution(const LDouble_t resolution);
+   LDouble_t Resolution() const;
  
    Bool_t IsIdentity() const;
    Bool_t IsUnitary() const;
@@ -55,23 +56,23 @@ public:
 
    Complex_t Trace() const;
    Complex_t Determ() const;
-   void Decompose(Double_t &a, TThreeVectorReal &b) const;
+   void Decompose(LDouble_t &a, TThreeVectorReal &b) const;
    void Decompose(Complex_t &a, TThreeVectorComplex &b) const;
    void GetDiagonal(Complex_t &a11, Complex_t &a22) const;
 
    TPauliMatrix &operator=(const TPauliMatrix &source);
    TPauliMatrix &operator+=(const TPauliMatrix &source);
    TPauliMatrix &operator+=(const Complex_t &factor);
-   TPauliMatrix &operator+=(const Double_t &factor);
+   TPauliMatrix &operator+=(const LDouble_t &factor);
    TPauliMatrix &operator-=(const TPauliMatrix &source);
    TPauliMatrix &operator-=(const Complex_t &factor);
-   TPauliMatrix &operator-=(const Double_t &factor);
+   TPauliMatrix &operator-=(const LDouble_t &factor);
    TPauliMatrix &operator*=(const TPauliMatrix &source);
    TPauliMatrix &operator*=(const Complex_t &factor);
-   TPauliMatrix &operator*=(const Double_t &factor);
+   TPauliMatrix &operator*=(const LDouble_t &factor);
    TPauliMatrix &operator/=(const TPauliMatrix &source);
    TPauliMatrix &operator/=(const Complex_t &factor);
-   TPauliMatrix &operator/=(const Double_t &factor);
+   TPauliMatrix &operator/=(const LDouble_t &factor);
  
    Bool_t operator==(const TPauliMatrix &other) const;
    Bool_t operator!=(const TPauliMatrix &other) const;
@@ -82,7 +83,7 @@ public:
    TPauliMatrix &Adjoint();
    TPauliMatrix &Transpose();
    TPauliMatrix &Compose
-                (const Double_t a, const TThreeVectorReal &polar);
+                (const LDouble_t a, const TThreeVectorReal &polar);
    TPauliMatrix &Compose
                 (const Complex_t &a, const TThreeVectorComplex &polar);
    TPauliMatrix &SetDiagonal(const Complex_t &a);
@@ -90,10 +91,10 @@ public:
    TPauliMatrix &SetDensity(const TThreeVectorReal &polar);
    TPauliMatrix &SetRotation(const TThreeRotation &rotOp);
    TPauliMatrix &SetRotation(const TThreeVectorReal &axis);
-   TPauliMatrix &SetRotation(const TUnitVector &axis, const Double_t angle);
-   TPauliMatrix &SetRotation(const Double_t phi,
-                             const Double_t theta,
-                             const Double_t psi);
+   TPauliMatrix &SetRotation(const TUnitVector &axis, const LDouble_t angle);
+   TPauliMatrix &SetRotation(const LDouble_t phi,
+                             const LDouble_t theta,
+                             const LDouble_t psi);
    TPauliMatrix &SimTransform(const TPauliMatrix &m);  // A' = M A Minverse
    TPauliMatrix &UniTransform(const TPauliMatrix &m);  // A' = M A Mdagger
  
@@ -139,7 +140,7 @@ inline  TPauliMatrix::TPauliMatrix(const Int_t a)
    fMatrix[1][0] = 0;	fMatrix[1][1] = a;
 }
 
-inline  TPauliMatrix::TPauliMatrix(const Double_t a)
+inline  TPauliMatrix::TPauliMatrix(const LDouble_t a)
 {
    fMatrix[0][0] = a;	fMatrix[0][1] = 0;
    fMatrix[1][0] = 0;	fMatrix[1][1] = a;
@@ -167,14 +168,14 @@ inline  TPauliMatrix::TPauliMatrix(const TPauliMatrix &another)
    *this = another;
 }
 
-inline void TPauliMatrix::SetResolution(const Double_t resolution)
+inline void TPauliMatrix::SetResolution(const LDouble_t resolution)
 {
    fResolution = resolution;
 }
 
-inline Double_t TPauliMatrix::Resolution() const
+inline LDouble_t TPauliMatrix::Resolution() const
 {
-   Double_t scale = abs(fMatrix[0][0]) + abs(fMatrix[0][1]) +
+   LDouble_t scale = abs(fMatrix[0][0]) + abs(fMatrix[0][1]) +
                     abs(fMatrix[1][0]) + abs(fMatrix[1][1]);
    if (scale > 0)
       return fResolution*scale;
@@ -184,7 +185,7 @@ inline Double_t TPauliMatrix::Resolution() const
 
 inline Bool_t TPauliMatrix::IsIdentity() const
 {
-   const TPauliMatrix one(1.0);
+   const TPauliMatrix one(1.0L);
    return (*this == one);
 }
 
@@ -249,7 +250,7 @@ inline TPauliMatrix &TPauliMatrix::operator+=(const Complex_t &factor)
    return *this;
 }
 
-inline TPauliMatrix &TPauliMatrix::operator+=(const Double_t &factor)
+inline TPauliMatrix &TPauliMatrix::operator+=(const LDouble_t &factor)
 {
    fMatrix[0][0] += factor;
    fMatrix[1][1] += factor;
@@ -272,7 +273,7 @@ inline TPauliMatrix &TPauliMatrix::operator-=(const Complex_t &factor)
    return *this;
 }
 
-inline TPauliMatrix &TPauliMatrix::operator-=(const Double_t &factor)
+inline TPauliMatrix &TPauliMatrix::operator-=(const LDouble_t &factor)
 {
    fMatrix[0][0] -= factor;
    fMatrix[1][1] -= factor;
@@ -288,7 +289,7 @@ inline TPauliMatrix &TPauliMatrix::operator*=(const Complex_t &factor)
    return *this;
 }
 
-inline TPauliMatrix &TPauliMatrix::operator*=(const Double_t &factor)
+inline TPauliMatrix &TPauliMatrix::operator*=(const LDouble_t &factor)
 {
    fMatrix[0][0] *= factor;
    fMatrix[0][1] *= factor;
@@ -312,7 +313,7 @@ inline TPauliMatrix &TPauliMatrix::operator/=(const Complex_t &factor)
    return *this;
 }
 
-inline TPauliMatrix &TPauliMatrix::operator/=(const Double_t &factor)
+inline TPauliMatrix &TPauliMatrix::operator/=(const LDouble_t &factor)
 {
    fMatrix[0][0] /= factor;
    fMatrix[0][1] /= factor;
@@ -379,7 +380,7 @@ inline TPauliMatrix &TPauliMatrix::SetDensity(const TThreeVectorReal &polar)
 
 inline TPauliMatrix &TPauliMatrix::SetRotation(const TThreeVectorReal &axis)
 {
-   Double_t angle = axis.Length();
+   LDouble_t angle = axis.Length();
    return SetRotation(axis,angle);
 }
 
@@ -482,7 +483,9 @@ inline TBuffer &operator<<(TBuffer &buf, const TPauliMatrix *obj)
 {
    for (Int_t i=0; i<2; i++) {
       for (Int_t j=0; j<2; j++) {
-         buf << obj->fMatrix[i][j].real() << obj->fMatrix[i][j].imag();
+         Double_t real = obj->fMatrix[i][j].real();
+         Double_t imag = obj->fMatrix[i][j].imag();
+         buf << real << imag;
       }
    }
    return buf;

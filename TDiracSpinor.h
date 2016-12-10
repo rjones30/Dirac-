@@ -8,6 +8,7 @@
 #ifndef ROOT_TDiracSpinor
 #define ROOT_TDiracSpinor
  
+#include "Double.h"
 #include "TBuffer.h"
 #include "TFourVectorComplex.h"
 #include "TPauliSpinor.h"
@@ -29,7 +30,7 @@ friend class TPauliSpinor;
  
 protected:
    Complex_t   fSpinor[4];	    // complex vector allocated on stack
-   static Double_t fResolution;	    // resolution "distance" between objects
+   static LDouble_t fResolution;	    // resolution "distance" between objects
  
 public:
    TDiracSpinor() { }
@@ -44,15 +45,15 @@ public:
  
    Complex_t &operator[](const Int_t index) const;
  
-   void static SetResolution(const Double_t resolution);
-   Double_t Resolution() const;
+   void static SetResolution(const LDouble_t resolution);
+   LDouble_t Resolution() const;
 
-   Double_t Norm() const;
-   Double_t NormSqr() const;
+   LDouble_t Norm() const;
+   LDouble_t NormSqr() const;
    TPauliSpinor Upper() const;
    TPauliSpinor Lower() const;
-   Double_t DistanceTo(const TDiracSpinor &another) const;
-   Double_t DistanceTo(const Complex_t *array) const;
+   LDouble_t DistanceTo(const TDiracSpinor &another) const;
+   LDouble_t DistanceTo(const Complex_t *array) const;
  
    TDiracSpinor &operator=(const TDiracSpinor &source);
    TDiracSpinor &operator=(const Complex_t *array);
@@ -75,7 +76,7 @@ public:
    TDiracSpinor &Bar();
    TDiracSpinor SetUpper(TPauliSpinor &phi);
    TDiracSpinor SetLower(TPauliSpinor &chi);
-   TDiracSpinor &Normalize(const Double_t &norm);
+   TDiracSpinor &Normalize(const LDouble_t &norm);
    TDiracSpinor &Normalize(const TFourVectorReal &p);
    TDiracSpinor &SetStateU(const TFourVectorReal &p,
                            const Float_t helicity);
@@ -87,17 +88,17 @@ public:
                            const TUnitVector &polar);
    TDiracSpinor &Operate(const TDiracMatrix &dmOp);
    TDiracSpinor &Rotate(const TThreeRotation &rotOp);
-   TDiracSpinor &Rotate(const Double_t &phi,
-                        const Double_t &theta,
-                        const Double_t &psi);
+   TDiracSpinor &Rotate(const LDouble_t &phi,
+                        const LDouble_t &theta,
+                        const LDouble_t &psi);
    TDiracSpinor &Rotate(const TThreeVectorReal &axis);
-   TDiracSpinor &Rotate(const TUnitVector &axis, const Double_t angle);
-   TDiracSpinor &Boost(const Double_t betaX,
-                       const Double_t betaY,
-                       const Double_t betaZ);
-   TDiracSpinor &Boost(const Double_t *beta);
+   TDiracSpinor &Rotate(const TUnitVector &axis, const LDouble_t angle);
+   TDiracSpinor &Boost(const LDouble_t betaX,
+                       const LDouble_t betaY,
+                       const LDouble_t betaZ);
+   TDiracSpinor &Boost(const LDouble_t *beta);
    TDiracSpinor &Boost(const TThreeVectorReal &beta);
-   TDiracSpinor &Boost(const TUnitVector &bhat, const Double_t beta);
+   TDiracSpinor &Boost(const TUnitVector &bhat, const LDouble_t beta);
    TDiracSpinor &BoostToRest(const TFourVector &p);
    TDiracSpinor &BoostFromRest(const TFourVector &p);
    Complex_t ScalarProd(const TDiracSpinor &other);
@@ -116,8 +117,8 @@ public:
    friend TDiracSpinor operator-(const Complex_t *a1,
                                  const TDiracSpinor &v2);
    friend TDiracSpinor operator*(const TDiracSpinor &vec,
-                                 const Double_t &factor);
-   friend TDiracSpinor operator*(const Double_t &factor,
+                                 const LDouble_t &factor);
+   friend TDiracSpinor operator*(const LDouble_t &factor,
                                  const TDiracSpinor &vec);
    friend TDiracSpinor operator*(const TDiracSpinor &vec,
                                  const Complex_t &factor);
@@ -180,32 +181,32 @@ inline Complex_t &TDiracSpinor::operator[](const Int_t index) const
    return (Complex_t &)fSpinor[index];
 }
  
-inline void TDiracSpinor::SetResolution(const Double_t resolution)
+inline void TDiracSpinor::SetResolution(const LDouble_t resolution)
 {
    fResolution = resolution;
 }
 
-inline Double_t TDiracSpinor::Resolution() const
+inline LDouble_t TDiracSpinor::Resolution() const
 {
-   Double_t scale = Norm();
+   LDouble_t scale = Norm();
    if (scale > 0)
       return fResolution*scale;
    else
       return fResolution;
 }
 
-inline Double_t TDiracSpinor::Norm() const
+inline LDouble_t TDiracSpinor::Norm() const
 {
    return sqrt(NormSqr());
 }
 
-inline Double_t TDiracSpinor::NormSqr() const
+inline LDouble_t TDiracSpinor::NormSqr() const
 {
    return (norm(fSpinor[0]) + norm(fSpinor[1]) +
            norm(fSpinor[2]) + norm(fSpinor[3]) );
 }
 
-inline Double_t TDiracSpinor::DistanceTo(const TDiracSpinor &another) const
+inline LDouble_t TDiracSpinor::DistanceTo(const TDiracSpinor &another) const
 {
    return sqrt(norm(fSpinor[0] - another.fSpinor[0]) +
                norm(fSpinor[1] - another.fSpinor[1]) +
@@ -213,7 +214,7 @@ inline Double_t TDiracSpinor::DistanceTo(const TDiracSpinor &another) const
                norm(fSpinor[3] - another.fSpinor[3]) );
 }
 
-inline Double_t TDiracSpinor::DistanceTo(const Complex_t *array) const
+inline LDouble_t TDiracSpinor::DistanceTo(const Complex_t *array) const
 {
    return sqrt(norm(fSpinor[0] - array[0]) +
                norm(fSpinor[1] - array[1]) +
@@ -347,7 +348,7 @@ inline TDiracSpinor &TDiracSpinor::Bar()
    return *this;
 }
 
-inline TDiracSpinor &TDiracSpinor::Normalize(const Double_t &norm)
+inline TDiracSpinor &TDiracSpinor::Normalize(const LDouble_t &norm)
 {
    return (*this *= norm/Norm());
 }
@@ -440,7 +441,7 @@ inline TDiracSpinor operator-(const Complex_t *a1, const TDiracSpinor &v2)
    return result;
 }
 
-inline TDiracSpinor operator*(const TDiracSpinor &vec, const Double_t &factor)
+inline TDiracSpinor operator*(const TDiracSpinor &vec, const LDouble_t &factor)
 {
    TDiracSpinor result(vec);
    result.fSpinor[0] *= factor;
@@ -450,7 +451,7 @@ inline TDiracSpinor operator*(const TDiracSpinor &vec, const Double_t &factor)
    return result;
 }
 
-inline TDiracSpinor operator*(const Double_t &factor, const TDiracSpinor &vec)
+inline TDiracSpinor operator*(const LDouble_t &factor, const TDiracSpinor &vec)
 {
    TDiracSpinor result(vec);
    result.fSpinor[0] *= factor;
@@ -503,7 +504,9 @@ inline TBuffer &operator>>(TBuffer &buf, TDiracSpinor *&obj)
 inline TBuffer &operator<<(TBuffer &buf, const TDiracSpinor *obj)
 {
    for (Int_t i=0; i<4; i++) {
-      buf << obj->fSpinor[i].real() << obj->fSpinor[i].imag();
+      Double_t real = obj->fSpinor[i].real();
+      Double_t imag = obj->fSpinor[i].imag();
+      buf << real << imag;
    }
    return buf;
 }

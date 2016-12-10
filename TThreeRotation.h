@@ -8,6 +8,7 @@
 #ifndef ROOT_TThreeRotation
 #define ROOT_TThreeRotation
  
+#include "Double.h"
 #include "TObject.h"
 #include "TLorentzTransform.h"
 #include "TError.h"
@@ -22,15 +23,15 @@ class TThreeRotation : public TLorentzTransform {
 public:
    TThreeRotation() : TLorentzTransform() { }
    TThreeRotation(const TThreeVectorReal &axis);
-   TThreeRotation(const TUnitVector &ahat, const Double_t angle);
-   TThreeRotation(const Double_t phi, const Double_t theta, const Double_t psi);
+   TThreeRotation(const TUnitVector &ahat, const LDouble_t angle);
+   TThreeRotation(const LDouble_t phi, const LDouble_t theta, const LDouble_t psi);
    TThreeRotation(const TThreeRotation &another);
  
    virtual ~TThreeRotation() { }
  
    TThreeVectorReal Axis() const;
-   void GetAxis(TUnitVector &ahat, Double_t &angle) const;
-   void GetEuler(Double_t &phi, Double_t &theta, Double_t &psi) const;
+   void GetAxis(TUnitVector &ahat, LDouble_t &angle) const;
+   void GetEuler(LDouble_t &phi, LDouble_t &theta, LDouble_t &psi) const;
 
    TThreeRotation &operator=(const TThreeRotation &source);
    TThreeRotation &operator*=(const TThreeRotation &source);
@@ -40,10 +41,10 @@ public:
    TThreeRotation &Invert();
 
    TThreeRotation &SetAxis(const TThreeVectorReal &axis);
-   TThreeRotation &SetAxis(const TUnitVector &ahat, const Double_t angle);
-   TThreeRotation &SetEuler(const Double_t &phi,
-                       const Double_t &theta,
-                       const Double_t &psi);
+   TThreeRotation &SetAxis(const TUnitVector &ahat, const LDouble_t angle);
+   TThreeRotation &SetEuler(const LDouble_t &phi,
+                       const LDouble_t &theta,
+                       const LDouble_t &psi);
 
    TThreeVectorReal operator*(const TThreeVectorReal &vec) const;
    TThreeVectorComplex operator*(const TThreeVectorComplex &vec) const;
@@ -62,15 +63,15 @@ inline TThreeRotation::TThreeRotation(const TThreeVectorReal &axis)
    SetAxis(axis);
 }
 
-inline TThreeRotation::TThreeRotation(const TUnitVector &ahat, const Double_t angle)
+inline TThreeRotation::TThreeRotation(const TUnitVector &ahat, const LDouble_t angle)
  : TLorentzTransform()
 {
    SetAxis(ahat,angle);
 }
 
-inline TThreeRotation::TThreeRotation(const Double_t phi,
-                            const Double_t theta,
-                            const Double_t psi)
+inline TThreeRotation::TThreeRotation(const LDouble_t phi,
+                            const LDouble_t theta,
+                            const LDouble_t psi)
  : TLorentzTransform()
 {
    SetEuler(phi,theta,psi);

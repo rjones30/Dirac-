@@ -8,6 +8,7 @@
 #ifndef ROOT_TThreeVectorComplex
 #define ROOT_TThreeVectorComplex
  
+#include "Double.h"
 #include "TBuffer.h"
 #include "Complex.h"
 #include "TThreeVectorReal.h"
@@ -25,7 +26,7 @@ friend class TThreeRotation;
  
 protected:
    Complex_t	   fVector[4];		// Complex vector allocated on stack
-   static Double_t fResolution;		// vector resolving "distance"
+   static LDouble_t fResolution;		// vector resolving "distance"
  
 public:
    TThreeVectorComplex() { }
@@ -33,7 +34,7 @@ public:
                        const Complex_t &y,
                        const Complex_t &z);
    TThreeVectorComplex(const Float_t *array);
-   TThreeVectorComplex(const Double_t *array);
+   TThreeVectorComplex(const LDouble_t *array);
    TThreeVectorComplex(const Complex_t *array);
    TThreeVectorComplex(const TThreeVectorComplex &another);
    TThreeVectorComplex(const TThreeVectorReal &another);
@@ -42,32 +43,32 @@ public:
  
    Complex_t &operator[](const Int_t index) const;
  
-   static void SetResolution(const Double_t resolution);
-   Double_t Resolution() const;
+   static void SetResolution(const LDouble_t resolution);
+   LDouble_t Resolution() const;
 
-   Double_t Length() const;		// sqrt of sum of absolute-squares
-   Double_t LengthSqr() const;		// sum of absolute-squares
+   LDouble_t Length() const;		// sqrt of sum of absolute-squares
+   LDouble_t LengthSqr() const;		// sum of absolute-squares
    TThreeVectorReal RealPart() const;
    TThreeVectorReal ImagPart() const;
    void GetCartesian(Complex_t &x, Complex_t &y, Complex_t &z) const;
    void GetCartesian(Complex_t *array) const;
-   Double_t DistanceTo
+   LDouble_t DistanceTo
             (const Complex_t x, const Complex_t y, const Complex_t z) const;
-   Double_t DistanceTo(const Complex_t *array) const;
-   Double_t DistanceTo(const TThreeVectorComplex &vec2) const;
+   LDouble_t DistanceTo(const Complex_t *array) const;
+   LDouble_t DistanceTo(const TThreeVectorComplex &vec2) const;
  
    TThreeVectorComplex &operator=(const TThreeVectorReal &source);
    TThreeVectorComplex &operator=(const TThreeVectorComplex &source);
    TThreeVectorComplex &operator=(const Float_t *array);
-   TThreeVectorComplex &operator=(const Double_t *array);
+   TThreeVectorComplex &operator=(const LDouble_t *array);
    TThreeVectorComplex &operator=(const Complex_t *array);
    TThreeVectorComplex &operator+=(const TThreeVectorComplex &source);
    TThreeVectorComplex &operator+=(const Float_t *array);
-   TThreeVectorComplex &operator+=(const Double_t *array);
+   TThreeVectorComplex &operator+=(const LDouble_t *array);
    TThreeVectorComplex &operator+=(const Complex_t *array);
    TThreeVectorComplex &operator-=(const TThreeVectorComplex &source);
    TThreeVectorComplex &operator-=(const Float_t *array);
-   TThreeVectorComplex &operator-=(const Double_t *array);
+   TThreeVectorComplex &operator-=(const LDouble_t *array);
    TThreeVectorComplex &operator-=(const Complex_t *array);
    TThreeVectorComplex &operator*=(const Complex_t &factor);
    TThreeVectorComplex &operator/=(const Complex_t &factor);
@@ -78,12 +79,12 @@ public:
    TThreeVectorComplex &Zero();
    TThreeVectorComplex &Conj();
    TThreeVectorComplex &SpaceInv();
-   TThreeVectorComplex &Normalize(const Double_t length);
+   TThreeVectorComplex &Normalize(const LDouble_t length);
    TThreeVectorComplex &Rotate(const TThreeRotation &rotOp);
-   TThreeVectorComplex &Rotate(const Double_t phi,
-                               const Double_t theta,
-                               const Double_t psi);
-   TThreeVectorComplex &Rotate(const TUnitVector &ahat, const Double_t angle);
+   TThreeVectorComplex &Rotate(const LDouble_t phi,
+                               const LDouble_t theta,
+                               const LDouble_t psi);
+   TThreeVectorComplex &Rotate(const TUnitVector &ahat, const LDouble_t angle);
    TThreeVectorComplex &Cross(const TThreeVectorComplex &other);
    TThreeVectorComplex &Cross(const TThreeVectorComplex &va,
                               const TThreeVectorComplex &vb);
@@ -125,7 +126,7 @@ inline TThreeVectorComplex::TThreeVectorComplex(const Float_t *array)
    fVector[3] = *array;
 }
 
-inline TThreeVectorComplex::TThreeVectorComplex(const Double_t *array)
+inline TThreeVectorComplex::TThreeVectorComplex(const LDouble_t *array)
 {
    fVector[1] = *(array++);
    fVector[2] = *(array++);
@@ -160,28 +161,28 @@ inline Complex_t &TThreeVectorComplex::operator[](const Int_t index) const
    return (Complex_t &)fVector[index];
 }
 
-inline void TThreeVectorComplex::SetResolution(const Double_t resolution)
+inline void TThreeVectorComplex::SetResolution(const LDouble_t resolution)
 {
    fResolution = resolution;
 }
 
-inline Double_t TThreeVectorComplex::Resolution() const
+inline LDouble_t TThreeVectorComplex::Resolution() const
 {
-   Double_t scale = Length();
+   LDouble_t scale = Length();
    if (scale > 0)
       return fResolution*scale;
    else
       return fResolution;
 }
  
-inline Double_t TThreeVectorComplex::Length() const
+inline LDouble_t TThreeVectorComplex::Length() const
 {
    return sqrt(LengthSqr());
 }
 
-inline Double_t TThreeVectorComplex::LengthSqr() const
+inline LDouble_t TThreeVectorComplex::LengthSqr() const
 {
-   return Double_t(norm(fVector[1]) + norm(fVector[2]) + norm(fVector[3]));
+   return LDouble_t(norm(fVector[1]) + norm(fVector[2]) + norm(fVector[3]));
 }
 
 inline TThreeVectorReal TThreeVectorComplex::RealPart() const
@@ -217,7 +218,7 @@ inline void TThreeVectorComplex::GetCartesian(Complex_t *array) const
    *array     = fVector[3];
 }
  
-inline Double_t TThreeVectorComplex::DistanceTo
+inline LDouble_t TThreeVectorComplex::DistanceTo
                 (const Complex_t x, const Complex_t y, const Complex_t z)
        const
 {
@@ -228,7 +229,7 @@ inline Double_t TThreeVectorComplex::DistanceTo
    return sqrt(norm(xloc) + norm(yloc) + norm(zloc));
 }
 
-inline Double_t TThreeVectorComplex::DistanceTo(const Complex_t *array) const
+inline LDouble_t TThreeVectorComplex::DistanceTo(const Complex_t *array) const
 {
    Complex_t x = fVector[1] - *(array++);
    Complex_t y = fVector[2] - *(array++);
@@ -236,7 +237,7 @@ inline Double_t TThreeVectorComplex::DistanceTo(const Complex_t *array) const
    return sqrt(norm(x) + norm(y) + norm(z));
 }
 
-inline Double_t TThreeVectorComplex::DistanceTo
+inline LDouble_t TThreeVectorComplex::DistanceTo
        (const TThreeVectorComplex &vec2) const
 {
    Complex_t x = fVector[1] - vec2.fVector[1];
@@ -273,7 +274,7 @@ inline TThreeVectorComplex &TThreeVectorComplex::operator=
 }
 
 inline TThreeVectorComplex &TThreeVectorComplex::operator=
-                           (const Double_t *array)
+                           (const LDouble_t *array)
 {
    fVector[1] = *(array++);
    fVector[2] = *(array++);
@@ -309,7 +310,7 @@ inline TThreeVectorComplex &TThreeVectorComplex::operator+=
 }
 
 inline TThreeVectorComplex &TThreeVectorComplex::operator+=
-                           (const Double_t *array)
+                           (const LDouble_t *array)
 {
    fVector[1] += *(array++);
    fVector[2] += *(array++);
@@ -345,7 +346,7 @@ inline TThreeVectorComplex &TThreeVectorComplex::operator-=
 }
 
 inline TThreeVectorComplex &TThreeVectorComplex::operator-=
-                           (const Double_t *array)
+                           (const LDouble_t *array)
 {
    fVector[1] -= *(array++);
    fVector[2] -= *(array++);
@@ -417,9 +418,9 @@ inline TThreeVectorComplex &TThreeVectorComplex::SpaceInv()
 }
 
 inline TThreeVectorComplex &TThreeVectorComplex::Normalize
-                           (const Double_t length)
+                           (const LDouble_t length)
 {
-   Double_t r = Length();
+   LDouble_t r = Length();
    *this *= length/r;
    return *this;
 }
@@ -504,7 +505,9 @@ inline TBuffer &operator>>(TBuffer &buf, TThreeVectorComplex *&obj)
 inline TBuffer &operator<<(TBuffer &buf, const TThreeVectorComplex *obj)
 {
    for (Int_t i=1; i<4; i++) {
-      buf << obj->fVector[i].real() << obj->fVector[i].imag();
+      Double_t real = obj->fVector[i].real();
+      Double_t imag = obj->fVector[i].imag();
+      buf << real << imag;
    }
    return buf;
 }

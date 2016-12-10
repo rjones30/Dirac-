@@ -8,6 +8,7 @@
 #ifndef ROOT_TPauliSpinor
 #define ROOT_TPauliSpinor
  
+#include "Double.h"
 #include "TBuffer.h"
 #include "TThreeVectorComplex.h"
 #include "TError.h"
@@ -24,13 +25,13 @@ friend class TPauliMatrix;
  
 protected:
    Complex_t       fSpinor[2];	  // complex state vector allocated on stack
-   static Double_t fResolution;	  // vector resolving "distance"
+   static LDouble_t fResolution;	  // vector resolving "distance"
  
 public:
    TPauliSpinor() { }
    TPauliSpinor(const Complex_t &a1, const Complex_t &a2);
    TPauliSpinor(const Complex_t *array);
-   TPauliSpinor(const Double_t theta, const Double_t phi);
+   TPauliSpinor(const LDouble_t theta, const LDouble_t phi);
    TPauliSpinor(const TUnitVector &pol);
    TPauliSpinor(const TPauliSpinor &another);
  
@@ -38,15 +39,15 @@ public:
  
    Complex_t &operator[](Int_t index) const;
 
-   static void SetResolution(const Double_t resolution);
-   Double_t Resolution() const;
+   static void SetResolution(const LDouble_t resolution);
+   LDouble_t Resolution() const;
  
-   Double_t Norm() const;
-   Double_t NormSqr() const;
-   void GetPolar(Double_t &theta, Double_t &phi) const;
+   LDouble_t Norm() const;
+   LDouble_t NormSqr() const;
+   void GetPolar(LDouble_t &theta, LDouble_t &phi) const;
    TUnitVector Polar() const;
-   Double_t DistanceTo(const TPauliSpinor &another) const;
-   Double_t DistanceTo(const Complex_t *array) const;
+   LDouble_t DistanceTo(const TPauliSpinor &another) const;
+   LDouble_t DistanceTo(const Complex_t *array) const;
  
    TPauliSpinor &operator=(const TPauliSpinor &source);
    TPauliSpinor &operator=(const Complex_t *array);
@@ -67,16 +68,16 @@ public:
    TPauliSpinor &Zero();
    TPauliSpinor &Conj();
    TPauliSpinor &Normalize();
-   TPauliSpinor &Normalize(const Double_t &norm);
-   TPauliSpinor &SetPolar(const Double_t &theta, const Double_t &phi);
+   TPauliSpinor &Normalize(const LDouble_t &norm);
+   TPauliSpinor &SetPolar(const LDouble_t &theta, const LDouble_t &phi);
    TPauliSpinor &SetPolar(const TUnitVector &pol);
    TPauliSpinor &Operate(const TPauliMatrix &xOp);
    TPauliSpinor &Rotate(const TThreeRotation &rotOp);
-   TPauliSpinor &Rotate(const Double_t &phi,
-                        const Double_t &theta,
-                        const Double_t &psi);
+   TPauliSpinor &Rotate(const LDouble_t &phi,
+                        const LDouble_t &theta,
+                        const LDouble_t &psi);
    TPauliSpinor &Rotate(const TThreeVectorReal &axis);
-   TPauliSpinor &Rotate(const TUnitVector &axis, const Double_t angle);
+   TPauliSpinor &Rotate(const TUnitVector &axis, const LDouble_t angle);
    Complex_t ScalarProd(const TPauliSpinor &other);
  
    TPauliSpinor operator-() const;
@@ -93,8 +94,8 @@ public:
    friend TPauliSpinor operator-(const Complex_t *a1,
                                  const TPauliSpinor &v2);
    friend TPauliSpinor operator*(const TPauliSpinor &vec,
-                                 const Double_t &factor);
-   friend TPauliSpinor operator*(const Double_t &factor,
+                                 const LDouble_t &factor);
+   friend TPauliSpinor operator*(const LDouble_t &factor,
                                  const TPauliSpinor &vec);
    friend TPauliSpinor operator*(const TPauliSpinor &vec,
                                  const Complex_t &factor);
@@ -126,7 +127,7 @@ inline  TPauliSpinor::TPauliSpinor(const Complex_t *array)
    fSpinor[1] = *array;
 }
    
-inline  TPauliSpinor::TPauliSpinor(const Double_t theta, const Double_t phi)
+inline  TPauliSpinor::TPauliSpinor(const LDouble_t theta, const LDouble_t phi)
 {
    SetPolar(theta,phi);
 }
@@ -150,34 +151,34 @@ inline Complex_t &TPauliSpinor::operator[](Int_t index) const
    return (Complex_t &)fSpinor[index];
 }
 
-inline void TPauliSpinor::SetResolution(const Double_t resolution)
+inline void TPauliSpinor::SetResolution(const LDouble_t resolution)
 {
    fResolution = resolution;
 }
 
-inline Double_t TPauliSpinor::Resolution() const
+inline LDouble_t TPauliSpinor::Resolution() const
 {
-   Double_t scale = Norm();
+   LDouble_t scale = Norm();
    if (scale > 0)
       return fResolution*scale;
    else
       return fResolution;
 }
 
-inline Double_t TPauliSpinor::Norm() const
+inline LDouble_t TPauliSpinor::Norm() const
 {
    return sqrt(NormSqr());
 }
 
-inline Double_t TPauliSpinor::NormSqr() const
+inline LDouble_t TPauliSpinor::NormSqr() const
 {
    return (norm(fSpinor[0]) + norm(fSpinor[1]));
 }
 
-inline void TPauliSpinor::GetPolar(Double_t &theta, Double_t &phi) const
+inline void TPauliSpinor::GetPolar(LDouble_t &theta, LDouble_t &phi) const
 {
-   Double_t aUp = abs(fSpinor[0]);
-   Double_t aDown = abs(fSpinor[1]);
+   LDouble_t aUp = abs(fSpinor[0]);
+   LDouble_t aDown = abs(fSpinor[1]);
    theta = 2*atan2(aDown,aUp);
    if (aDown < Resolution())
       phi = -2*arg(fSpinor[0]);
@@ -190,18 +191,18 @@ inline void TPauliSpinor::GetPolar(Double_t &theta, Double_t &phi) const
 inline TUnitVector TPauliSpinor::Polar() const
 {
    TUnitVector pol;
-   Double_t theta=0, phi=0;
+   LDouble_t theta=0, phi=0;
    GetPolar(theta,phi);
    return pol.SetPolar(1,theta,phi);
 }
  
-inline Double_t TPauliSpinor::DistanceTo(const TPauliSpinor &another) const
+inline LDouble_t TPauliSpinor::DistanceTo(const TPauliSpinor &another) const
 {
    return sqrt(norm(fSpinor[0] - another.fSpinor[0]) +
                norm(fSpinor[1] - another.fSpinor[1]) );
 }
 
-inline Double_t TPauliSpinor::DistanceTo(const Complex_t *array) const
+inline LDouble_t TPauliSpinor::DistanceTo(const Complex_t *array) const
 {
    return sqrt(norm(fSpinor[0] - array[0]) +
                norm(fSpinor[1] - array[1]) );
@@ -312,14 +313,14 @@ inline TPauliSpinor &TPauliSpinor::Normalize()
    return *this;
 }
 
-inline TPauliSpinor &TPauliSpinor::Normalize(const Double_t &norm)
+inline TPauliSpinor &TPauliSpinor::Normalize(const LDouble_t &norm)
 {
    return (*this *= norm/Norm());
 }
 
 inline TPauliSpinor &TPauliSpinor::SetPolar(const TUnitVector &pol)
 {
-   Double_t r=0, theta=0, phi=0;
+   LDouble_t r=0, theta=0, phi=0;
    pol.GetPolar(r,theta,phi);
    SetPolar(theta,phi);
    return *this;
@@ -389,7 +390,7 @@ inline TPauliSpinor operator-(const Complex_t *a1, const TPauliSpinor &v2)
    return result;
 }
 
-inline TPauliSpinor operator*(const TPauliSpinor &vec, const Double_t &factor)
+inline TPauliSpinor operator*(const TPauliSpinor &vec, const LDouble_t &factor)
 {
    TPauliSpinor result(vec);
    result.fSpinor[0] *= factor;
@@ -397,7 +398,7 @@ inline TPauliSpinor operator*(const TPauliSpinor &vec, const Double_t &factor)
    return result;
 }
 
-inline TPauliSpinor operator*(const Double_t &factor, const TPauliSpinor &vec)
+inline TPauliSpinor operator*(const LDouble_t &factor, const TPauliSpinor &vec)
 {
    TPauliSpinor result(vec);
    result.fSpinor[0] *= factor;
@@ -441,9 +442,10 @@ inline TBuffer &operator>>(TBuffer &buf, TPauliSpinor *&obj)
 
 inline TBuffer &operator<<(TBuffer &buf, const TPauliSpinor *obj)
 {
-
    for (Int_t i=0; i<2; i++) {
-      buf << obj->fSpinor[i].real() << obj->fSpinor[i].imag();
+      Double_t real = obj->fSpinor[i].real();
+      Double_t imag = obj->fSpinor[i].imag();
+      buf << real << imag;
    }
    return buf;
 }

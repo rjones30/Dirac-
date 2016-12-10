@@ -18,7 +18,7 @@
 //
 // Rotations may be specified either by Euler angles or by a rotation
 // axis.  All angles are assumed to be in radians.  Vector classes are
-// defined for both Real_t and Complex_t generic types.  For complex
+// defined for both Double_t and Complex_t generic types.  For complex
 // vectors there are several additional member functions to deal with
 // operations that are specific to complex numbers.
 //

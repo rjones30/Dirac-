@@ -8,6 +8,7 @@
 #ifndef ROOT_TDiracMatrix
 #define ROOT_TDiracMatrix
  
+#include "Double.h"
 #include "TFourVectorComplex.h"
 #include "TPauliMatrix.h"
 #include "TDiracSpinor.h"
@@ -43,14 +44,14 @@ friend class TDiracSpinor;
  
 protected:
    Complex_t       fMatrix[4][4];   // complex matrix allocated on stack
-   static Double_t fResolution;	    // matrix resolving "distance"
+   static LDouble_t fResolution;	    // matrix resolving "distance"
  
 public:
    TDiracMatrix() { }
    TDiracMatrix(const EDiracIndex i);
    TDiracMatrix(const EDiracIndex i, const EDiracIndex j);
    TDiracMatrix(const Int_t a);
-   TDiracMatrix(const Double_t a);
+   TDiracMatrix(const LDouble_t a);
    TDiracMatrix(const Complex_t &a);
    TDiracMatrix(const TDiracMatrix &another);
    TDiracMatrix(const TLorentzTransform &xOp);
@@ -59,8 +60,8 @@ public:
 
    Complex_t *operator[](Int_t row) const;
 
-   static void SetResolution(const Double_t resolution);
-   Double_t Resolution() const;
+   static void SetResolution(const LDouble_t resolution);
+   LDouble_t Resolution() const;
  
    Bool_t IsIdentity() const;
    Bool_t IsUnitary() const;
@@ -78,16 +79,16 @@ public:
    TDiracMatrix &operator=(const TDiracMatrix &source);
    TDiracMatrix &operator+=(const TDiracMatrix &source);
    TDiracMatrix &operator+=(const Complex_t &factor);
-   TDiracMatrix &operator+=(const Double_t &factor);
+   TDiracMatrix &operator+=(const LDouble_t &factor);
    TDiracMatrix &operator-=(const TDiracMatrix &source);
    TDiracMatrix &operator-=(const Complex_t &factor);
-   TDiracMatrix &operator-=(const Double_t &factor);
+   TDiracMatrix &operator-=(const LDouble_t &factor);
    TDiracMatrix &operator*=(const TDiracMatrix &source);
    TDiracMatrix &operator*=(const Complex_t &factor);
-   TDiracMatrix &operator*=(const Double_t &factor);
+   TDiracMatrix &operator*=(const LDouble_t &factor);
    TDiracMatrix &operator/=(const TDiracMatrix &source);
    TDiracMatrix &operator/=(const Complex_t &factor);
-   TDiracMatrix &operator/=(const Double_t &factor);
+   TDiracMatrix &operator/=(const LDouble_t &factor);
  
    Bool_t operator==(const TDiracMatrix &other) const;
    Bool_t operator!=(const TDiracMatrix &other) const;
@@ -118,16 +119,16 @@ public:
 
    TDiracMatrix &SetRotation(const TThreeRotation &rotOp);
    TDiracMatrix &SetRotation(const TThreeVectorReal &axis);
-   TDiracMatrix &SetRotation(const TUnitVector &axis, const Double_t angle);
-   TDiracMatrix &SetRotation(const Double_t phi,
-                             const Double_t theta,
-                             const Double_t psi);
+   TDiracMatrix &SetRotation(const TUnitVector &axis, const LDouble_t angle);
+   TDiracMatrix &SetRotation(const LDouble_t phi,
+                             const LDouble_t theta,
+                             const LDouble_t psi);
    TDiracMatrix &SetBoost(const TLorentzBoost &boostOp);
-   TDiracMatrix &SetBoost(const Double_t betaX,
-                          const Double_t betaY,
-                          const Double_t betaZ);
+   TDiracMatrix &SetBoost(const LDouble_t betaX,
+                          const LDouble_t betaY,
+                          const LDouble_t betaZ);
    TDiracMatrix &SetBoost(const TThreeVectorReal &beta);
-   TDiracMatrix &SetBoost(const TUnitVector &bhat, const Double_t &beta);
+   TDiracMatrix &SetBoost(const TUnitVector &bhat, const LDouble_t &beta);
    TDiracMatrix &SetTransform(const TLorentzTransform &xform);
    TDiracMatrix &SimTransform(const TDiracMatrix &M); // A' = M A Minverse
    TDiracMatrix &UniTransform(const TDiracMatrix &U); // A' = U A Udagger
@@ -141,40 +142,40 @@ public:
                                  const TDiracMatrix &v2);
    friend TDiracMatrix operator+(const TDiracMatrix &v1,
                                  const Complex_t &a2);
-   friend TDiracMatrix operator+(const Double_t &a1,
+   friend TDiracMatrix operator+(const LDouble_t &a1,
                                  const TDiracMatrix &v2);
    friend TDiracMatrix operator+(const TDiracMatrix &v1,
-                                 const Double_t &a2);
+                                 const LDouble_t &a2);
    friend TDiracMatrix operator-(const TDiracMatrix &v1,
                                  const TDiracMatrix &v2);
    friend TDiracMatrix operator-(const Complex_t &a1,
                                  const TDiracMatrix &v2);
    friend TDiracMatrix operator-(const TDiracMatrix &v1,
                                  const Complex_t &a2);
-   friend TDiracMatrix operator-(const Double_t &a1,
+   friend TDiracMatrix operator-(const LDouble_t &a1,
                                  const TDiracMatrix &v2);
    friend TDiracMatrix operator-(const TDiracMatrix &v1,
-                                 const Double_t &a2);
+                                 const LDouble_t &a2);
    friend TDiracMatrix operator*(const TDiracMatrix &v1,
                                  const TDiracMatrix &v2);
    friend TDiracMatrix operator*(const Complex_t &a1,
                                  const TDiracMatrix &v2);
    friend TDiracMatrix operator*(const TDiracMatrix &v1,
                                  const Complex_t &a2);
-   friend TDiracMatrix operator*(const Double_t &a1,
+   friend TDiracMatrix operator*(const LDouble_t &a1,
                                  const TDiracMatrix &v2);
    friend TDiracMatrix operator*(const TDiracMatrix &v1,
-                                 const Double_t &a2);
+                                 const LDouble_t &a2);
    friend TDiracMatrix operator/(const TDiracMatrix &v1,
                                  const TDiracMatrix &v2);
    friend TDiracMatrix operator/(const Complex_t &a1,
                                  const TDiracMatrix &v2);
    friend TDiracMatrix operator/(const TDiracMatrix &v1,
                                  const Complex_t &a2);
-   friend TDiracMatrix operator/(const Double_t &a1,
+   friend TDiracMatrix operator/(const LDouble_t &a1,
                                  const TDiracMatrix &v2);
    friend TDiracMatrix operator/(const TDiracMatrix &v1,
-                                 const Double_t &a2);
+                                 const LDouble_t &a2);
 
    friend TBuffer &operator>>(TBuffer &buf, TDiracMatrix *&obj);
    friend TBuffer &operator<<(TBuffer &buf, const TDiracMatrix *obj);
@@ -191,7 +192,7 @@ inline TDiracMatrix::TDiracMatrix(const Int_t a)
    SetDiagonal(a);
 }
 
-inline TDiracMatrix::TDiracMatrix(const Double_t a)
+inline TDiracMatrix::TDiracMatrix(const LDouble_t a)
 {
    Zero();
    SetDiagonal(a);
@@ -218,14 +219,14 @@ inline Complex_t *TDiracMatrix::operator[](Int_t row) const
    return ((Complex_t *)fMatrix + row*4);
 }
  
-inline void TDiracMatrix::SetResolution(const Double_t resolution)
+inline void TDiracMatrix::SetResolution(const LDouble_t resolution)
 {
    fResolution = resolution;
 }
 
-inline Double_t TDiracMatrix::Resolution() const
+inline LDouble_t TDiracMatrix::Resolution() const
 {
-   Double_t scale = abs(fMatrix[0][0]) + abs(fMatrix[0][1]) +
+   LDouble_t scale = abs(fMatrix[0][0]) + abs(fMatrix[0][1]) +
                     abs(fMatrix[0][2]) + abs(fMatrix[0][3]);
    if (scale > 0)
       return fResolution*scale;
@@ -235,7 +236,7 @@ inline Double_t TDiracMatrix::Resolution() const
 
 inline Bool_t TDiracMatrix::IsIdentity() const
 {
-   const TDiracMatrix one(1.0);
+   const TDiracMatrix one(1.0L);
    return (*this == one);
 }
 
@@ -248,7 +249,7 @@ inline Bool_t TDiracMatrix::IsUnitary() const
 
 inline Bool_t TDiracMatrix::IsDiagonal() const
 {
-   Double_t limit = Resolution();
+   LDouble_t limit = Resolution();
    if ( abs(fMatrix[0][1]) >= limit ||
         abs(fMatrix[0][2]) >= limit ||
         abs(fMatrix[0][3]) >= limit ||
@@ -300,7 +301,7 @@ inline Complex_t TDiracMatrix::Component(const EDiracIndex i) const
 
    TDiracMatrix g(i);
    g *= *this;
-   return (g.Trace() / ((i>0 && i<4) ? -4. : 4.));
+   return (g.Trace() / ((i>0 && i<4) ? -4.L : 4.L));
 }
 
 inline Complex_t TDiracMatrix::Component(const EDiracIndex i,
@@ -313,7 +314,7 @@ inline Complex_t TDiracMatrix::Component(const EDiracIndex i,
 
    TDiracMatrix g(i,j);
    g *= *this;
-   return (g.Trace() / ((i>0 && i<4) ? -2. : 2.) / ((j>0 && j<4) ? -2. : 2.));
+   return (g.Trace() / ((i>0 && i<4) ? -2.L : 2.L) / ((j>0 && j<4) ? -2.L : 2.L));
 }
 
 inline void TDiracMatrix::GetDiagonal(Complex_t &a11, Complex_t &a22,
@@ -352,7 +353,7 @@ inline TDiracMatrix &TDiracMatrix::operator+=(const Complex_t &factor)
    return *this;
 }
 
-inline TDiracMatrix &TDiracMatrix::operator+=(const Double_t &factor)
+inline TDiracMatrix &TDiracMatrix::operator+=(const LDouble_t &factor)
 {
    fMatrix[0][0] += factor;
    fMatrix[1][1] += factor;
@@ -379,7 +380,7 @@ inline TDiracMatrix &TDiracMatrix::operator-=(const Complex_t &factor)
    return *this;
 }
 
-inline TDiracMatrix &TDiracMatrix::operator-=(const Double_t &factor)
+inline TDiracMatrix &TDiracMatrix::operator-=(const LDouble_t &factor)
 {
    fMatrix[0][0] -= factor;
    fMatrix[1][1] -= factor;
@@ -409,7 +410,7 @@ inline TDiracMatrix &TDiracMatrix::operator*=(const Complex_t &factor)
    return *this;
 }
 
-inline TDiracMatrix &TDiracMatrix::operator*=(const Double_t &factor)
+inline TDiracMatrix &TDiracMatrix::operator*=(const LDouble_t &factor)
 {
    Complex_t *d = (Complex_t *)&fMatrix[0][0];
    for (Int_t i=0; i<16; i++, d++)
@@ -431,7 +432,7 @@ inline TDiracMatrix &TDiracMatrix::operator/=(const Complex_t &factor)
    return *this;
 }
  
-inline TDiracMatrix &TDiracMatrix::operator/=(const Double_t &factor)
+inline TDiracMatrix &TDiracMatrix::operator/=(const LDouble_t &factor)
 {
    Complex_t *d = (Complex_t *)&fMatrix[0][0];
    for (Int_t i=0; i<16; i++, d++)
@@ -525,7 +526,7 @@ inline TDiracMatrix &TDiracMatrix::SetVVbar
 inline TDiracMatrix &TDiracMatrix::SetUUbar
                     (const TFourVectorReal &p, const TPauliMatrix &density)
 {
-   Double_t a;
+   LDouble_t a;
    TThreeVectorReal polar;
    density.Decompose(a,polar);
    SetUUbar(p,polar/=a);
@@ -535,7 +536,7 @@ inline TDiracMatrix &TDiracMatrix::SetUUbar
 inline TDiracMatrix &TDiracMatrix::SetVVbar
                     (const TFourVectorReal &p, const TPauliMatrix &density)
 {
-   Double_t a;
+   LDouble_t a;
    TThreeVectorReal polar;
    density.Decompose(a,polar);
    SetVVbar(p,polar/=a);
@@ -587,7 +588,7 @@ inline TDiracMatrix operator+(const TDiracMatrix &v1,
    return result += a2;
 }
 
-inline TDiracMatrix operator+(const Double_t &a1,
+inline TDiracMatrix operator+(const LDouble_t &a1,
                               const TDiracMatrix &v2)
 {
    TDiracMatrix result(a1);
@@ -595,7 +596,7 @@ inline TDiracMatrix operator+(const Double_t &a1,
 }
 
 inline TDiracMatrix operator+(const TDiracMatrix &v1,
-                              const Double_t &a2)
+                              const LDouble_t &a2)
 {
    TDiracMatrix result(v1);
    return result += a2;
@@ -622,7 +623,7 @@ inline TDiracMatrix operator-(const TDiracMatrix &v1,
    return result -= a2;
 }
 
-inline TDiracMatrix operator-(const Double_t &a1,
+inline TDiracMatrix operator-(const LDouble_t &a1,
                               const TDiracMatrix &v2)
 {
    TDiracMatrix result(a1);
@@ -630,7 +631,7 @@ inline TDiracMatrix operator-(const Double_t &a1,
 }
 
 inline TDiracMatrix operator-(const TDiracMatrix &v1,
-                              const Double_t &a2)
+                              const LDouble_t &a2)
 {
    TDiracMatrix result(v1);
    return result -= a2;
@@ -657,7 +658,7 @@ inline TDiracMatrix operator*(const TDiracMatrix &v1,
    return result *= a2;
 }
 
-inline TDiracMatrix operator*(const Double_t &a1,
+inline TDiracMatrix operator*(const LDouble_t &a1,
                               const TDiracMatrix &v2)
 {
    TDiracMatrix result(a1);
@@ -665,7 +666,7 @@ inline TDiracMatrix operator*(const Double_t &a1,
 }
 
 inline TDiracMatrix operator*(const TDiracMatrix &v1,
-                              const Double_t &a2)
+                              const LDouble_t &a2)
 {
    TDiracMatrix result(v1);
    return result *= a2;
@@ -692,7 +693,7 @@ inline TDiracMatrix operator/(const TDiracMatrix &v1,
    return result /= a2;
 }
 
-inline TDiracMatrix operator/(const Double_t &a1,
+inline TDiracMatrix operator/(const LDouble_t &a1,
                               const TDiracMatrix &v2)
 {
    TDiracMatrix result(a1);
@@ -700,7 +701,7 @@ inline TDiracMatrix operator/(const Double_t &a1,
 }
 
 inline TDiracMatrix operator/(const TDiracMatrix &v1,
-                              const Double_t &a2)
+                              const LDouble_t &a2)
 {
    TDiracMatrix result(v1);
    return result /= a2;
@@ -722,7 +723,9 @@ inline TBuffer &operator<<(TBuffer &buf, const TDiracMatrix *obj)
 {
    for (Int_t i=0; i<4; i++) {
       for (Int_t j=0; j<4; j++) {
-         buf << obj->fMatrix[i][j].real() << obj->fMatrix[i][j].imag();
+         Double_t real = obj->fMatrix[i][j].real();
+         Double_t imag = obj->fMatrix[i][j].imag();
+         buf << real << imag;
       }
    }
    return buf;

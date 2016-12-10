@@ -8,6 +8,7 @@
 #ifndef ROOT_TThreeVectorReal
 #define ROOT_TThreeVectorReal
  
+#include "Double.h"
 #include "TBuffer.h"
 #include "TError.h"
  
@@ -26,69 +27,69 @@ friend class TLorentzBoost;
 friend class TThreeRotation;
  
 protected:
-   Double_t	   fVector[4];		// real vector allocated on stack
-   static Double_t fResolution;		// vector resolving "distance"
+   LDouble_t	   fVector[4];		// real vector allocated on stack
+   static LDouble_t fResolution;		// vector resolving "distance"
  
 public:
    TThreeVectorReal() { }
-   TThreeVectorReal(const Double_t x, const Double_t y, const Double_t z);
+   TThreeVectorReal(const LDouble_t x, const LDouble_t y, const LDouble_t z);
    TThreeVectorReal(const Float_t *array);
-   TThreeVectorReal(const Double_t *array);
+   TThreeVectorReal(const LDouble_t *array);
    TThreeVectorReal(const TThreeVectorReal &another);
  
    virtual ~TThreeVectorReal() { }
  
-   Double_t &operator[](const Int_t index) const;
+   LDouble_t &operator[](const Int_t index) const;
  
-   static void SetResolution(const Double_t resolution);
-   Double_t Resolution() const;
+   static void SetResolution(const LDouble_t resolution);
+   LDouble_t Resolution() const;
 
-   Double_t Length() const;
-   Double_t LengthSqr() const;
-   Double_t Rho() const;
-   Double_t RhoSqr() const;
-   Double_t Theta() const;
-   Double_t CosTheta() const;
-   Double_t Phi() const;
-   void GetPolar(Double_t &r, Double_t &theta, Double_t &phi) const;
-   void GetCartesian(Double_t &x, Double_t &y, Double_t &z) const;
-   void GetCartesian(Double_t *array) const;
-   Double_t DistanceTo(const Double_t x,
-                       const Double_t y,
-                       const Double_t z) const;
-   Double_t DistanceTo(const Double_t *array) const;
-   Double_t DistanceTo(const TThreeVectorReal &vec2) const;
+   LDouble_t Length() const;
+   LDouble_t LengthSqr() const;
+   LDouble_t Rho() const;
+   LDouble_t RhoSqr() const;
+   LDouble_t Theta() const;
+   LDouble_t CosTheta() const;
+   LDouble_t Phi() const;
+   void GetPolar(LDouble_t &r, LDouble_t &theta, LDouble_t &phi) const;
+   void GetCartesian(LDouble_t &x, LDouble_t &y, LDouble_t &z) const;
+   void GetCartesian(LDouble_t *array) const;
+   LDouble_t DistanceTo(const LDouble_t x,
+                       const LDouble_t y,
+                       const LDouble_t z) const;
+   LDouble_t DistanceTo(const LDouble_t *array) const;
+   LDouble_t DistanceTo(const TThreeVectorReal &vec2) const;
  
    TThreeVectorReal &operator=(const TThreeVectorReal &source);
    TThreeVectorReal &operator=(const Float_t *array);
-   TThreeVectorReal &operator=(const Double_t *array);
+   TThreeVectorReal &operator=(const LDouble_t *array);
    TThreeVectorReal &operator+=(const TThreeVectorReal &source);
    TThreeVectorReal &operator+=(const Float_t *array);
-   TThreeVectorReal &operator+=(const Double_t *array);
+   TThreeVectorReal &operator+=(const LDouble_t *array);
    TThreeVectorReal &operator-=(const TThreeVectorReal &source);
    TThreeVectorReal &operator-=(const Float_t *array);
-   TThreeVectorReal &operator-=(const Double_t *array);
-   TThreeVectorReal &operator*=(const Double_t factor);
-   TThreeVectorReal &operator/=(const Double_t factor);
+   TThreeVectorReal &operator-=(const LDouble_t *array);
+   TThreeVectorReal &operator*=(const LDouble_t factor);
+   TThreeVectorReal &operator/=(const LDouble_t factor);
  
    Bool_t operator==(const TThreeVectorReal &other) const;
    Bool_t operator!=(const TThreeVectorReal &other) const;
  
    TThreeVectorReal &Zero();
    TThreeVectorReal &SpaceInv();
-   TThreeVectorReal &Normalize(const Double_t length);
-   TThreeVectorReal &SetPolar(const Double_t r,
-                              const Double_t theta,
-                              const Double_t phi);
+   TThreeVectorReal &Normalize(const LDouble_t length);
+   TThreeVectorReal &SetPolar(const LDouble_t r,
+                              const LDouble_t theta,
+                              const LDouble_t phi);
    TThreeVectorReal &Rotate(const TThreeRotation &rotOp);
-   TThreeVectorReal &Rotate(const Double_t phi,
-                            const Double_t theta,
-                            const Double_t psi);
-   TThreeVectorReal &Rotate(const TUnitVector &ahat, const Double_t angle);
+   TThreeVectorReal &Rotate(const LDouble_t phi,
+                            const LDouble_t theta,
+                            const LDouble_t psi);
+   TThreeVectorReal &Rotate(const TUnitVector &ahat, const LDouble_t angle);
    TThreeVectorReal &Cross(const TThreeVectorReal &other);
    TThreeVectorReal &Cross(const TThreeVectorReal &va,
                            const TThreeVectorReal &vb);
-   Double_t Dot(const TThreeVectorReal &other);
+   LDouble_t Dot(const TThreeVectorReal &other);
  
    TThreeVectorReal operator-() const;
    friend TThreeVectorReal operator+(const TThreeVectorReal &v1,
@@ -96,11 +97,11 @@ public:
    friend TThreeVectorReal operator-(const TThreeVectorReal &v1,
                                      const TThreeVectorReal &v2);
    friend TThreeVectorReal operator*(const TThreeVectorReal &vec,
-                                     const Double_t factor);
-   friend TThreeVectorReal operator*(const Double_t factor,
+                                     const LDouble_t factor);
+   friend TThreeVectorReal operator*(const LDouble_t factor,
                                      const TThreeVectorReal &vec);
    friend TThreeVectorReal operator/(const TThreeVectorReal &vec,
-                                     const Double_t factor);
+                                     const LDouble_t factor);
 
    friend TBuffer &operator>>(TBuffer &buf, TThreeVectorReal *&vec);
    friend TBuffer &operator<<(TBuffer &buf, const TThreeVectorReal *vec);
@@ -113,7 +114,7 @@ public:
 //----- inlines ----------------------------------------------------------------
  
 inline TThreeVectorReal::TThreeVectorReal
-       (const Double_t x, const Double_t y, const Double_t z)
+       (const LDouble_t x, const LDouble_t y, const LDouble_t z)
 {
    fVector[1] = x;
    fVector[2] = y;
@@ -127,7 +128,7 @@ inline TThreeVectorReal::TThreeVectorReal(const Float_t *array)
    fVector[3] = *array;
 }
 
-inline TThreeVectorReal::TThreeVectorReal(const Double_t *array)
+inline TThreeVectorReal::TThreeVectorReal(const LDouble_t *array)
 {
    fVector[1] = *(array++);
    fVector[2] = *(array++);
@@ -139,68 +140,68 @@ inline TThreeVectorReal::TThreeVectorReal(const TThreeVectorReal &another)
    *this = another;
 }
  
-inline Double_t &TThreeVectorReal::operator[](const Int_t index) const
+inline LDouble_t &TThreeVectorReal::operator[](const Int_t index) const
 {
    if (index <= 0 || index > 3) {
       Error("TThreeVectorReal::operator[]","index out of range");
-      return (Double_t &)fVector[1];
+      return (LDouble_t &)fVector[1];
    }
-   return (Double_t &)fVector[index];
+   return (LDouble_t &)fVector[index];
 }
 
-inline void TThreeVectorReal::SetResolution(const Double_t resolution)
+inline void TThreeVectorReal::SetResolution(const LDouble_t resolution)
 {
    TThreeVectorReal::fResolution = resolution;
 }
 
-inline Double_t TThreeVectorReal::Resolution() const
+inline LDouble_t TThreeVectorReal::Resolution() const
 {
-   Double_t scale = Length();
+   LDouble_t scale = Length();
    if (scale > 0)
       return fResolution*scale;
    else
       return fResolution;
 }
  
-inline Double_t TThreeVectorReal::Length() const
+inline LDouble_t TThreeVectorReal::Length() const
 {
    return sqrt(LengthSqr());
 }
 
-inline Double_t TThreeVectorReal::LengthSqr() const
+inline LDouble_t TThreeVectorReal::LengthSqr() const
 {
    return fVector[1]*fVector[1] +
           fVector[2]*fVector[2] +
           fVector[3]*fVector[3];
 }
 
-inline Double_t TThreeVectorReal::Rho() const
+inline LDouble_t TThreeVectorReal::Rho() const
 {
    return sqrt(RhoSqr());
 }
 
-inline Double_t TThreeVectorReal::RhoSqr() const
+inline LDouble_t TThreeVectorReal::RhoSqr() const
 {
    return fVector[1]*fVector[1] + fVector[2]*fVector[2];
 }
 
-inline Double_t TThreeVectorReal::Theta() const
+inline LDouble_t TThreeVectorReal::Theta() const
 {
    return atan2(Rho(),fVector[3]);
 }
 
-inline Double_t TThreeVectorReal::CosTheta() const
+inline LDouble_t TThreeVectorReal::CosTheta() const
 {
    return fVector[3]/Length();
 }
 
-inline Double_t TThreeVectorReal::Phi() const
+inline LDouble_t TThreeVectorReal::Phi() const
 {
    return atan2(fVector[2],fVector[1]);
 }
 
 inline void TThreeVectorReal::GetPolar
-            (Double_t &r, Double_t &theta, Double_t &phi) const
+            (LDouble_t &r, LDouble_t &theta, LDouble_t &phi) const
 {
    r = Length();
    theta = Theta();
@@ -208,44 +209,44 @@ inline void TThreeVectorReal::GetPolar
 }
 
 inline void TThreeVectorReal::GetCartesian
-            (Double_t &x, Double_t &y, Double_t &z) const
+            (LDouble_t &x, LDouble_t &y, LDouble_t &z) const
 {
    x = fVector[1];
    y = fVector[2];
    z = fVector[3];
 }
 
-inline void TThreeVectorReal::GetCartesian(Double_t *array) const
+inline void TThreeVectorReal::GetCartesian(LDouble_t *array) const
 {
    *(array++) = fVector[1];
    *(array++) = fVector[2];
    *array     = fVector[3];
 }
  
-inline Double_t TThreeVectorReal::DistanceTo
-                (const Double_t x, const Double_t y, const Double_t z) const
+inline LDouble_t TThreeVectorReal::DistanceTo
+                (const LDouble_t x, const LDouble_t y, const LDouble_t z) const
 {
-   Double_t xloc(x), yloc(y), zloc(z);
+   LDouble_t xloc(x), yloc(y), zloc(z);
    xloc -= fVector[1];
    yloc -= fVector[2];
    zloc -= fVector[3];
    return sqrt(xloc*xloc + yloc*yloc + zloc*zloc);
 }
 
-inline Double_t TThreeVectorReal::DistanceTo(const Double_t *array) const
+inline LDouble_t TThreeVectorReal::DistanceTo(const LDouble_t *array) const
 {
-   Double_t x = fVector[1] - *(array++);
-   Double_t y = fVector[2] - *(array++);
-   Double_t z = fVector[3] - *array;
+   LDouble_t x = fVector[1] - *(array++);
+   LDouble_t y = fVector[2] - *(array++);
+   LDouble_t z = fVector[3] - *array;
    return sqrt(x*x + y*y + z*z);
 }
 
-inline Double_t TThreeVectorReal::DistanceTo
+inline LDouble_t TThreeVectorReal::DistanceTo
                 (const TThreeVectorReal &vec2) const
 {
-   Double_t x = fVector[1] - vec2.fVector[1];
-   Double_t y = fVector[2] - vec2.fVector[2];
-   Double_t z = fVector[3] - vec2.fVector[3];
+   LDouble_t x = fVector[1] - vec2.fVector[1];
+   LDouble_t y = fVector[2] - vec2.fVector[2];
+   LDouble_t z = fVector[3] - vec2.fVector[3];
    return sqrt(x*x + y*y + z*z);
 }
 
@@ -266,7 +267,7 @@ inline TThreeVectorReal &TThreeVectorReal::operator=(const Float_t *array)
    return *this;
 }
 
-inline TThreeVectorReal &TThreeVectorReal::operator=(const Double_t *array)
+inline TThreeVectorReal &TThreeVectorReal::operator=(const LDouble_t *array)
 {
    fVector[1] = *(array++);
    fVector[2] = *(array++);
@@ -291,7 +292,7 @@ inline TThreeVectorReal &TThreeVectorReal::operator+=(const Float_t *array)
    return *this;
 }
 
-inline TThreeVectorReal &TThreeVectorReal::operator+=(const Double_t *array)
+inline TThreeVectorReal &TThreeVectorReal::operator+=(const LDouble_t *array)
 {
    fVector[1] += *(array++);
    fVector[2] += *(array++);
@@ -316,7 +317,7 @@ inline TThreeVectorReal &TThreeVectorReal::operator-=(const Float_t *array)
    return *this;
 }
 
-inline TThreeVectorReal &TThreeVectorReal::operator-=(const Double_t *array)
+inline TThreeVectorReal &TThreeVectorReal::operator-=(const LDouble_t *array)
 {
    fVector[1] -= *(array++);
    fVector[2] -= *(array++);
@@ -324,7 +325,7 @@ inline TThreeVectorReal &TThreeVectorReal::operator-=(const Double_t *array)
    return *this;
 }
 
-inline TThreeVectorReal &TThreeVectorReal::operator*=(const Double_t factor)
+inline TThreeVectorReal &TThreeVectorReal::operator*=(const LDouble_t factor)
 {
    fVector[1] *= factor;
    fVector[2] *= factor;
@@ -332,7 +333,7 @@ inline TThreeVectorReal &TThreeVectorReal::operator*=(const Double_t factor)
    return *this;
 }
 
-inline TThreeVectorReal &TThreeVectorReal::operator/=(const Double_t factor)
+inline TThreeVectorReal &TThreeVectorReal::operator/=(const LDouble_t factor)
 {
    fVector[1] /= factor;
    fVector[2] /= factor;
@@ -366,16 +367,16 @@ inline TThreeVectorReal &TThreeVectorReal::SpaceInv()
    return *this;
 }
 
-inline TThreeVectorReal &TThreeVectorReal::Normalize(const Double_t length)
+inline TThreeVectorReal &TThreeVectorReal::Normalize(const LDouble_t length)
 {
-   Double_t r = Length();
+   LDouble_t r = Length();
    *this *= length/r;
    return *this;
 }
 
-inline TThreeVectorReal &TThreeVectorReal::SetPolar(const Double_t r,
-                                                    const Double_t theta,
-                                                    const Double_t phi)
+inline TThreeVectorReal &TThreeVectorReal::SetPolar(const LDouble_t r,
+                                                    const LDouble_t theta,
+                                                    const LDouble_t phi)
 {
    fVector[1] = r*sin(theta);
    fVector[2] = fVector[1]*sin(phi);
@@ -399,7 +400,7 @@ inline TThreeVectorReal &TThreeVectorReal::Cross
    return *this;
 }
 
-inline Double_t TThreeVectorReal::Dot(const TThreeVectorReal &other)
+inline LDouble_t TThreeVectorReal::Dot(const TThreeVectorReal &other)
 {
    return (fVector[1]*other.fVector[1] +
            fVector[2]*other.fVector[2] +
@@ -430,21 +431,21 @@ inline TThreeVectorReal operator-
 }
 
 inline TThreeVectorReal operator*
-                        (const TThreeVectorReal &vec, const Double_t factor)
+                        (const TThreeVectorReal &vec, const LDouble_t factor)
 {
    TThreeVectorReal result(vec);
    return (result *= factor);
 }
 
 inline TThreeVectorReal operator*
-                        (const Double_t factor, const TThreeVectorReal &vec)
+                        (const LDouble_t factor, const TThreeVectorReal &vec)
 {
    TThreeVectorReal result(vec);
    return (result *= factor);
 }
 
 inline TThreeVectorReal operator/
-                        (const TThreeVectorReal &vec, const Double_t factor)
+                        (const TThreeVectorReal &vec, const LDouble_t factor)
 {
    TThreeVectorReal result(vec);
    return (result /= factor);
@@ -452,13 +453,21 @@ inline TThreeVectorReal operator/
 
 inline TBuffer &operator>>(TBuffer &buf, TThreeVectorReal *&obj)
 {
-   buf.ReadStaticArray((Double_t *)&obj->fVector[1]);
+   Double_t vector[3];
+   buf.ReadStaticArray(vector);
+   obj->fVector[1] = vector[0];
+   obj->fVector[2] = vector[1];
+   obj->fVector[3] = vector[2];
    return buf;
 }
 
 inline TBuffer &operator<<(TBuffer &buf, const TThreeVectorReal *obj)
 {
-   buf.WriteArray((Double_t *)&obj->fVector[1], 3);
+   Double_t vector[3];
+   vector[0] = obj->fVector[1];
+   vector[1] = obj->fVector[2];
+   vector[2] = obj->fVector[3];
+   buf.WriteArray(vector, 3);
    return buf;
 }
 

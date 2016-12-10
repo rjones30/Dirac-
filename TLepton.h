@@ -8,30 +8,31 @@
 #ifndef ROOT_TLepton
 #define ROOT_TLepton
 
+#include "Double.h"
 #include "TFourVectorComplex.h"
 #include "TDiracMatrix.h"
 
-const Double_t mElectron=0.51099907e-3;
-const Double_t mMuon=0.105658389;
+const LDouble_t mElectron=0.51099907e-3;
+const LDouble_t mMuon=0.105658389;
 
 
 class TLepton {
 
 protected:
-   Double_t        fMass;	  // mass of lepton
+   LDouble_t        fMass;	  // mass of lepton
    TFourVectorReal fMomentum;	  // four-momentum of lepton
    TPauliMatrix	   fSpinDensity;  // spin density matrix in helicity basis
 
 public:
-   TLepton(const Double_t mass=0);
-   TLepton(const TFourVectorReal &p, const Double_t mass=0);
-   TLepton(const TThreeVectorReal &p, const Double_t mass=0);
+   TLepton(const LDouble_t mass=0);
+   TLepton(const TFourVectorReal &p, const LDouble_t mass=0);
+   TLepton(const TThreeVectorReal &p, const LDouble_t mass=0);
    virtual ~TLepton() { }
-   Double_t Mass() const;
+   LDouble_t Mass() const;
    TFourVectorReal Mom() const;
    TThreeVectorReal Pol() const;
    TPauliMatrix &SDM() const;
-   TLepton &SetMass(Double_t mass);
+   TLepton &SetMass(LDouble_t mass);
    TLepton &SetMom(const TFourVectorReal &p);
    TLepton &SetMom(const TThreeVectorReal &p);
    TLepton &SetPol(const TThreeVectorReal &polar);
@@ -44,26 +45,26 @@ public:
    ClassDef(TLepton,1)  // Lepton state description class
 };
 
-inline TLepton::TLepton(const Double_t mass)
+inline TLepton::TLepton(const LDouble_t mass)
 {
    fMass = mass;
 }
 
-inline TLepton::TLepton(const TFourVectorReal &p, const Double_t mass)
+inline TLepton::TLepton(const TFourVectorReal &p, const LDouble_t mass)
 {
    fMass = mass;
    fMomentum = p;
-   fSpinDensity = 0.5;
+   fSpinDensity = 0.5L;
 }
 
-inline TLepton::TLepton(const TThreeVectorReal &p, const Double_t mass)
+inline TLepton::TLepton(const TThreeVectorReal &p, const LDouble_t mass)
 {
    TFourVectorReal p4(p.Length(),p);
    p4[0] = sqrt(p4[0]*p4[0] + mass*mass);
    TLepton(p4,mass);
 }
 
-inline Double_t TLepton::Mass() const
+inline LDouble_t TLepton::Mass() const
 {
    return fMass;
 }
@@ -78,7 +79,7 @@ inline TPauliMatrix &TLepton::SDM() const
    return (TPauliMatrix &)fSpinDensity;
 }
 
-inline TLepton &TLepton::SetMass(Double_t mass)
+inline TLepton &TLepton::SetMass(LDouble_t mass)
 {
    fMass = mass;
    return *this;
@@ -105,7 +106,7 @@ inline TLepton &TLepton::SetPol(const TThreeVectorReal &polar)
 
 inline TLepton &TLepton::AllPol()
 {
-   fSpinDensity = 1.0;
+   fSpinDensity = 1.0L;
    return *this;
 }
 
@@ -113,7 +114,9 @@ inline TBuffer &operator>>(TBuffer &buf, TLepton *&obj)
 {
    TFourVectorReal *mom=(TFourVectorReal *)&obj->fMomentum;
    TPauliMatrix *sdm=(TPauliMatrix *)&obj->fSpinDensity;
-   buf >> obj->fMass;
+   Double_t mass;
+   buf >> mass;
+   obj->fMass = mass;
    buf >> mom;
    buf >> sdm;
    return buf;
@@ -123,7 +126,8 @@ inline TBuffer &operator<<(TBuffer &buf, const TLepton *obj)
 {
    TFourVectorReal *mom=(TFourVectorReal *)&obj->fMomentum;
    TPauliMatrix *sdm=(TPauliMatrix *)&obj->fSpinDensity;
-   buf << obj->fMass;
+   Double_t mass = obj->fMass;
+   buf << mass;
    buf << mom;
    buf << sdm;
    return buf;

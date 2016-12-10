@@ -8,6 +8,7 @@
 #ifndef ROOT_TFourVectorComplex
 #define ROOT_TFourVectorComplex
  
+#include "Double.h"
 #include "TBuffer.h"
 #include "TThreeVectorComplex.h" 
 #include "TFourVectorReal.h" 
@@ -33,7 +34,7 @@ public:
                       const Complex_t &y,
                       const Complex_t &z);
    TFourVectorComplex(const Float_t *array);
-   TFourVectorComplex(const Double_t *array);
+   TFourVectorComplex(const LDouble_t *array);
    TFourVectorComplex(const Complex_t *array);
    TFourVectorComplex(const TFourVectorComplex &another);
    TFourVectorComplex(const TFourVectorReal &another);
@@ -41,37 +42,37 @@ public:
  
    virtual ~TFourVectorComplex() { }
 
-   Double_t Resolution() const;
+   LDouble_t Resolution() const;
  
    Complex_t &operator[](const Int_t index) const;
  
-   Double_t Invariant() const;		// use +--- metric and
-   Double_t InvariantSqr() const;	// sum over absolute-squares
+   LDouble_t Invariant() const;		// use +--- metric and
+   LDouble_t InvariantSqr() const;	// sum over absolute-squares
    TFourVectorReal RealPart() const;
    TFourVectorReal ImagPart() const;
    void GetCoord(Complex_t &t, Complex_t &x, Complex_t &y, Complex_t &z) const;
    void GetCoord(Complex_t *array) const;
-   Double_t DistanceTo(const Complex_t t, const Complex_t x,
+   LDouble_t DistanceTo(const Complex_t t, const Complex_t x,
                        const Complex_t y, const Complex_t z) const;
-   Double_t DistanceTo(const Float_t *array) const;
-   Double_t DistanceTo(const Double_t *array) const;
-   Double_t DistanceTo(const Complex_t *array) const;
-   Double_t DistanceTo(const TFourVectorComplex &vec2) const;
+   LDouble_t DistanceTo(const Float_t *array) const;
+   LDouble_t DistanceTo(const LDouble_t *array) const;
+   LDouble_t DistanceTo(const Complex_t *array) const;
+   LDouble_t DistanceTo(const TFourVectorComplex &vec2) const;
  
    TFourVectorComplex &operator=(const TFourVectorReal &source);
    TFourVectorComplex &operator=(const TFourVectorComplex &source);
    TFourVectorComplex &operator=(const Float_t *array);
-   TFourVectorComplex &operator=(const Double_t *array);
+   TFourVectorComplex &operator=(const LDouble_t *array);
    TFourVectorComplex &operator=(const Complex_t *array);
    TFourVectorComplex &operator+=(const TFourVectorReal &source);
    TFourVectorComplex &operator+=(const TFourVectorComplex &source);
    TFourVectorComplex &operator+=(const Float_t *array);
-   TFourVectorComplex &operator+=(const Double_t *array);
+   TFourVectorComplex &operator+=(const LDouble_t *array);
    TFourVectorComplex &operator+=(const Complex_t *array);
    TFourVectorComplex &operator-=(const TFourVectorReal &source);
    TFourVectorComplex &operator-=(const TFourVectorComplex &source);
    TFourVectorComplex &operator-=(const Float_t *array);
-   TFourVectorComplex &operator-=(const Double_t *array);
+   TFourVectorComplex &operator-=(const LDouble_t *array);
    TFourVectorComplex &operator-=(const Complex_t *array);
    TFourVectorComplex &operator*=(const Complex_t &factor);
    TFourVectorComplex &operator/=(const Complex_t &factor);
@@ -83,10 +84,10 @@ public:
    TFourVectorComplex &Conj();
    TFourVectorComplex &Transform(const TLorentzTransform &xformOp);
    TFourVectorComplex &Boost(const TLorentzBoost &boostOp);
-   TFourVectorComplex &Boost(const Double_t betaX,
-                             const Double_t betaY,
-                             const Double_t betaZ);
-   TFourVectorComplex &Boost(const TUnitVector &bhat, const Double_t beta);
+   TFourVectorComplex &Boost(const LDouble_t betaX,
+                             const LDouble_t betaY,
+                             const LDouble_t betaZ);
+   TFourVectorComplex &Boost(const TUnitVector &bhat, const LDouble_t beta);
    Complex_t ScalarProd(const TFourVectorComplex &other);
    Complex_t ScalarProd(const TFourVectorComplex &v1,
                         const TFourVectorComplex &v2);
@@ -132,7 +133,7 @@ inline TFourVectorComplex::TFourVectorComplex(const Float_t *array)
    fVector[3] = *array;
 }
 
-inline TFourVectorComplex::TFourVectorComplex(const Double_t *array)
+inline TFourVectorComplex::TFourVectorComplex(const LDouble_t *array)
  : TThreeVectorComplex()
 {
    fVector[0] = *(array++);
@@ -170,9 +171,9 @@ inline TFourVectorComplex::TFourVectorComplex
    fVector[0] = t;
 }
  
-inline Double_t TFourVectorComplex::Resolution() const
+inline LDouble_t TFourVectorComplex::Resolution() const
 {
-   Double_t scale = sqrt(norm(fVector[0]) + LengthSqr());
+   LDouble_t scale = sqrt(norm(fVector[0]) + LengthSqr());
    if (scale > 0)
       return fResolution*scale;
    else
@@ -188,9 +189,9 @@ inline Complex_t &TFourVectorComplex::operator[](const Int_t index) const
    return (Complex_t &)fVector[index];
 }
 
-inline Double_t TFourVectorComplex::Invariant() const
+inline LDouble_t TFourVectorComplex::Invariant() const
 {
-   Double_t inv2 = InvariantSqr();
+   LDouble_t inv2 = InvariantSqr();
    if (inv2 > 0)
       return sqrt(inv2);
    else if (inv2 > -Resolution())
@@ -201,7 +202,7 @@ inline Double_t TFourVectorComplex::Invariant() const
    return -1;
 }
 
-inline Double_t TFourVectorComplex::InvariantSqr() const
+inline LDouble_t TFourVectorComplex::InvariantSqr() const
 {
    return (norm(fVector[0]) - LengthSqr());
 }
@@ -243,7 +244,7 @@ inline void TFourVectorComplex::GetCoord(Complex_t *array) const
    *array     = fVector[3];
 }
  
-inline Double_t TFourVectorComplex::DistanceTo
+inline LDouble_t TFourVectorComplex::DistanceTo
                 (const Complex_t t, const Complex_t x,
                  const Complex_t y, const Complex_t z) const
 {
@@ -255,25 +256,16 @@ inline Double_t TFourVectorComplex::DistanceTo
    return sqrt(norm(tloc) + norm(xloc) + norm(yloc) + norm(zloc));
 }
 
-inline Double_t TFourVectorComplex::DistanceTo(const Float_t *array) const
+inline LDouble_t TFourVectorComplex::DistanceTo(const Float_t *array) const
 {
-   Complex_t t = fVector[0] - (double)*(array++);
-   Complex_t x = fVector[1] - (double)*(array++);
-   Complex_t y = fVector[2] - (double)*(array++);
-   Complex_t z = fVector[3] - (double)*array;
+   Complex_t t = fVector[0] - (LDouble_t)*(array++);
+   Complex_t x = fVector[1] - (LDouble_t)*(array++);
+   Complex_t y = fVector[2] - (LDouble_t)*(array++);
+   Complex_t z = fVector[3] - (LDouble_t)*array;
    return sqrt(norm(t) + norm(x) + norm(y) + norm(z));
 }
 
-inline Double_t TFourVectorComplex::DistanceTo(const Double_t *array) const
-{
-   Complex_t t = fVector[0] - *(array++);
-   Complex_t x = fVector[1] - *(array++);
-   Complex_t y = fVector[2] - *(array++);
-   Complex_t z = fVector[3] - *array;
-   return sqrt(norm(t) + norm(x) + norm(y) + norm(z));
-}
-
-inline Double_t TFourVectorComplex::DistanceTo(const Complex_t *array) const
+inline LDouble_t TFourVectorComplex::DistanceTo(const LDouble_t *array) const
 {
    Complex_t t = fVector[0] - *(array++);
    Complex_t x = fVector[1] - *(array++);
@@ -282,7 +274,16 @@ inline Double_t TFourVectorComplex::DistanceTo(const Complex_t *array) const
    return sqrt(norm(t) + norm(x) + norm(y) + norm(z));
 }
 
-inline Double_t TFourVectorComplex::DistanceTo
+inline LDouble_t TFourVectorComplex::DistanceTo(const Complex_t *array) const
+{
+   Complex_t t = fVector[0] - *(array++);
+   Complex_t x = fVector[1] - *(array++);
+   Complex_t y = fVector[2] - *(array++);
+   Complex_t z = fVector[3] - *array;
+   return sqrt(norm(t) + norm(x) + norm(y) + norm(z));
+}
+
+inline LDouble_t TFourVectorComplex::DistanceTo
                 (const TFourVectorComplex &vec2) const
 {
    Complex_t t = fVector[0] - vec2.fVector[0];
@@ -321,7 +322,7 @@ inline TFourVectorComplex &TFourVectorComplex::operator=(const Float_t *array)
    return *this;
 }
 
-inline TFourVectorComplex &TFourVectorComplex::operator=(const Double_t *array)
+inline TFourVectorComplex &TFourVectorComplex::operator=(const LDouble_t *array)
 {
    fVector[0] = *(array++);
    fVector[1] = *(array++);
@@ -368,7 +369,7 @@ inline TFourVectorComplex &TFourVectorComplex::operator+=(const Float_t *array)
    return *this;
 }
 
-inline TFourVectorComplex &TFourVectorComplex::operator+=(const Double_t *array)
+inline TFourVectorComplex &TFourVectorComplex::operator+=(const LDouble_t *array)
 {
    fVector[0] += *(array++);
    fVector[1] += *(array++);
@@ -417,7 +418,7 @@ inline TFourVectorComplex &TFourVectorComplex::operator-=
 }
 
 inline TFourVectorComplex &TFourVectorComplex::operator-=
-                          (const Double_t *array)
+                          (const LDouble_t *array)
 {
    fVector[0] -= *(array++);
    fVector[1] -= *(array++);
@@ -561,9 +562,11 @@ inline TBuffer &operator>>(TBuffer &buf, TFourVectorComplex *&obj)
 
 inline TBuffer &operator<<(TBuffer &buf, const TFourVectorComplex *obj)
 {
-// This method assumes that complex is stored in memory as double[2]
+// This method assumes that complex is stored in memory as LDouble_t[2]
    for (Int_t i=0; i<4; i++) {
-      buf << obj->fVector[i].real() << obj->fVector[i].imag();
+      Double_t real = obj->fVector[i].real();
+      Double_t imag = obj->fVector[i].imag();
+      buf << real << imag;
    }
    return buf;
 }

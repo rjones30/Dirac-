@@ -8,6 +8,7 @@
 #ifndef ROOT_TLorentzBoost
 #define ROOT_TLorentzBoost
  
+#include "Double.h"
 #include "TObject.h"
 #include "TLorentzTransform.h"
 #include "TThreeVectorReal.h"
@@ -20,12 +21,12 @@ class TLorentzBoost : public TLorentzTransform {
  
 public:
    TLorentzBoost() : TLorentzTransform() { }
-   TLorentzBoost(const Double_t betaX,
-                 const Double_t betaY,
-                 const Double_t betaZ);
-   TLorentzBoost(const Double_t *beta);
+   TLorentzBoost(const LDouble_t betaX,
+                 const LDouble_t betaY,
+                 const LDouble_t betaZ);
+   TLorentzBoost(const LDouble_t *beta);
    TLorentzBoost(const TThreeVectorReal &beta);
-   TLorentzBoost(const TUnitVector &bhat, const Double_t beta);
+   TLorentzBoost(const TUnitVector &bhat, const LDouble_t beta);
    TLorentzBoost(const TFourVectorReal &p);
    TLorentzBoost(const TLorentzBoost &another);
  
@@ -39,12 +40,12 @@ public:
    TLorentzBoost &Transpose();
    TLorentzBoost &Invert();
 
-   TLorentzBoost &SetBeta(const Double_t betaX,
-                          const Double_t betaY,
-                          const Double_t betaZ);
-   TLorentzBoost &SetBeta(const Double_t *beta);
+   TLorentzBoost &SetBeta(const LDouble_t betaX,
+                          const LDouble_t betaY,
+                          const LDouble_t betaZ);
+   TLorentzBoost &SetBeta(const LDouble_t *beta);
    TLorentzBoost &SetBeta(const TThreeVectorReal &beta);
-   TLorentzBoost &SetBeta(const TUnitVector &bhat, const Double_t beta);
+   TLorentzBoost &SetBeta(const TUnitVector &bhat, const LDouble_t beta);
    TLorentzBoost &SetBeta(const TFourVectorReal &p);
 
    void Print(Option_t *option="");
@@ -54,15 +55,15 @@ public:
 
 //----- inlines ----------------------------------------------------------------
 
-inline TLorentzBoost::TLorentzBoost(const Double_t betaX,
-                                    const Double_t betaY,
-                                    const Double_t betaZ)
+inline TLorentzBoost::TLorentzBoost(const LDouble_t betaX,
+                                    const LDouble_t betaY,
+                                    const LDouble_t betaZ)
  : TLorentzTransform()
 {
    SetBeta(betaX,betaY,betaZ);
 }
  
-inline TLorentzBoost::TLorentzBoost(const Double_t *beta)
+inline TLorentzBoost::TLorentzBoost(const LDouble_t *beta)
  : TLorentzTransform()
 {
    SetBeta(beta);
@@ -75,7 +76,7 @@ inline TLorentzBoost::TLorentzBoost(const TThreeVectorReal &beta)
 }
 
 inline TLorentzBoost::TLorentzBoost
-       (const TUnitVector &bhat, const Double_t beta)
+       (const TUnitVector &bhat, const LDouble_t beta)
  : TLorentzTransform()
 {
    SetBeta(bhat,beta);
@@ -126,15 +127,15 @@ inline TLorentzBoost &TLorentzBoost::Invert()
    return *this;
 }
  
-inline TLorentzBoost &TLorentzBoost::SetBeta(const Double_t betaX,
-                                             const Double_t betaY,
-                                             const Double_t betaZ)
+inline TLorentzBoost &TLorentzBoost::SetBeta(const LDouble_t betaX,
+                                             const LDouble_t betaY,
+                                             const LDouble_t betaZ)
 {
    TThreeVectorReal betaV(betaX,betaY,betaZ);
    return SetBeta(betaV);
 }
 
-inline TLorentzBoost &TLorentzBoost::SetBeta(const Double_t *beta)
+inline TLorentzBoost &TLorentzBoost::SetBeta(const LDouble_t *beta)
 {
    TThreeVectorReal betaV(beta);
    return SetBeta(betaV);

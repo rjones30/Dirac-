@@ -8,6 +8,7 @@
 #ifndef ROOT_TCrossSection
 #define ROOT_TCrossSection
 
+#include "Double.h"
 #include "TBuffer.h"
 
 class TPhoton;
@@ -19,13 +20,13 @@ class TCrossSection {
 public:
    virtual ~TCrossSection() { }
 
-   static Double_t Compton(const TPhoton &gIn, const TLepton &eIn,
+   static LDouble_t Compton(const TPhoton &gIn, const TLepton &eIn,
                            const TPhoton &gOut, const TLepton &eOut);
-   static Double_t Bremsstrahlung(const TLepton &eIn, const TLepton &eOut,
+   static LDouble_t Bremsstrahlung(const TLepton &eIn, const TLepton &eOut,
                                   const TPhoton &gOut);
-   static Double_t PairProduction(const TPhoton &gIn,
+   static LDouble_t PairProduction(const TPhoton &gIn,
                                   const TLepton &eOut, const TLepton &pOut);
-   static Double_t TripletProduction(const TPhoton &gIn, const TLepton &eIn,
+   static LDouble_t TripletProduction(const TPhoton &gIn, const TLepton &eIn,
                                      const TLepton &pOut, const TLepton &eOut2,
                                      const TLepton &eOut3);
 
