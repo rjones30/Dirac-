@@ -5,8 +5,8 @@
 // effects for a given kinematics.  The kinematics are set by the
 // initial photon energy kin, the mass of the e+e- pair M, the recoil
 // momentum squared qR^2, the azimuthal angle of the recoil momentum
-// phiR, the azimuthal angle of the outgoing electron about the pair
-// momentum axis phi-, and energy of the outgoing electron E-.  The
+// phiR, the azimuthal angle of the outgoing positron about the pair
+// momentum axis phi+, and energy of the outgoing positron E+.  The
 // returned value is the differential cross section measured in
 // microbarns/GeV^4/r, differential in (d^3 qR  dphi- dE-). Another
 // useful expression for the differential measure is
@@ -22,6 +22,7 @@
 #include "Complex.h"
 #include "TPhoton.h"
 #include "TLepton.h"
+#include "TLorentzBoost.h"
 #include "TCrossSection.h"
 #include "constants.h"
 
@@ -31,10 +32,18 @@
 #include <TFile.h>
 #include <TF1.h>
 
+#ifndef DEFINE_SQR_ON_STANDARD_TYPES
+#define DEFINE_SQR_ON_STANDARD_TYPES
+inline unsigned int sqr(unsigned int x) { return x*x; }
+inline Int_t sqr(Int_t x) { return x*x; }
+inline Float_t sqr(Float_t x) { return x*x; }
 inline Double_t sqr(Double_t x) { return x*x; }
 inline LDouble_t sqr(LDouble_t x) { return x*x; }
 inline Complex_t sqr(Complex_t x) { return x*x; }
+#endif
 
+#ifndef STANDARD_VECTOR_CONSTANTS
+#define STANDARD_VECTOR_CONSTANTS
 const TThreeVectorReal zeroVector(0,0,0);
 const TThreeVectorReal posXhat(1,0,0);
 const TThreeVectorReal negXhat(-1,0,0);
@@ -42,36 +51,39 @@ const TThreeVectorReal posYhat(0,1,0);
 const TThreeVectorReal negYhat(0,-1,0);
 const TThreeVectorReal posZhat(0,0,1);
 const TThreeVectorReal negZhat(0,0,-1);
+#endif
 
+#ifndef DEFINE_GLOBAL_RANDOM_GEN
+#define DEFINE_GLOBAL_RANDOM_GEN
 TRandom2 random_gen(0);
+#endif
 
 Double_t Pairs(Double_t *var, Double_t *par)
 {
    LDouble_t kin=par[0];
-   LDouble_t Eele=par[1]=var[0];
-   LDouble_t phie=par[2];
+   LDouble_t Epos=par[1]=var[0];
+   LDouble_t phi12=par[2];
    LDouble_t Mpair=par[3];
    LDouble_t qR2=par[4];
    LDouble_t phiR=par[5];
-
-   LDouble_t qRmin=sqr(Mpair)/(2*kin);
-   LDouble_t Ppair=kin-qRmin;
-   LDouble_t theta2=(qR2-sqr(qRmin))/(kin*Ppair);
-   if (theta2 < 0) {
-      // std::cout << "no kinematic solution because theta2 < 0" << std::endl;
-      return 0;
-   }
-   LDouble_t theta=sqrt(theta2);
-   TThreeVectorReal qRecoil(cos(phiR)*Ppair*theta,
-                            sin(phiR)*Ppair*theta,
-                            qRmin+theta2*Ppair/2 );
 
    TPhoton gIn;
    TLepton eOut(mElectron), pOut(mElectron);
 
    // Solve for the rest of the kinematics
-   LDouble_t Epos = kin-Eele;
-   LDouble_t qmin=sqr(mElectron)*kin/(2*Eele*Epos);
+   LDouble_t qR=sqrt(qR2);
+   LDouble_t Eele=kin-Epos;
+   LDouble_t qmin=kin-sqrt(sqr(kin)-sqr(Mpair));
+   LDouble_t costhetaR=(qR2+sqr(Mpair))/(2*kin*qR);
+   if (costhetaR > 1) {
+      // std::cout << "no kinematic solution because costhetaR > 1" << std::endl;
+      return 0;
+   }
+   LDouble_t sinthetaR=sqrt(1-sqr(costhetaR));
+   TThreeVectorReal qRecoil(qR*sinthetaR*cos(phiR),
+                            qR*sinthetaR*sin(phiR),
+                            qR*costhetaR);
+
    if (qRecoil[3] < qmin) {
       // std::cout << "no kinematic solution because qRecoil[3] < qmin" << std::endl;
       return 0;
@@ -85,23 +97,22 @@ Double_t Pairs(Double_t *var, Double_t *par)
       return 0;
    }
    LDouble_t pStar=sqrt(pStar2);
-   LDouble_t gamma=kin/Mpair;
-   LDouble_t beta=sqrt(1-1/sqr(gamma));
-   LDouble_t costhetaStar=((Eele/gamma)-Mpair/2)/(beta*pStar);
-   if (fabs(costhetaStar) > 1) {
-      // std::cout << "no kinematic solution because |costhetaStar| > 1" << std::endl;
+   LDouble_t p12mag=sqrt(sqr(kin)-sqr(Mpair));
+   LDouble_t costhetastar=(Epos-kin/2)*Mpair/(pStar*p12mag);
+   if (fabs(costhetastar) > 1) {
+      // std::cout << "no kinematic solution because costhetastar < 1" << std::endl;
       return 0;
    }
-   LDouble_t sinthetaStar=sqrt(1-sqr(costhetaStar));
-   LDouble_t p1Long=gamma*(beta*Mpair/2+pStar*costhetaStar);
-   LDouble_t p2Long=gamma*(beta*Mpair/2-pStar*costhetaStar);
-   LDouble_t pTrans=pStar*sinthetaStar;
-   p[1] = pTrans*cos(phie)-qRecoil[1]*p1Long/Ppair;
-   p[2] = pTrans*sin(phie)-qRecoil[2]*p1Long/Ppair;
-   p[3] = p1Long;
-   eOut.SetMom(p);
-   p = gIn.Mom()-qRecoil-p;
-   pOut.SetMom(p);
+   LDouble_t sinthetastar=sqrt(1-sqr(costhetastar));
+   TThreeVectorReal k12(pStar*sinthetastar*cos(phi12),
+                        pStar*sinthetastar*sin(phi12),
+                        pStar*costhetastar);
+   TFourVectorReal p1(Mpair/2,k12);
+   TLorentzBoost toLab(qRecoil[1]/kin,qRecoil[2]/kin,(qRecoil[3]-kin)/kin);
+   p1.Boost(toLab);
+   pOut.SetMom(p1);
+   TThreeVectorReal p2(gIn.Mom()-qRecoil-p1);
+   eOut.SetMom(p2);
 
    // Set the initial,final polarizations
    gIn.SetPol(posXhat);
@@ -139,18 +150,18 @@ Double_t Pairs(Double_t *var, Double_t *par)
 }
 
 Int_t demoPairs(Double_t E0=9.,
-                Double_t Eele=4.5,
-                Double_t phie=0,
+                Double_t Epos=4.5,
+                Double_t phi12=0,
                 Double_t Mpair=2e-3,
                 Double_t qR2=1e-6,
                 Double_t phiR=0.)
 {
    TCanvas *c1 = new TCanvas("c1","Pair Production Rate",200,10,700,500);
-   TF1 *f1 = new TF1("f1",Pairs,0,Eele,6);
+   TF1 *f1 = new TF1("f1",Pairs,0,Epos,6);
    Double_t params[6];
    params[0] = E0;
-   params[1] = Eele;
-   params[2] = phie;
+   params[1] = Epos;
+   params[2] = phi12;
    params[3] = Mpair;
    params[4] = qR2;
    params[5] = phiR;
@@ -170,8 +181,8 @@ Int_t genPairs(Int_t N, Double_t kin=9., TFile *hfile=0, TTree *tree=0, Int_t pr
 {
    struct event_t {
       Double_t E0;
-      Double_t Eele;
-      Double_t phie;
+      Double_t Epos;
+      Double_t phi12;
       Double_t Mpair;
       Double_t qR2;
       Double_t phiR;
@@ -179,7 +190,7 @@ Int_t genPairs(Int_t N, Double_t kin=9., TFile *hfile=0, TTree *tree=0, Int_t pr
       Double_t weight;
       Double_t weightedXS;
    } event;
-   TString leaflist("E0/D:Eele/D:phie/D:Mpair/D:qR2/D:phiR/D:diffXS/D:weight/D:weightedXS");
+   TString leaflist("E0/D:Epos/D:phi12/D:Mpair/D:qR2/D:phiR/D:diffXS/D:weight/D:weightedXS");
    event.E0 = kin;
 
    if (hfile != 0) {
@@ -196,12 +207,12 @@ Int_t genPairs(Int_t N, Double_t kin=9., TFile *hfile=0, TTree *tree=0, Int_t pr
    for (int n=1; n<=N; n++) { 
       event.weight = 1;
 
-      // generate Eele uniform on [0,E0]
-      event.Eele = random_gen.Uniform(event.E0);
+      // generate Epos uniform on [0,E0]
+      event.Epos = random_gen.Uniform(event.E0);
       event.weight *= event.E0;
    
-      // generate phie uniform on [0,2pi]
-      event.phie = random_gen.Uniform(2*PI_);
+      // generate phi12 uniform on [0,2pi]
+      event.phi12 = random_gen.Uniform(2*PI_);
       event.weight *= 2*PI_;
 
       // generate phiR uniform on [0,2pi]
@@ -247,7 +258,7 @@ Int_t genPairs(Int_t N, Double_t kin=9., TFile *hfile=0, TTree *tree=0, Int_t pr
       event.weight *= event.Mpair/(2*event.E0);
 
       Double_t *par=&event.E0;
-      Double_t *var=&event.Eele;
+      Double_t *var=&event.Epos;
       event.diffXS = Pairs(var,par);
       event.weightedXS = event.diffXS*event.weight;
 
