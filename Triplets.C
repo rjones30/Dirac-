@@ -6,11 +6,11 @@
 // kinematics.  The kinematics are specified by the initial photon
 // energy kin, the mass of the e+e- pair M, the recoil momentum vector
 // qR (2 transverse components only), the azimuthal angle of the plane
-// containing the e+e- pair phiR, and the energy of the pair positron
-// E+.  The returned value is the differential cross section measured
+// containing the e+e- pair phi+, and the energy of the pair positron
+// E+. The returned value is the differential cross section measured
 // microbarns/GeV^4/r, differential in (d^3 qR  dphi+ dE+).  Another 
 // useful expression for the differential measure is
-//    (d^3 qR dphi- dE-) = (M / 2 kin) (dM dqR^2 dphiR dphi+ dE+)
+//    (d^3 qR dphi+ dE+) = (M / 2 kin) (dM dqR^2 dphiR dphi+ dE+)
 //
 // author: richard.t.jones at uconn.edu
 // version: january 1, 2000
@@ -253,7 +253,7 @@ Int_t genTriplets(Int_t N, Double_t kin=9., TFile *hfile=0, TTree *tree=0, Int_t
       LDouble_t qRcut = 1e-3; // 1 MeV/c cutoff parameter
       LDouble_t uq0 = qRmin/(qRcut+sqrt(sqr(qRcut)+sqr(qRmin)));
       LDouble_t uq = pow(uq0, event.urand[1]);
-      event.qR2 = sqr(2*qRcut*uq/sqr(1-sqr(uq)));
+      event.qR2 = sqr(2*qRcut*uq/(1-sqr(uq)));
       event.weight *= event.qR2*sqrt(1+event.qR2/sqr(qRcut))
                       *(-2*log(uq0));
 
