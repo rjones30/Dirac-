@@ -237,7 +237,7 @@ Int_t genPairs(Int_t N, Double_t kin=9., TFile *hfile=0, TTree *tree=0, Int_t pr
       LDouble_t qRcut = 1e-3; // 1 MeV/c cutoff parameter
       LDouble_t uq0 = qRmin/(qRcut+sqrt(sqr(qRcut)+sqr(qRmin)));
       LDouble_t uq = pow(uq0,random_gen.Uniform(1));
-      event.qR2 = sqr(2*qRcut*uq/sqr(1-sqr(uq)));
+      event.qR2 = sqr(2*qRcut*uq/(1-sqr(uq)));
       event.weight *= event.qR2*sqrt(1+event.qR2/sqr(qRcut))
                       *(-2*log(uq0));
 
