@@ -7,3 +7,5 @@
 *.pyc
 *.o
 *.so
+*Dict_rdict.pcm
+*Dict.cxx
