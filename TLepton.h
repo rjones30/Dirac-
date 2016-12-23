@@ -59,9 +59,9 @@ inline TLepton::TLepton(const TFourVectorReal &p, const LDouble_t mass)
 
 inline TLepton::TLepton(const TThreeVectorReal &p, const LDouble_t mass)
 {
-   TFourVectorReal p4(p.Length(),p);
-   p4[0] = sqrt(p4[0]*p4[0] + mass*mass);
-   TLepton(p4,mass);
+   fMass = mass;
+   fMomentum = TFourVectorReal(sqrt(p.LengthSqr()+mass*mass),p);
+   fSpinDensity = 0.5L;
 }
 
 inline LDouble_t TLepton::Mass() const

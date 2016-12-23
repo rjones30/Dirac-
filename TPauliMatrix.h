@@ -134,19 +134,19 @@ public:
 
 //----- inlines ----------------------------------------------------------------
 
-inline  TPauliMatrix::TPauliMatrix(const Int_t a)
+inline TPauliMatrix::TPauliMatrix(const Int_t a)
 {
    fMatrix[0][0] = a;	fMatrix[0][1] = 0;
    fMatrix[1][0] = 0;	fMatrix[1][1] = a;
 }
 
-inline  TPauliMatrix::TPauliMatrix(const LDouble_t a)
+inline TPauliMatrix::TPauliMatrix(const LDouble_t a)
 {
    fMatrix[0][0] = a;	fMatrix[0][1] = 0;
    fMatrix[1][0] = 0;	fMatrix[1][1] = a;
 }
 
-inline  TPauliMatrix::TPauliMatrix(const Complex_t &a)
+inline TPauliMatrix::TPauliMatrix(const Complex_t &a)
 {
    fMatrix[0][0] = a;	fMatrix[0][1] = 0;
    fMatrix[1][0] = 0;	fMatrix[1][1] = a;
@@ -157,13 +157,13 @@ inline Complex_t *TPauliMatrix::operator[](Int_t row) const
    return ((Complex_t *)fMatrix + row*2);
 }
 
-inline  TPauliMatrix::TPauliMatrix
+inline TPauliMatrix::TPauliMatrix
         (const Complex_t &a, const TThreeVectorComplex &b)
 {
    Compose(a,b);
 }
 
-inline  TPauliMatrix::TPauliMatrix(const TPauliMatrix &another)
+inline TPauliMatrix::TPauliMatrix(const TPauliMatrix &another)
 {
    *this = another;
 }
