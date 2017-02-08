@@ -1,5 +1,5 @@
 #---------------------------------------------------
-CXXFLAGS      = -O -fPIC $(shell root-config --cflags)
+CXXFLAGS      = -O4 -fPIC $(shell root-config --cflags)
 CDBFLAGS      = -g -fPIC $(shell root-config --cflags)
 LDFLAGS       = -g -Wl,--export-dynamic
 SOFLAGS       = -shared
