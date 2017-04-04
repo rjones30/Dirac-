@@ -43,7 +43,7 @@
 //
 // 4. rho(final) is calculated in whatever frame the user has chosen
 //    to specify the kinematics.  It consists of a term of the form
-//           -1     -3   3
+//                 -1      -3    3
 //             (2E)   (2pi)   d p
 //    for each final-state fermion or photon, accompanied by a four-
 //    dimensional delta function expressing momentum conservation.
