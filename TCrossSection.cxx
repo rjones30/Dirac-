@@ -286,7 +286,7 @@ LDouble_t TCrossSection::Bremsstrahlung(
 
    LDouble_t kinFactor = 1/sqr(2*PI_*eI->Mom()[0]); // |qRecoil| << mElectron
    LDouble_t diffXsect = hbarcSqr*pow(alphaQED,3)*real(ampSquared)
-                       *kinFactor/sqr(qRecoil.InvariantSqr());
+                         *kinFactor/sqr(qRecoil.InvariantSqr());
    return diffXsect;
 }
 
