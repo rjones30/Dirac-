@@ -284,7 +284,7 @@ LDouble_t TCrossSection::Bremsstrahlung(
    // the momentum axis of the final electron+photon, rather than
    // the incoming electron direction.
 
-   LDouble_t kinFactor = 1/sqr(2*PI_*eI->Mom()[0]); // |qRecoil| << mElectron
+   LDouble_t kinFactor = 1/sqr(2*PI_*eI->Mom()[0]); // |qRecoil| << E/c
    LDouble_t diffXsect = hbarcSqr*pow(alphaQED,3)*real(ampSquared)
                          *kinFactor/sqr(qRecoil.InvariantSqr());
    return diffXsect;
