@@ -387,7 +387,10 @@ LDouble_t TCrossSection::TripletProduction(
    //     gIn.Mom() + eIn.Mom() = pOut.Mom() + eOut2.Mom() + eOut3.Mom()
    // but it is not checked.  The calculation is performed in whatever frame
    // the user specifies through the momenta passed in the argument objects.
-   // Units are microbarns/GeV^4/r.
+   // This cross section is only a partial result, because it does not
+   // include the integral d^3 q over the form factor of the target.  This
+   // depends on the internal structure of the target atom, and so is left to
+   // be carried out by more specialized code.  Units are microbarns/GeV^4/r.
 
    TPhoton gIncoming(gIn), *g0=&gIncoming;
    TLepton eIncoming(eIn), *e0=&eIncoming;
@@ -826,7 +829,10 @@ LDouble_t TCrossSection::eeBremsstrahlung(const TLepton &eIn0,
    // eIn1, eOut2, eOut3, and gOut satisfy momentum conservation, that is
    // eIn0.Mom() + eIn1.Mom() == eOut2.Mom() + eOut3.Mom() + gOut.Mom(),
    // but it is not checked.  The calculation is performed in the lab frame.
-   // Units are microbarns/GeV^4/r.
+   // This cross section is only a partial result, because it does not
+   // include the integral d^3 q over the form factor of the target.  This
+   // depends on the internal structure of the target atom, and so is left to
+   // be carried out by more specialized code.  Units are microbarns/GeV^4/r.
 
    TLepton eIncoming0(eIn0), *e0=&eIncoming0;
    TLepton eIncoming1(eIn1), *e1=&eIncoming1;
