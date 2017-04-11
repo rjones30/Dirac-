@@ -810,6 +810,448 @@ LDouble_t TCrossSection::TripletProduction(
    return diffXsect;
 }
 
+LDouble_t TCrossSection::eeBremsstrahlung(const TLepton &eIn0,
+                                          const TLepton &eIn1,
+                                          const TLepton &eOut2, 
+                                          const TLepton &eOut3,
+                                          const TPhoton &gOut)
+{
+   // Calculates the e-,e- bremsstrahlung cross section for the radiative
+   // scattering of an energetic electron off a free electron in the target.
+   // The cross section is returned as d(sigma)/(dk dphi d^3 q) where k is
+   // the energy of the bremsstrahlung photon and phi is the azimuthal angle
+   // of the photon.  The polar angle of the photon is fixed by kinematics,
+   // given known values for its energy and the recoil momentum vector q.
+   // It is assumed that the momenta specified in the input arguments eIn0,
+   // eIn1, eOut2, eOut3, and gOut satisfy momentum conservation, that is
+   // eIn0.Mom() + eIn1.Mom() == eOut2.Mom() + eOut3.Mom() + gOut.Mom(),
+   // but it is not checked.  The calculation is performed in the lab frame.
+   // Units are microbarns/GeV^4/r.
+
+   TLepton eIncoming0(eIn0), *e0=&eIncoming0;
+   TLepton eIncoming1(eIn1), *e1=&eIncoming1;
+   TLepton eOutgoing2(eOut2), *e2=&eOutgoing2;
+   TLepton eOutgoing3(eOut3), *e3=&eOutgoing3;
+   TPhoton gOutgoing(gOut), *g0=&gOutgoing;
+
+   // The two leptons must be identical, not checked
+   const LDouble_t mLepton=e0->Mass();
+
+   // Obtain the four lepton state matrices
+   TDiracMatrix chi0,chi1,chi2,chi3;
+   chi0.SetUUbar(e0->Mom(),e0->SDM());
+   chi1.SetVVbar(e1->Mom(),e1->SDM());
+   chi2.SetUUbar(e2->Mom(),e2->SDM());
+   chi3.SetUUbar(e3->Mom(),e3->SDM());
+
+   // There are 8 tree-level diagrams for e,e bremstrahlung.  They can be
+   // organized as follows. Diagram A1[A2] has initial[final] state radiation
+   // from the lepton leg that connects from eIn0 to eOut2. Diagram B1[B2]
+   // has initial[final] state radiation from the lepton leg that connects
+   // from eIn1 to eOut3. Diagrams C1[C2] and D1[D2] are copies of A1[A2]
+   // and B1[B2] respectively, with eOut2 and eOut3 labels swapped on the
+   // outgoing legs. Each diagram amplitude involves 2 Dirac matrix product
+   // chains, one connecting to eIn0 and the other to eIn1. Each of these
+   // comes with one Lorentz index [mu=0..4] for the photon propagator, and
+   // one photon spin index [j=0,1] for the external photon polarization, 
+   // which must be summed over at the end.  The following naming scheme
+   // will help to keep track of which amplitude factor is being computed:
+   //
+   //    {dm}{diag}{rad}{leg}{Bar}[mu][j]
+   // where
+   //    {dm} = dm or some other symbol for Dirac matrix
+   //    {diag} = A, B, C, or D to indicate which diagram
+   //    {rad} = 1 for initial, 2 for final state radiation
+   //    {leg} = 0 or 1, chain with initial electron 0 or 1
+   //    {Bar} = "" or "Bar", representing the matrix or its adjoint partner
+   //    [mu] = Lorentz index for photon propagator
+   //    [j] = outgoing photon spin index
+   // For example, dmB11Bar[3][0] refers to the adjoint variant of the Dirac
+   // matrix product (Bar) coming from the leg (leg=1) containing the initial-
+   // state electron eIn1, with final-state radiation (rad=1) off the right
+   // lepton leg connecting eIn1 to eOut3 (diag=B), Lorentz component (mu=3),
+   // photon spin component (j=0).
+   //
+   // The plan for computing the sums is as follows:
+   //   1. compute all Dirac matrix chains for each leg of each diagram
+   //   2. compute the adjoint pair for each of the above (xxxBar matrices)
+   //   3. append chi matrices for the u(p) or v(p) spinor factors to each
+   //   4. take traces of chains of two xxx[mu][j] and two xxxBar[nu][jj]
+   //   5. sum above traces over diag,rad,diagBar,radBar,mu,nu
+   //   6. contract sum[j][jj] with the photon spin density matrix
+   // The result of the final contraction is |Mfi|^2
+
+   // Pre-compute the electron propagators
+   TDiracMatrix dm;
+   TDiracMatrix epropA1 = (dm.Slash(e0->Mom() - g0->Mom()) + mLepton) /
+                          (-2*g0->Mom().ScalarProd(e0->Mom()));
+   TDiracMatrix epropA2 = (dm.Slash(e2->Mom() + g0->Mom()) + mLepton) /
+                          (2*g0->Mom().ScalarProd(e2->Mom()));
+   TDiracMatrix epropB1 = (dm.Slash(e1->Mom() - g0->Mom()) + mLepton) /
+                          (-2*g0->Mom().ScalarProd(e1->Mom()));
+   TDiracMatrix epropB2 = (dm.Slash(e3->Mom() + g0->Mom()) + mLepton) /
+                          (2*g0->Mom().ScalarProd(e3->Mom()));
+   TDiracMatrix epropC1(epropA1);
+   TDiracMatrix epropC2(epropB2);
+   TDiracMatrix epropD1(epropB1);
+   TDiracMatrix epropD2(epropA2);
+
+   // Pre-compute the photon propagators (no 1,2 suffix is needed)
+   LDouble_t gpropA = 1/(e1->Mom()-e3->Mom()).InvariantSqr();
+   LDouble_t gpropB = 1/(e0->Mom()-e2->Mom()).InvariantSqr();
+   LDouble_t gpropC = 1/(e1->Mom()-e2->Mom()).InvariantSqr();
+   LDouble_t gpropD = 1/(e0->Mom()-e3->Mom()).InvariantSqr();
+
+   // Evaluate the leading order Feynman amplitude
+   const TDiracMatrix gamma0(kDiracGamma0);
+   const TDiracMatrix gamma1(kDiracGamma1);
+   const TDiracMatrix gamma2(kDiracGamma2);
+   const TDiracMatrix gamma3(kDiracGamma3);
+   TDiracMatrix gamma[4];
+   gamma[0] = gamma0;
+   gamma[1] = gamma1;
+   gamma[2] = gamma2;
+   gamma[3] = gamma3;
+
+   // Compute the product chains of Dirac matrices
+   TDiracMatrix dmA0[4][2],dmA0Bar[4][2];
+   TDiracMatrix dmB1[4][2],dmB1Bar[4][2];
+   TDiracMatrix dmC0[4][2],dmC0Bar[4][2];
+   TDiracMatrix dmD1[4][2],dmD1Bar[4][2];
+   TDiracMatrix dmA1[4],dmA1Bar[4];
+   TDiracMatrix dmB0[4],dmB0Bar[4];
+   TDiracMatrix dmC1[4],dmC1Bar[4];
+   TDiracMatrix dmD0[4],dmD0Bar[4];
+   for (Int_t j=0; j<2; j++) {
+      for (Int_t mu=0; mu<4; mu++) {
+         TDiracMatrix current1, current2;
+
+         current1 = gamma[mu];
+         current1 *= epropA1;
+         current1 *= dm.Slash(g0->EpsStar(j+1));
+         current2.Slash(g0->EpsStar(j+1));
+         current2 *= epropA2;
+         current2 *= gamma[mu];
+         dmA0[mu][j] = current1 + current2;
+         dmA1[mu] = gamma[mu];
+ 
+         current1 = gamma[mu];
+         current1 *= epropB1;
+         current1 *= dm.Slash(g0->EpsStar(j+1));
+         current2.Slash(g0->EpsStar(j+1));
+         current2 *= epropB2;
+         current2 *= gamma[mu];
+         dmB1[mu][j] = current1 + current2;
+         dmB0[mu] = gamma[mu];
+
+         current1 = gamma[mu];
+         current1 *= epropC1;
+         current1 *= dm.Slash(g0->EpsStar(j+1));
+         current2.Slash(g0->EpsStar(j+1));
+         current2 *= epropC2;
+         current2 *= gamma[mu];
+         dmC0[mu][j] = current1 + current2;
+         dmC1[mu] = gamma[mu];
+
+         current1 = gamma[mu];
+         current1 *= epropD1;
+         current1 *= dm.Slash(g0->EpsStar(j+1));
+         current2.Slash(g0->EpsStar(j+1));
+         current2 *= epropD2;
+         current2 *= gamma[mu];
+         dmD1[mu][j] = current1 + current2;
+         dmD0[mu] = gamma[mu];
+      }
+   }
+
+   // Compute adjoint pairs and append chi matrices
+   for (Int_t j=0; j<2; j++) {
+      for (Int_t mu=0; mu<4; mu++) {
+         dmA0Bar[mu][j] = dmA0[mu][j];
+         dmA0Bar[mu][j].Adjoint();
+         dmA0Bar[mu][j].UniTransform(gamma0);
+         dmA0Bar[mu][j] *= chi2;
+         dmA0[mu][j] *= chi0;
+         dmA1Bar[mu] = dmA1[mu];
+         // dmA1Bar[mu].Adjoint();
+         // dmA1Bar[mu].UniTransform(gamma0);
+         dmA1Bar[mu] *= chi3;
+         dmA1[mu] *= chi1;
+ 
+         dmB0Bar[mu] = dmB0[mu];
+         // dmB0Bar[mu].Adjoint();
+         // dmB0Bar[mu].UniTransform(gamma0);
+         dmB0Bar[mu] *= chi2;
+         dmB0[mu] *= chi0;
+         dmB1Bar[mu][j] = dmB1[mu][j];
+         dmB1Bar[mu][j].Adjoint();
+         dmB1Bar[mu][j].UniTransform(gamma0);
+         dmB1Bar[mu][j] *= chi3;
+         dmB1[mu][j] *= chi1;
+ 
+         dmC0Bar[mu][j] = dmC0[mu][j];
+         dmC0Bar[mu][j].Adjoint();
+         dmC0Bar[mu][j].UniTransform(gamma0);
+         dmC0Bar[mu][j] *= chi3;
+         dmC0[mu][j] *= chi0;
+         dmC1Bar[mu] = dmC1[mu];
+         // dmC1Bar[mu].Adjoint();
+         // dmC1Bar[mu].UniTransform(gamma0);
+         dmC1Bar[mu] *= chi2;
+         dmC1[mu] *= chi1;
+ 
+         dmD0Bar[mu] = dmD0[mu];
+         // dmD0Bar[mu].Adjoint();
+         // dmD0Bar[mu].UniTransform(gamma0);
+         dmD0Bar[mu] *= chi3;
+         dmD0[mu] *= chi0;
+         dmD1Bar[mu][j] = dmD1[mu][j];
+         dmD1Bar[mu][j].Adjoint();
+         dmD1Bar[mu][j].UniTransform(gamma0);
+         dmD1Bar[mu][j] *= chi2;
+         dmD1[mu][j] *= chi1;
+      }
+   }
+
+   // Finally, the sums over traces
+   Complex_t Mfi2[2][2]; 
+   Complex_t AAbar[2][2];
+   Complex_t ABbar[2][2];
+   Complex_t ACbar[2][2];
+   Complex_t ADbar[2][2];
+   Complex_t BAbar[2][2];
+   Complex_t BBbar[2][2];
+   Complex_t BCbar[2][2];
+   Complex_t BDbar[2][2];
+   Complex_t CAbar[2][2];
+   Complex_t CBbar[2][2];
+   Complex_t CCbar[2][2];
+   Complex_t CDbar[2][2];
+   Complex_t DAbar[2][2];
+   Complex_t DBbar[2][2];
+   Complex_t DCbar[2][2];
+   Complex_t DDbar[2][2];
+   for (Int_t j=0; j<2; j++) {
+      for (Int_t jj=0; jj<2; jj++) {
+         for (Int_t mu=0; mu<4; mu++) {
+            for (Int_t nu=0; nu<4; nu++) {
+               LDouble_t sign;
+               sign = (mu == 0)? 1 : -1;
+               sign *= (nu == 0)? 1 : -1;
+               TDiracMatrix dm0,dm1;
+               // A * ABar
+               dm0 = dmA0[mu][j];
+               dm0 *= dmA0Bar[nu][jj];
+               dm1 = dmA1[mu];
+               dm1 *= dmA1Bar[nu];
+               AAbar[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropA*gpropA;
+               // A * BBar
+               dm0 = dmA0[mu][j];
+               dm0 *= dmB0Bar[nu];
+               dm1 = dmA1[mu];
+               dm1 *= dmB1Bar[nu][jj];
+               ABbar[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropA*gpropB;
+               // A * CBar
+               dm0 = dmA0[mu][j];
+               dm0 *= dmC1Bar[nu];
+               dm0 *= dmA1[mu];
+               dm0 *= dmC0Bar[nu][jj];
+               ACbar[j][jj] -= sign*dm0.Trace()*gpropA*gpropC;
+               // A * DBar
+               dm0 = dmA0[mu][j];
+               dm0 *= dmD1Bar[nu][jj];
+               dm0 *= dmA1[mu];
+               dm0 *= dmD0Bar[nu];
+               ADbar[j][jj] -= sign*dm0.Trace()*gpropA*gpropD;
+               // B * ABar
+               dm0 = dmB0[mu];
+               dm0 *= dmA0Bar[nu][jj];
+               dm1 = dmB1[mu][j];
+               dm1 *= dmA1Bar[nu];
+               BAbar[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropB*gpropA;
+               // B * BBar
+               dm0 = dmB0[mu];
+               dm0 *= dmB0Bar[nu];
+               dm1 = dmB1[mu][j];
+               dm1 *= dmB1Bar[nu][jj];
+               BBbar[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropB*gpropB;
+               // B * CBar
+               dm0 = dmB0[mu];
+               dm0 *= dmC1Bar[nu];
+               dm0 *= dmB1[mu][j];
+               dm0 *= dmC0Bar[nu][jj];
+               BCbar[j][jj] -= sign*dm0.Trace()*gpropB*gpropC;
+               // B * DBar
+               dm0 = dmB0[mu];
+               dm0 *= dmD1Bar[nu][jj];
+               dm0 *= dmB1[mu][j];
+               dm0 *= dmD0Bar[nu];
+               BDbar[j][jj] -= sign*dm0.Trace()*gpropB*gpropD;
+               // C * ABar
+               dm0 = dmC0[mu][j];
+               dm0 *= dmA1Bar[nu];
+               dm0 *= dmC1[mu];
+               dm0 *= dmA0Bar[nu][jj];
+               CAbar[j][jj] -= sign*dm0.Trace()*gpropC*gpropA;
+               // C * BBar
+               dm0 = dmC0[mu][j];
+               dm0 *= dmB1Bar[nu][jj];
+               dm0 *= dmC1[mu];
+               dm0 *= dmB0Bar[nu];
+               CBbar[j][jj] -= sign*dm0.Trace()*gpropC*gpropB;
+               // C * CBar
+               dm0 = dmC0[mu][j];
+               dm0 *= dmC0Bar[nu][jj];
+               dm1 = dmC1[mu];
+               dm1 *= dmC1Bar[nu];
+               CCbar[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropC*gpropC;
+               // C * DBar
+               dm0 = dmC0[mu][j];
+               dm0 *= dmD0Bar[nu];
+               dm1 = dmC1[mu];
+               dm1 *= dmD1Bar[nu][jj];
+               CDbar[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropC*gpropD;
+               // D * ABar
+               dm0 = dmD0[mu];
+               dm0 *= dmA1Bar[nu];
+               dm0 *= dmD1[mu][j];
+               dm0 *= dmA0Bar[nu][jj];
+               DAbar[j][jj] -= sign*dm0.Trace()*gpropD*gpropA;
+               // D * BBar
+               dm0 = dmD0[mu];
+               dm0 *= dmB1Bar[nu][jj];
+               dm0 *= dmD1[mu][j];
+               dm0 *= dmB0Bar[nu];
+               DBbar[j][jj] -= sign*dm0.Trace()*gpropD*gpropB;
+               // D * CBar
+               dm0 = dmD0[mu];
+               dm0 *= dmC0Bar[nu][jj];
+               dm1 = dmD1[mu][j];
+               dm1 *= dmC1Bar[nu];
+               DCbar[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropD*gpropC;
+               // D * DBar
+               dm0 = dmD0[mu];
+               dm0 *= dmD0Bar[nu];
+               dm1 = dmD1[mu][j];
+               dm1 *= dmD1Bar[nu][jj];
+               DDbar[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropD*gpropD;
+            }
+         }
+         Mfi2[j][jj] = AAbar[j][jj] + ABbar[j][jj] + 
+                       ACbar[j][jj] + ADbar[j][jj] +
+                       BAbar[j][jj] + BBbar[j][jj] + 
+                       BCbar[j][jj] + BDbar[j][jj] +
+                       CAbar[j][jj] + CBbar[j][jj] + 
+                       CCbar[j][jj] + CDbar[j][jj] +
+                       DAbar[j][jj] + DBbar[j][jj] + 
+                       DCbar[j][jj] + DDbar[j][jj];
+      }
+   }
+
+   // Contract with the incident photon spin density matrix
+   Complex_t ampSquared=0;
+   for (Int_t j=0; j<2; j++) {
+      for (Int_t jj=0; jj<2; jj++) {
+         ampSquared += Mfi2[j][jj] * g0->SDM()[jj][j];
+      }
+   }
+
+#if DEBUGGING
+   if (real(ampSquared) < 0 || fabs(ampSquared.imag()) > fabs(ampSquared / 1e8L))
+   {
+      std::cout << "Summary of eeBremsstrahlung amplitudes:" << std::endl
+                << "  These guys should be all real positive:" << std::endl
+                << "    ampSquared = " << ampSquared << std::endl
+                << "    AAbar[0][0] = " << AAbar[0][0] << std::endl
+                << "    AAbar[1][1] = " << AAbar[1][1] << std::endl
+                << "    BBbar[0][0] = " << BBbar[0][0] << std::endl
+                << "    BBbar[1][1] = " << BBbar[1][1] << std::endl
+                << "    CCbar[0][0] = " << CCbar[0][0] << std::endl
+                << "    CCbar[1][1] = " << CCbar[1][1] << std::endl
+                << "    DDbar[0][0] = " << DDbar[0][0] << std::endl
+                << "    DDbar[1][1] = " << DDbar[1][1] << std::endl
+                << "  The rest of these should be conjugate pairs:" << std::endl
+                << "    AAbar[i][j]: " << AAbar[0][1] << ", "
+                                       << AAbar[1][0] <<  std::endl
+                << "    BBbar[i][j]: " << BBbar[0][1] << ", "
+                                       << BBbar[1][0] <<  std::endl
+                << "    CCbar[i][j]: " << CCbar[0][1] << ", "
+                                       << CCbar[1][0] <<  std::endl
+                << "    DDbar[i][j]: " << DDbar[0][1] << ", "
+                                       << DDbar[1][0] <<  std::endl
+                << "    ABbar[0][0]: " << ABbar[0][0] << ", "
+                                       << BAbar[0][0] <<  std::endl
+                << "    ABbar[1][1]: " << ABbar[1][1] << ", "
+                                       << BAbar[1][1] <<  std::endl
+                << "    ABbar[1][0]: " << ABbar[1][0] << ", "
+                                       << BAbar[0][1] <<  std::endl
+                << "    ABbar[0][1]: " << ABbar[0][1] << ", "
+                                       << BAbar[1][0] <<  std::endl
+                << "    ACbar[0][0]: " << ACbar[0][0] << ", "
+                                       << CAbar[0][0] <<  std::endl
+                << "    ACbar[1][1]: " << ACbar[1][1] << ", "
+                                       << CAbar[1][1] <<  std::endl
+                << "    ACbar[1][0]: " << ACbar[1][0] << ", "
+                                       << CAbar[0][1] <<  std::endl
+                << "    ACbar[0][1]: " << ACbar[0][1] << ", "
+                                       << CAbar[1][0] <<  std::endl
+                << "    ADbar[0][0]: " << ADbar[0][0] << ", "
+                                       << DAbar[0][0] <<  std::endl
+                << "    ADbar[1][1]: " << ADbar[1][1] << ", "
+                                       << DAbar[1][1] <<  std::endl
+                << "    ADbar[1][0]: " << ADbar[1][0] << ", "
+                                       << DAbar[0][1] <<  std::endl
+                << "    ADbar[0][1]: " << ADbar[0][1] << ", "
+                                       << DAbar[1][0] <<  std::endl
+                << "    BCbar[0][0]: " << BCbar[0][0] << ", "
+                                       << CBbar[0][0] <<  std::endl
+                << "    BCbar[1][1]: " << BCbar[1][1] << ", "
+                                       << CBbar[1][1] <<  std::endl
+                << "    BCbar[1][0]: " << BCbar[1][0] << ", "
+                                       << CBbar[0][1] <<  std::endl
+                << "    BCbar[0][1]: " << BCbar[0][1] << ", "
+                                       << CBbar[1][0] <<  std::endl
+                << "    BDbar[0][0]: " << BDbar[0][0] << ", "
+                                       << DBbar[0][0] <<  std::endl
+                << "    BDbar[1][1]: " << BDbar[1][1] << ", "
+                                       << DBbar[1][1] <<  std::endl
+                << "    BDbar[1][0]: " << BDbar[1][0] << ", "
+                                       << DBbar[0][1] <<  std::endl
+                << "    BDbar[0][1]: " << BDbar[0][1] << ", "
+                                       << DBbar[1][0] <<  std::endl
+                << "    CDbar[0][0]: " << CDbar[0][0] << ", "
+                                       << DCbar[0][0] <<  std::endl
+                << "    CDbar[1][1]: " << CDbar[1][1] << ", "
+                                       << DCbar[1][1] <<  std::endl
+                << "    CDbar[1][0]: " << CDbar[1][0] << ", "
+                                       << DCbar[0][1] <<  std::endl
+                << "    CDbar[0][1]: " << CDbar[0][1] << ", "
+                                       << DCbar[1][0] <<  std::endl
+                ;
+   }
+#endif
+
+   // Obtain the kinematical factors:
+   //    (1) 1/flux factor from initial state 1/(4 E0 E1)
+   //    (2) rho from density of final states factor
+   // where the general relativistic expression for rho is
+   //  rho = pow(2*PI_,4-3*N) delta4(Pin-Pout) [d4 P1] [d4 P2] ... [d4 PN]
+   // using differential forms [d4 P] = d4P delta(P.P - m*m) where P.P is
+   // the invariant norm of four-vector P, m is the known mass of the
+   // corresponding particle, and N is the number of final state particles.
+   //    (3) absorb three powers of 4*PI_ into pow(alphaQED,3)
+   // To get a simple expression for the density of final states,
+   // I redefined the solid angle for the outgoing photon around
+   // the momentum axis of the final eOut2 + photon, rather than
+   // the incoming electron direction.
+
+   LDouble_t kinFactor = 1 / sqr(2*PI_ * e0->Mom()[0]);
+   kinFactor /= 4 * e1->Mom()[0] * e3->Mom()[0];
+   LDouble_t diffXsect = hbarcSqr * pow(alphaQED,3) *
+                         real(ampSquared) * kinFactor;
+   return diffXsect;
+}
+
 void TCrossSection::Streamer(TBuffer &buf)
 {
    // All members are static; this function is a noop.
