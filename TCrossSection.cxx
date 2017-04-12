@@ -581,22 +581,22 @@ LDouble_t TCrossSection::TripletProduction(
 
    // Finally, the sums over traces
    Complex_t Mfi2[2][2]; 
-   Complex_t CD2CD2bar[2][2];
-   Complex_t CD2BH2bar[2][2];
-   Complex_t CD2CD3bar[2][2];
-   Complex_t CD2BH3bar[2][2];
-   Complex_t BH2CD2bar[2][2];
-   Complex_t BH2BH2bar[2][2];
-   Complex_t BH2CD3bar[2][2];
-   Complex_t BH2BH3bar[2][2];
-   Complex_t CD3CD2bar[2][2];
-   Complex_t CD3BH2bar[2][2];
-   Complex_t CD3CD3bar[2][2];
-   Complex_t CD3BH3bar[2][2];
-   Complex_t BH3CD2bar[2][2];
-   Complex_t BH3BH2bar[2][2];
-   Complex_t BH3CD3bar[2][2];
-   Complex_t BH3BH3bar[2][2];
+   Complex_t CD2CD2bar[2][2] = {0};
+   Complex_t CD2BH2bar[2][2] = {0};
+   Complex_t CD2CD3bar[2][2] = {0};
+   Complex_t CD2BH3bar[2][2] = {0};
+   Complex_t BH2CD2bar[2][2] = {0};
+   Complex_t BH2BH2bar[2][2] = {0};
+   Complex_t BH2CD3bar[2][2] = {0};
+   Complex_t BH2BH3bar[2][2] = {0};
+   Complex_t CD3CD2bar[2][2] = {0};
+   Complex_t CD3BH2bar[2][2] = {0};
+   Complex_t CD3CD3bar[2][2] = {0};
+   Complex_t CD3BH3bar[2][2] = {0};
+   Complex_t BH3CD2bar[2][2] = {0};
+   Complex_t BH3BH2bar[2][2] = {0};
+   Complex_t BH3CD3bar[2][2] = {0};
+   Complex_t BH3BH3bar[2][2] = {0};
    for (Int_t j=0; j<2; j++) {
       for (Int_t jj=0; jj<2; jj++) {
          for (Int_t mu=0; mu<4; mu++) {
@@ -1022,22 +1022,22 @@ LDouble_t TCrossSection::eeBremsstrahlung(const TLepton &eIn0,
 
    // Finally, the sums over traces
    Complex_t Mfi2[2][2]; 
-   Complex_t AAbar[2][2];
-   Complex_t ABbar[2][2];
-   Complex_t ACbar[2][2];
-   Complex_t ADbar[2][2];
-   Complex_t BAbar[2][2];
-   Complex_t BBbar[2][2];
-   Complex_t BCbar[2][2];
-   Complex_t BDbar[2][2];
-   Complex_t CAbar[2][2];
-   Complex_t CBbar[2][2];
-   Complex_t CCbar[2][2];
-   Complex_t CDbar[2][2];
-   Complex_t DAbar[2][2];
-   Complex_t DBbar[2][2];
-   Complex_t DCbar[2][2];
-   Complex_t DDbar[2][2];
+   Complex_t AAbar[2][2] = {0};
+   Complex_t ABbar[2][2] = {0};
+   Complex_t ACbar[2][2] = {0};
+   Complex_t ADbar[2][2] = {0};
+   Complex_t BAbar[2][2] = {0};
+   Complex_t BBbar[2][2] = {0};
+   Complex_t BCbar[2][2] = {0};
+   Complex_t BDbar[2][2] = {0};
+   Complex_t CAbar[2][2] = {0};
+   Complex_t CBbar[2][2] = {0};
+   Complex_t CCbar[2][2] = {0};
+   Complex_t CDbar[2][2] = {0};
+   Complex_t DAbar[2][2] = {0};
+   Complex_t DBbar[2][2] = {0};
+   Complex_t DCbar[2][2] = {0};
+   Complex_t DDbar[2][2] = {0};
    for (Int_t j=0; j<2; j++) {
       for (Int_t jj=0; jj<2; jj++) {
          for (Int_t mu=0; mu<4; mu++) {
