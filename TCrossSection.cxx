@@ -98,6 +98,8 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
+#define DEBUGGING 1
+
 #include <iostream>
 #include "TCrossSection.h"
 
@@ -846,7 +848,7 @@ LDouble_t TCrossSection::eeBremsstrahlung(const TLepton &eIn0,
    // Obtain the four lepton state matrices
    TDiracMatrix chi0,chi1,chi2,chi3;
    chi0.SetUUbar(e0->Mom(),e0->SDM());
-   chi1.SetVVbar(e1->Mom(),e1->SDM());
+   chi1.SetUUbar(e1->Mom(),e1->SDM());
    chi2.SetUUbar(e2->Mom(),e2->SDM());
    chi3.SetUUbar(e3->Mom(),e3->SDM());
 
@@ -863,20 +865,19 @@ LDouble_t TCrossSection::eeBremsstrahlung(const TLepton &eIn0,
    // which must be summed over at the end.  The following naming scheme
    // will help to keep track of which amplitude factor is being computed:
    //
-   //    {dm}{diag}{rad}{leg}{Bar}[mu][j]
+   //    {dm}{diag}{leg}{Bar}[mu][j]
    // where
    //    {dm} = dm or some other symbol for Dirac matrix
-   //    {diag} = A, B, C, or D to indicate which diagram
-   //    {rad} = 1 for initial, 2 for final state radiation
+   //    {diag} = A, B, C, or D to indicate which diagram pair
    //    {leg} = 0 or 1, chain with initial electron 0 or 1
    //    {Bar} = "" or "Bar", representing the matrix or its adjoint partner
    //    [mu] = Lorentz index for photon propagator
    //    [j] = outgoing photon spin index
-   // For example, dmB11Bar[3][0] refers to the adjoint variant of the Dirac
+   // For example, dmB1Bar[3][0] refers to the adjoint variant of the Dirac
    // matrix product (Bar) coming from the leg (leg=1) containing the initial-
-   // state electron eIn1, with final-state radiation (rad=1) off the right
-   // lepton leg connecting eIn1 to eOut3 (diag=B), Lorentz component (mu=3),
-   // photon spin component (j=0).
+   // state electron eIn1, with radiation from the right-hand leg connecting
+   // eIn1 to eOut3 (diag=B), Lorentz component mu=3, photon spin component
+   // j=0.
    //
    // The plan for computing the sums is as follows:
    //   1. compute all Dirac matrix chains for each leg of each diagram
@@ -921,13 +922,13 @@ LDouble_t TCrossSection::eeBremsstrahlung(const TLepton &eIn0,
 
    // Compute the product chains of Dirac matrices
    TDiracMatrix dmA0[4][2],dmA0Bar[4][2];
+   TDiracMatrix dmA1[4][2],dmA1Bar[4][2];
+   TDiracMatrix dmB0[4][2],dmB0Bar[4][2];
    TDiracMatrix dmB1[4][2],dmB1Bar[4][2];
    TDiracMatrix dmC0[4][2],dmC0Bar[4][2];
+   TDiracMatrix dmC1[4][2],dmC1Bar[4][2];
+   TDiracMatrix dmD0[4][2],dmD0Bar[4][2];
    TDiracMatrix dmD1[4][2],dmD1Bar[4][2];
-   TDiracMatrix dmA1[4],dmA1Bar[4];
-   TDiracMatrix dmB0[4],dmB0Bar[4];
-   TDiracMatrix dmC1[4],dmC1Bar[4];
-   TDiracMatrix dmD0[4],dmD0Bar[4];
    for (Int_t j=0; j<2; j++) {
       for (Int_t mu=0; mu<4; mu++) {
          TDiracMatrix current1, current2;
@@ -939,7 +940,7 @@ LDouble_t TCrossSection::eeBremsstrahlung(const TLepton &eIn0,
          current2 *= epropA2;
          current2 *= gamma[mu];
          dmA0[mu][j] = current1 + current2;
-         dmA1[mu] = gamma[mu];
+         dmA1[mu][j] = gamma[mu];
  
          current1 = gamma[mu];
          current1 *= epropB1;
@@ -948,7 +949,7 @@ LDouble_t TCrossSection::eeBremsstrahlung(const TLepton &eIn0,
          current2 *= epropB2;
          current2 *= gamma[mu];
          dmB1[mu][j] = current1 + current2;
-         dmB0[mu] = gamma[mu];
+         dmB0[mu][j] = gamma[mu];
 
          current1 = gamma[mu];
          current1 *= epropC1;
@@ -957,7 +958,7 @@ LDouble_t TCrossSection::eeBremsstrahlung(const TLepton &eIn0,
          current2 *= epropC2;
          current2 *= gamma[mu];
          dmC0[mu][j] = current1 + current2;
-         dmC1[mu] = gamma[mu];
+         dmC1[mu][j] = gamma[mu];
 
          current1 = gamma[mu];
          current1 *= epropD1;
@@ -966,7 +967,7 @@ LDouble_t TCrossSection::eeBremsstrahlung(const TLepton &eIn0,
          current2 *= epropD2;
          current2 *= gamma[mu];
          dmD1[mu][j] = current1 + current2;
-         dmD0[mu] = gamma[mu];
+         dmD0[mu][j] = gamma[mu];
       }
    }
 
@@ -978,17 +979,17 @@ LDouble_t TCrossSection::eeBremsstrahlung(const TLepton &eIn0,
          dmA0Bar[mu][j].UniTransform(gamma0);
          dmA0Bar[mu][j] *= chi2;
          dmA0[mu][j] *= chi0;
-         dmA1Bar[mu] = dmA1[mu];
-         // dmA1Bar[mu].Adjoint();
-         // dmA1Bar[mu].UniTransform(gamma0);
-         dmA1Bar[mu] *= chi3;
-         dmA1[mu] *= chi1;
+         dmA1Bar[mu][j] = dmA1[mu][j];
+         // dmA1Bar[mu][j].Adjoint();
+         // dmA1Bar[mu][j].UniTransform(gamma0);
+         dmA1Bar[mu][j] *= chi3;
+         dmA1[mu][j] *= chi1;
  
-         dmB0Bar[mu] = dmB0[mu];
-         // dmB0Bar[mu].Adjoint();
-         // dmB0Bar[mu].UniTransform(gamma0);
-         dmB0Bar[mu] *= chi2;
-         dmB0[mu] *= chi0;
+         dmB0Bar[mu][j] = dmB0[mu][j];
+         // dmB0Bar[mu][j].Adjoint();
+         // dmB0Bar[mu][j].UniTransform(gamma0);
+         dmB0Bar[mu][j] *= chi2;
+         dmB0[mu][j] *= chi0;
          dmB1Bar[mu][j] = dmB1[mu][j];
          dmB1Bar[mu][j].Adjoint();
          dmB1Bar[mu][j].UniTransform(gamma0);
@@ -1000,17 +1001,17 @@ LDouble_t TCrossSection::eeBremsstrahlung(const TLepton &eIn0,
          dmC0Bar[mu][j].UniTransform(gamma0);
          dmC0Bar[mu][j] *= chi3;
          dmC0[mu][j] *= chi0;
-         dmC1Bar[mu] = dmC1[mu];
-         // dmC1Bar[mu].Adjoint();
-         // dmC1Bar[mu].UniTransform(gamma0);
-         dmC1Bar[mu] *= chi2;
-         dmC1[mu] *= chi1;
+         dmC1Bar[mu][j] = dmC1[mu][j];
+         // dmC1Bar[mu][j].Adjoint();
+         // dmC1Bar[mu][j].UniTransform(gamma0);
+         dmC1Bar[mu][j] *= chi2;
+         dmC1[mu][j] *= chi1;
  
-         dmD0Bar[mu] = dmD0[mu];
-         // dmD0Bar[mu].Adjoint();
-         // dmD0Bar[mu].UniTransform(gamma0);
-         dmD0Bar[mu] *= chi3;
-         dmD0[mu] *= chi0;
+         dmD0Bar[mu][j] = dmD0[mu][j];
+         // dmD0Bar[mu][j].Adjoint();
+         // dmD0Bar[mu][j].UniTransform(gamma0);
+         dmD0Bar[mu][j] *= chi3;
+         dmD0[mu][j] *= chi0;
          dmD1Bar[mu][j] = dmD1[mu][j];
          dmD1Bar[mu][j].Adjoint();
          dmD1Bar[mu][j].UniTransform(gamma0);
@@ -1048,96 +1049,96 @@ LDouble_t TCrossSection::eeBremsstrahlung(const TLepton &eIn0,
                // A * ABar
                dm0 = dmA0[mu][j];
                dm0 *= dmA0Bar[nu][jj];
-               dm1 = dmA1[mu];
-               dm1 *= dmA1Bar[nu];
+               dm1 = dmA1[mu][j];
+               dm1 *= dmA1Bar[nu][jj];
                AAbar[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropA*gpropA;
                // A * BBar
                dm0 = dmA0[mu][j];
-               dm0 *= dmB0Bar[nu];
-               dm1 = dmA1[mu];
+               dm0 *= dmB0Bar[nu][jj];
+               dm1 = dmA1[mu][j];
                dm1 *= dmB1Bar[nu][jj];
                ABbar[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropA*gpropB;
                // A * CBar
                dm0 = dmA0[mu][j];
-               dm0 *= dmC1Bar[nu];
-               dm0 *= dmA1[mu];
+               dm0 *= dmC1Bar[nu][jj];
+               dm0 *= dmA1[mu][j];
                dm0 *= dmC0Bar[nu][jj];
                ACbar[j][jj] -= sign*dm0.Trace()*gpropA*gpropC;
                // A * DBar
                dm0 = dmA0[mu][j];
                dm0 *= dmD1Bar[nu][jj];
-               dm0 *= dmA1[mu];
-               dm0 *= dmD0Bar[nu];
+               dm0 *= dmA1[mu][j];
+               dm0 *= dmD0Bar[nu][jj];
                ADbar[j][jj] -= sign*dm0.Trace()*gpropA*gpropD;
                // B * ABar
-               dm0 = dmB0[mu];
+               dm0 = dmB0[mu][j];
                dm0 *= dmA0Bar[nu][jj];
                dm1 = dmB1[mu][j];
-               dm1 *= dmA1Bar[nu];
+               dm1 *= dmA1Bar[nu][jj];
                BAbar[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropB*gpropA;
                // B * BBar
-               dm0 = dmB0[mu];
-               dm0 *= dmB0Bar[nu];
+               dm0 = dmB0[mu][j];
+               dm0 *= dmB0Bar[nu][jj];
                dm1 = dmB1[mu][j];
                dm1 *= dmB1Bar[nu][jj];
                BBbar[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropB*gpropB;
                // B * CBar
-               dm0 = dmB0[mu];
-               dm0 *= dmC1Bar[nu];
+               dm0 = dmB0[mu][j];
+               dm0 *= dmC1Bar[nu][jj];
                dm0 *= dmB1[mu][j];
                dm0 *= dmC0Bar[nu][jj];
                BCbar[j][jj] -= sign*dm0.Trace()*gpropB*gpropC;
                // B * DBar
-               dm0 = dmB0[mu];
+               dm0 = dmB0[mu][j];
                dm0 *= dmD1Bar[nu][jj];
                dm0 *= dmB1[mu][j];
-               dm0 *= dmD0Bar[nu];
+               dm0 *= dmD0Bar[nu][jj];
                BDbar[j][jj] -= sign*dm0.Trace()*gpropB*gpropD;
                // C * ABar
                dm0 = dmC0[mu][j];
-               dm0 *= dmA1Bar[nu];
-               dm0 *= dmC1[mu];
+               dm0 *= dmA1Bar[nu][jj];
+               dm0 *= dmC1[mu][j];
                dm0 *= dmA0Bar[nu][jj];
                CAbar[j][jj] -= sign*dm0.Trace()*gpropC*gpropA;
                // C * BBar
                dm0 = dmC0[mu][j];
                dm0 *= dmB1Bar[nu][jj];
-               dm0 *= dmC1[mu];
-               dm0 *= dmB0Bar[nu];
+               dm0 *= dmC1[mu][j];
+               dm0 *= dmB0Bar[nu][jj];
                CBbar[j][jj] -= sign*dm0.Trace()*gpropC*gpropB;
                // C * CBar
                dm0 = dmC0[mu][j];
                dm0 *= dmC0Bar[nu][jj];
-               dm1 = dmC1[mu];
-               dm1 *= dmC1Bar[nu];
+               dm1 = dmC1[mu][j];
+               dm1 *= dmC1Bar[nu][jj];
                CCbar[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropC*gpropC;
                // C * DBar
                dm0 = dmC0[mu][j];
-               dm0 *= dmD0Bar[nu];
-               dm1 = dmC1[mu];
+               dm0 *= dmD0Bar[nu][jj];
+               dm1 = dmC1[mu][j];
                dm1 *= dmD1Bar[nu][jj];
                CDbar[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropC*gpropD;
                // D * ABar
-               dm0 = dmD0[mu];
-               dm0 *= dmA1Bar[nu];
+               dm0 = dmD0[mu][j];
+               dm0 *= dmA1Bar[nu][jj];
                dm0 *= dmD1[mu][j];
                dm0 *= dmA0Bar[nu][jj];
                DAbar[j][jj] -= sign*dm0.Trace()*gpropD*gpropA;
                // D * BBar
-               dm0 = dmD0[mu];
+               dm0 = dmD0[mu][j];
                dm0 *= dmB1Bar[nu][jj];
                dm0 *= dmD1[mu][j];
-               dm0 *= dmB0Bar[nu];
+               dm0 *= dmB0Bar[nu][jj];
                DBbar[j][jj] -= sign*dm0.Trace()*gpropD*gpropB;
                // D * CBar
-               dm0 = dmD0[mu];
+               dm0 = dmD0[mu][j];
                dm0 *= dmC0Bar[nu][jj];
                dm1 = dmD1[mu][j];
-               dm1 *= dmC1Bar[nu];
+               dm1 *= dmC1Bar[nu][jj];
                DCbar[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropD*gpropC;
                // D * DBar
-               dm0 = dmD0[mu];
-               dm0 *= dmD0Bar[nu];
+               dm0 = dmD0[mu][j];
+               dm0 *= dmD0Bar[nu][jj];
                dm1 = dmD1[mu][j];
                dm1 *= dmD1Bar[nu][jj];
                DDbar[j][jj] += sign*dm0.Trace()*dm1.Trace()*gpropD*gpropD;
