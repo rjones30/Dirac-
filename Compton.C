@@ -176,27 +176,27 @@ Double_t ComptonBackScatter(Double_t *var, Double_t *par)
 
    LDouble_t result=TCrossSection::Compton(gIn,eIn,gOut,eOut);
 
-   result*=(2*PI_)/(eta*kstar);	// convert cross section from d(sigma)/d(Omega*)
-                               	// to d(sigma)/d(kf)
+   result*=(2*PI_)/(eta*kstar);    // convert cross section from d(sigma)/d(Omega*)
+                                   // to d(sigma)/d(kf)
 
-   LDouble_t P=600;	  // laser power in Watts (peak times duty factor)
-   LDouble_t G=250;	  // laser cavity gain factor
-   LDouble_t tau=2e-12;	  // laser pulse length (s) times crossing factor
-   LDouble_t rC=10e-6;	  // neck radius of cavity beam (m)
-   LDouble_t rB=10e-6;	  // electron beam radius (m)
-   LDouble_t I=1.0e-6;	  // electron beam current (A)
-   LDouble_t L=0.0450;	  // effective length of cavity (m)
-   Int_t    N=2; 	  // number of passes through beam
-   Int_t    pulsed=1;	  // indicate whether laser is pulsed
+   LDouble_t P=600;      // laser power in Watts (peak times duty factor)
+   LDouble_t G=250;      // laser cavity gain factor
+   LDouble_t tau=2e-12;  // laser pulse length (s) times crossing factor
+   LDouble_t rC=10e-6;   // neck radius of cavity beam (m)
+   LDouble_t rB=10e-6;   // electron beam radius (m)
+   LDouble_t I=1.0e-6;   // electron beam current (A)
+   LDouble_t L=0.0450;   // effective length of cavity (m)
+   Int_t    N=2;         // number of passes through beam
+   Int_t    pulsed=1;    // indicate whether laser is pulsed
 
-   result*=1e-34;		// convert from microbarns to m^2
-   result*=N*P*G/(ki*1.6e-10);	// ki is converted from GeV to Joules
-   result/=2*PI_*(rB*rB+rC*rC);	// area of overlap region
-   result*=I/1.6e-19;		// rate of electrons in beam
+   result*=1e-34;        // convert from microbarns to m^2
+   result*=N*P*G/(ki*1.6e-10);    // ki is converted from GeV to Joules
+   result/=2*PI_*(rB*rB+rC*rC);   // area of overlap region
+   result*=I/1.6e-19;    // rate of electrons in beam
    if (pulsed)
-     result*=tau;		// duration of pulse crossing (lab frame)
+     result*=tau;        // duration of pulse crossing (lab frame)
    else
-     result*=L/3e8;		// time spent in crossing region (lab frame)
+     result*=L/3e8;      // time spent in crossing region (lab frame)
 
    return result;
 }

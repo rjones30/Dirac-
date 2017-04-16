@@ -76,18 +76,18 @@ Double_t Brems(Double_t *var, Double_t *par)
    LDouble_t result=TCrossSection::Bremsstrahlung(eIn,eOut,gOut);
    const LDouble_t Z=6;
    const LDouble_t Sff=8*Z;
-   const LDouble_t Aphonon=0.5e9;			// in /GeV**2
+   const LDouble_t Aphonon=0.5e9;                      // in /GeV**2
    const LDouble_t Gff=exp(-Aphonon*qRecoil.LengthSqr()/2);
-   const LDouble_t beta=111*pow(Z,-1/3.)/mElectron;	// ff cutoff in /GeV
+   const LDouble_t beta=111*pow(Z,-1/3.)/mElectron;    // ff cutoff in /GeV
    const LDouble_t Fff=1/(1+sqr(beta)*qRecoil.LengthSqr());
-   const LDouble_t hbarc=1.97327e-6;			// in GeV.Angstroms
-   const LDouble_t Vcell=45.5;				// in Angstroms**3
+   const LDouble_t hbarc=1.97327e-6;                   // in GeV.Angstroms
+   const LDouble_t Vcell=45.5;                         // in Angstroms**3
    const LDouble_t XffSqr_d3q=pow(2*PI_*hbarc,3)/Vcell;
    result *= sqr(Sff) * sqr(Gff) * sqr(1-Fff) * XffSqr_d3q;
 
    // Multiply the cross section by target thickness
-   result *= 1e-34;					// from ub to m**2
-   const LDouble_t t=20e-6;				// in m
+   result *= 1e-34;                    // from ub to m**2
+   const LDouble_t t=20e-6;            // in m
    result *= t/(Vcell*1e-30);
 result *= 2.2e-6/1.6e-19;
 result *= 2*PI_;

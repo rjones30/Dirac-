@@ -13,9 +13,9 @@
 //
 // The standard matrices are identified by a discrete index of enum
 // type EDiracIndex.  A EDiracIndex can take on a value from the list
-// 	kDiracOne,	kDiracGamma1,	kDiracGamma2,	kDiracGamma3,
-//	kDiracGamma4,	kDiracGamma5,	kDiracSigma1,	kDiracSigma2,
-//	kDiracSigma3, 	kDiracKappa1, 	kDiracKappa2, 	kDiracKappa3.
+//    kDiracOne,    kDiracGamma1,   kDiracGamma2,   kDiracGamma3,
+//    kDiracGamma4, kDiracGamma5,   kDiracSigma1,   kDiracSigma2,
+//    kDiracSigma3, kDiracKappa1,   kDiracKappa2,   kDiracKappa3.
 // The constructor invoked with two EDiracIndex values i,j returns
 // i_/2 [TDiracMatrix(i),TDiracMatrix(j)] where [a,b] denotes the com-
 // utator of matrices a and b, and i_ is the positive square root of

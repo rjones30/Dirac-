@@ -122,7 +122,7 @@ Double_t Pairs(Double_t *var, Double_t *par)
    // Multiply the basic cross section by the carbon atomic form factor
    // Here I chose a simple parameterization for the form factor
    const LDouble_t Z=6;
-   const LDouble_t beta2=111*pow(Z,-1/3.)/mElectron;	// ff cutoff in /GeV
+   const LDouble_t beta2=111*pow(Z,-1/3.)/mElectron;    // ff cutoff in /GeV
    const LDouble_t Fff=1/(1+sqr(beta2)*qRecoil.LengthSqr());
    LDouble_t result = TCrossSection::PairProduction(gIn,eOut,pOut);
    result *= sqr(Z*(1-Fff));

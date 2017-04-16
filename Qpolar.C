@@ -5,7 +5,7 @@
 // virtual photon from a polarized quark.  The final state consists of
 // only the scattered quark.  The photon energy is adjusted to keep the
 // final quark on-shell. The mass of the quark is adjustable.
-//	
+//    
 // author: richard.t.jones at uconn.edu
 // version: january 1, 2000
 
