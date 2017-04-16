@@ -317,22 +317,22 @@ Float_t *TInvertor::Invert(const Float_t *matrix, Float_t *inverse)
    const Float_t *m = matrix;
    Float_t *w = work;
    Float_t *v = winv;
-   for (Int_t i=0; i<nelem; i++) {		// copy initial matrix
-      *(w++) = *(m++);				// to work matrix
-      *(v++) = 0;				// and zero work inverse
+   for (Int_t i=0; i<nelem; i++) {             // copy initial matrix
+      *(w++) = *(m++);                         // to work matrix
+      *(v++) = 0;                              // and zero work inverse
    }
-   v = winv;					// initialize inverse work
-   for (Int_t i=0; i<fDim; i++, v+=fDim+1)	// matrix to unity
+   v = winv;                                   // initialize inverse work
+   for (Int_t i=0; i<fDim; i++, v+=fDim+1)     // matrix to unity
       *v = 1;
 
-   for (Int_t row=0; row<fDim; row++) {		// pivot down to one non-zero
-      SetPivot(row,work);			// element per row or column
+   for (Int_t row=0; row<fDim; row++) {        // pivot down to one non-zero
+      SetPivot(row,work);                      // element per row or column
       for (Int_t r=0; r<fDim; r++)
          if (r != row) PivotRow(row,r,work,winv);
    }
 
-   for (Int_t row=0; row<fDim; row++) {		// copy to destination array
-      Int_t r = fPivot[row];			// swapping rows as needed
+   for (Int_t row=0; row<fDim; row++) {        // copy to destination array
+      Int_t r = fPivot[row];                   // swapping rows as needed
       LDouble_t norm = work[row*fDim+r];
       for (Int_t i=0; i<fDim; i++)
          inverse[r*fDim+i] = winv[row*fDim+i]/norm;
@@ -357,22 +357,22 @@ LDouble_t *TInvertor::Invert(const LDouble_t *matrix, LDouble_t *inverse)
    const LDouble_t *m = matrix;
    LDouble_t *w = work;
    LDouble_t *v = winv;
-   for (Int_t i=0; i<nelem; i++) {		// copy initial matrix
-      *(w++) = *(m++);				// to work matrix
-      *(v++) = 0;				// and zero work inverse
+   for (Int_t i=0; i<nelem; i++) {              // copy initial matrix
+      *(w++) = *(m++);                          // to work matrix
+      *(v++) = 0;                               // and zero work inverse
    }
-   v = winv;					// initialize inverse work
-   for (Int_t i=0; i<fDim; i++, v+=fDim+1)		// matrix to unity
+   v = winv;                                    // initialize inverse work
+   for (Int_t i=0; i<fDim; i++, v+=fDim+1)      // matrix to unity
       *v = 1;
 
-   for (Int_t row=0; row<fDim; row++) {		// pivot down to one non-zero
-      SetPivot(row,work);			// element per row or column
+   for (Int_t row=0; row<fDim; row++) {         // pivot down to one non-zero
+      SetPivot(row,work);                       // element per row or column
       for (Int_t r=0; r<fDim; r++)
          if (r != row) PivotRow(row,r,work,winv);
    }
 
-   for (Int_t row=0; row<fDim; row++) {		// copy to destination array
-      Int_t r = fPivot[row];			// swapping rows as needed
+   for (Int_t row=0; row<fDim; row++) {         // copy to destination array
+      Int_t r = fPivot[row];                    // swapping rows as needed
       LDouble_t norm = work[row*fDim+r];
       for (Int_t i=0; i<fDim; i++)
          inverse[r*fDim+i] = winv[row*fDim+i]/norm;
@@ -398,22 +398,22 @@ Complex_t *TInvertor::Invert
    const Complex_t *m = matrix;
    Complex_t *w = work;
    Complex_t *v = winv;
-   for (Int_t i=0; i<nelem; i++) {		// copy initial matrix
-      *(w++) = *(m++);				// to work matrix
-      *(v++) = 0;				// and zero work inverse
+   for (Int_t i=0; i<nelem; i++) {                // copy initial matrix
+      *(w++) = *(m++);                            // to work matrix
+      *(v++) = 0;                                 // and zero work inverse
    }
-   v = winv;					// initialize inverse work
-   for (Int_t i=0; i<fDim; i++, v+=fDim+1)		// matrix to unity
+   v = winv;                                      // initialize inverse work
+   for (Int_t i=0; i<fDim; i++, v+=fDim+1)        // matrix to unity
       *v = 1;
 
-   for (Int_t row=0; row<fDim; row++) {		// pivot down to one non-zero
-      SetPivot(row,work);			// element per row or column
+   for (Int_t row=0; row<fDim; row++) {           // pivot down to one non-zero
+      SetPivot(row,work);                         // element per row or column
       for (Int_t r=0; r<fDim; r++)
          if (r != row) PivotRow(row,r,work,winv);
    }
 
-   for (Int_t row=0; row<fDim; row++) {		// copy to destination array
-      Int_t r = fPivot[row];			// swapping rows as needed
+   for (Int_t row=0; row<fDim; row++) {           // copy to destination array
+      Int_t r = fPivot[row];                      // swapping rows as needed
       Complex_t norm = work[row*fDim+r];
       for (Int_t i=0; i<fDim; i++)
          inverse[r*fDim+i] = winv[row*fDim+i]/norm;

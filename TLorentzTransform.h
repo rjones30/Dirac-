@@ -24,8 +24,8 @@ class TLorentzTransform {
  
 protected:
 
-   LDouble_t 	   fMatrix[4][4];	// storage for rotation matrix;
-   static LDouble_t fResolution;		// matrix resolving "distance"
+   LDouble_t        fMatrix[4][4];    // storage for rotation matrix;
+   static LDouble_t fResolution;      // matrix resolving "distance"
 
    LDouble_t Determ() const;
 
@@ -78,8 +78,8 @@ class TDeterminor {
 // Float_t, LDouble_t and Complex_t elements are currently supported.
 
 private:
-   Int_t fDim;		// dimension of square matrix
-   Int_t *fRow;		// permutator array of colIndex->rowIndex
+   Int_t fDim;        // dimension of square matrix
+   Int_t *fRow;       // permutator array of colIndex->rowIndex
 
 public:
    TDeterminor() : fDim(0), fRow(0) { }
@@ -99,8 +99,8 @@ class TInvertor {
 // Matrices of Float_t, LDouble_t and Complex_t elements are supported.
 
 private:
-   Int_t fDim;			// dimension of square matrix
-   Int_t *fPivot;		// array of pivot element indices
+   Int_t fDim;            // dimension of square matrix
+   Int_t *fPivot;        // array of pivot element indices
 
 public:
    TInvertor() : fDim(0), fPivot(0) { }

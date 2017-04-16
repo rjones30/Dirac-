@@ -21,13 +21,13 @@ class TLorentzBoost : public TLorentzTransform {
  
 public:
    TLorentzBoost() : TLorentzTransform() { }
-   TLorentzBoost(const LDouble_t betaX,
-                 const LDouble_t betaY,
-                 const LDouble_t betaZ);
-   TLorentzBoost(const LDouble_t *beta);
-   TLorentzBoost(const TThreeVectorReal &beta);
-   TLorentzBoost(const TUnitVector &bhat, const LDouble_t beta);
-   TLorentzBoost(const TFourVectorReal &p);
+   explicit TLorentzBoost(const LDouble_t betaX,
+                          const LDouble_t betaY,
+                          const LDouble_t betaZ);
+   explicit TLorentzBoost(const LDouble_t *beta);
+   explicit TLorentzBoost(const TThreeVectorReal &beta);
+   explicit TLorentzBoost(const TUnitVector &bhat, const LDouble_t beta);
+   explicit TLorentzBoost(const TFourVectorReal &p);
    TLorentzBoost(const TLorentzBoost &another);
  
    virtual ~TLorentzBoost() { }

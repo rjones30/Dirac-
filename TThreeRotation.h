@@ -22,9 +22,9 @@ class TThreeRotation : public TLorentzTransform {
  
 public:
    TThreeRotation() : TLorentzTransform() { }
-   TThreeRotation(const TThreeVectorReal &axis);
-   TThreeRotation(const TUnitVector &ahat, const LDouble_t angle);
-   TThreeRotation(const LDouble_t phi, const LDouble_t theta, const LDouble_t psi);
+   explicit TThreeRotation(const TThreeVectorReal &axis);
+   explicit TThreeRotation(const TUnitVector &ahat, const LDouble_t angle);
+   explicit TThreeRotation(const LDouble_t phi, const LDouble_t theta, const LDouble_t psi);
    TThreeRotation(const TThreeRotation &another);
  
    virtual ~TThreeRotation() { }
