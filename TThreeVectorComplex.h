@@ -25,19 +25,19 @@ friend class TLorentzBoost;
 friend class TThreeRotation;
  
 protected:
-   Complex_t	   fVector[4];		// Complex vector allocated on stack
-   static LDouble_t fResolution;		// vector resolving "distance"
+   Complex_t        fVector[4];        // Complex vector allocated on stack
+   static LDouble_t fResolution;       // vector resolving "distance"
  
 public:
    TThreeVectorComplex() { }
-   TThreeVectorComplex(const Complex_t &x,
-                       const Complex_t &y,
-                       const Complex_t &z);
-   TThreeVectorComplex(const Float_t *array);
-   TThreeVectorComplex(const LDouble_t *array);
-   TThreeVectorComplex(const Complex_t *array);
-   TThreeVectorComplex(const TThreeVectorComplex &another);
+   explicit TThreeVectorComplex(const Complex_t &x,
+                               const Complex_t &y,
+                               const Complex_t &z);
+   explicit TThreeVectorComplex(const Float_t *array);
+   explicit TThreeVectorComplex(const LDouble_t *array);
+   explicit TThreeVectorComplex(const Complex_t *array);
    TThreeVectorComplex(const TThreeVectorReal &another);
+   TThreeVectorComplex(const TThreeVectorComplex &another);
  
    virtual ~TThreeVectorComplex() { }
  
@@ -46,8 +46,8 @@ public:
    static void SetResolution(const LDouble_t resolution);
    LDouble_t Resolution() const;
 
-   LDouble_t Length() const;		// sqrt of sum of absolute-squares
-   LDouble_t LengthSqr() const;		// sum of absolute-squares
+   LDouble_t Length() const;        // sqrt of sum of absolute-squares
+   LDouble_t LengthSqr() const;        // sum of absolute-squares
    TThreeVectorReal RealPart() const;
    TThreeVectorReal ImagPart() const;
    void GetCartesian(Complex_t &x, Complex_t &y, Complex_t &z) const;

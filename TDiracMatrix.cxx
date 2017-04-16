@@ -32,9 +32,9 @@
 //
 // The standard matrices are identified by a discrete index of enum
 // type EDiracIndex.  A EDiracIndex can take on a value from the list
-// 	kDiracOne,	kDiracGamma1,	kDiracGamma2,	kDiracGamma3,
-//	kDiracGamma4,	kDiracGamma5,	kDiracSigma1,	kDiracSigma2,
-//	kDiracSigma3, 	kDiracKappa1, 	kDiracKappa2, 	kDiracKappa3.
+//    kDiracOne,    kDiracGamma1,   kDiracGamma2,   kDiracGamma3,
+//    kDiracGamma4, kDiracGamma5,   kDiracSigma1,   kDiracSigma2,
+//    kDiracSigma3, kDiracKappa1,   kDiracKappa2,   kDiracKappa3.
 // The constructor invoked with two EDiracIndex values i,j returns
 // i_/2 [TDiracMatrix(i),TDiracMatrix(j)] where [a,b] denotes the com-
 // utator of matrices a and b, and i_ is the positive square root of
@@ -89,75 +89,76 @@ TDiracMatrix::TDiracMatrix(const EDiracIndex i)
    Zero();
    switch (i) {
    case kDiracOne:
-	fMatrix[0][0] = 1;
-			fMatrix[1][1] = 1;
-					fMatrix[2][2] = 1;
-							fMatrix[3][3] = 1;
+    fMatrix[0][0] = 1;
+            fMatrix[1][1] = 1;
+                    fMatrix[2][2] = 1;
+                            fMatrix[3][3] = 1;
       break;
    case kDiracGamma0:
-	fMatrix[0][0] = 1;
-			fMatrix[1][1] = 1;
-					fMatrix[2][2] = -1;
-							fMatrix[3][3] = -1;
+    fMatrix[0][0] = 1;
+            fMatrix[1][1] = 1;
+                    fMatrix[2][2] = -1;
+                            fMatrix[3][3] = -1;
       break;
    case kDiracGamma1:
-							fMatrix[0][3] = 1;
-					fMatrix[1][2] = 1;
-			fMatrix[2][1] = -1;
-	fMatrix[3][0] = -1;
+                            fMatrix[0][3] = 1;
+                    fMatrix[1][2] = 1;
+            fMatrix[2][1] = -1;
+    fMatrix[3][0] = -1;
       break;
    case kDiracGamma2:
-							fMatrix[0][3] = -i_;
-					fMatrix[1][2] = i_;
-			fMatrix[2][1] = i_;
-	fMatrix[3][0] = -i_;
+                            fMatrix[0][3] = -i_;
+                    fMatrix[1][2] = i_;
+            fMatrix[2][1] = i_;
+    fMatrix[3][0] = -i_;
       break;
    case kDiracGamma3:
-					fMatrix[0][2] = 1;
-							fMatrix[1][3] = -1;
-	fMatrix[2][0] = -1;
-			fMatrix[3][1] = 1;
+                    fMatrix[0][2] = 1;
+                            fMatrix[1][3] = -1;
+    fMatrix[2][0] = -1;
+            fMatrix[3][1] = 1;
       break;
    case kDiracGamma5:
-					fMatrix[0][2] = 1;
-							fMatrix[1][3] = 1;
-	fMatrix[2][0] = 1;
-			fMatrix[3][1] = 1;
+                    fMatrix[0][2] = 1;
+                            fMatrix[1][3] = 1;
+    fMatrix[2][0] = 1;
+            fMatrix[3][1] = 1;
+      break;
    case kDiracSigma1:
-			fMatrix[0][1] = 1;
-	fMatrix[1][0] = 1;
-							fMatrix[2][3] = 1;
-					fMatrix[3][2] = 1;
+            fMatrix[0][1] = 1;
+    fMatrix[1][0] = 1;
+                            fMatrix[2][3] = 1;
+                    fMatrix[3][2] = 1;
       break;
    case kDiracSigma2:
-			fMatrix[0][1] = -i_;
-	fMatrix[1][0] = i_;
-							fMatrix[2][3] = -i_;
-					fMatrix[3][2] = i_;
+            fMatrix[0][1] = -i_;
+    fMatrix[1][0] = i_;
+                            fMatrix[2][3] = -i_;
+                    fMatrix[3][2] = i_;
       break;
    case kDiracSigma3:
-	fMatrix[0][0] = 1;
-			fMatrix[1][1] = -1;
-					fMatrix[2][2] = 1;
-							fMatrix[3][3] = -1;
+    fMatrix[0][0] = 1;
+            fMatrix[1][1] = -1;
+                    fMatrix[2][2] = 1;
+                            fMatrix[3][3] = -1;
       break;
    case kDiracKappa1:
-							fMatrix[0][3] = i_;
-					fMatrix[1][2] = i_;
-			fMatrix[2][1] = i_;
-	fMatrix[3][0] = i_;
+                            fMatrix[0][3] = i_;
+                    fMatrix[1][2] = i_;
+            fMatrix[2][1] = i_;
+    fMatrix[3][0] = i_;
       break;
    case kDiracKappa2:
-							fMatrix[0][3] = 1;
-					fMatrix[1][2] = -1;
-			fMatrix[2][1] = 1;
-	fMatrix[3][0] = -1;
+                            fMatrix[0][3] = 1;
+                    fMatrix[1][2] = -1;
+            fMatrix[2][1] = 1;
+    fMatrix[3][0] = -1;
       break;
    case kDiracKappa3:
-					fMatrix[0][2] = i_;
-							fMatrix[1][3] = -i_;
-	fMatrix[2][0] = i_;
-			fMatrix[3][1] = -i_;
+                    fMatrix[0][2] = i_;
+                            fMatrix[1][3] = -i_;
+    fMatrix[2][0] = i_;
+            fMatrix[3][1] = -i_;
       break;
    default:
       break;
@@ -260,7 +261,7 @@ TDiracMatrix &TDiracMatrix::SetRotation
    LDouble_t cosHalfAngle = cos(angle/2);
    LDouble_t sinHalfAngle = sin(angle/2);
    rotator.Normalize(sinHalfAngle);
-   *this = cosHalfAngle;
+   *this = TDiracMatrix(cosHalfAngle);
    *this += i_*rotator[1]*TDiracMatrix(kDiracSigma1);
    *this += i_*rotator[2]*TDiracMatrix(kDiracSigma2);
    *this += i_*rotator[3]*TDiracMatrix(kDiracSigma3);
@@ -311,7 +312,7 @@ TDiracMatrix &TDiracMatrix::SetBoost
 {
    const Complex_t i_(0,1);
    if (abs(beta) < fResolution) {
-      *this = 1;
+      *this = TDiracMatrix(1);
    }
    else
    {
@@ -320,7 +321,7 @@ TDiracMatrix &TDiracMatrix::SetBoost
       LDouble_t coshHalfEta = cosh(eta/2);
       LDouble_t sinhHalfEta = sinh(eta/2);
       booster.Normalize(sinhHalfEta);
-      *this = coshHalfEta;
+      *this = TDiracMatrix(coshHalfEta);
       *this += i_*booster[1]*TDiracMatrix(kDiracKappa1);
       *this += i_*booster[2]*TDiracMatrix(kDiracKappa2);
       *this += i_*booster[3]*TDiracMatrix(kDiracKappa3);

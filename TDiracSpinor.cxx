@@ -32,9 +32,9 @@
 //
 // The standard matrices are identified by a discrete index of enum
 // type TDiracIndex.  A TDiracIndex can take on a value from the list
-// 	kDiracOne,	kDiracGamma1,	kDiracGamma2,	kDiracGamma3,
-//	kDiracGamma4,	kDiracGamma5,	kDiracSigma1,	kDiracSigma2,
-//	kDiracSigma3, 	kDiracKappa1, 	kDiracKappa2, 	kDiracKappa3.
+//    kDiracOne,    kDiracGamma1, kDiracGamma2, kDiracGamma3,
+//    kDiracGamma4, kDiracGamma5, kDiracSigma1, kDiracSigma2,
+//    kDiracSigma3, kDiracKappa1, kDiracKappa2, kDiracKappa3.
 // The constructor invoked with two TDiracIndex values i,j returns
 // i_/2 [TDiracMatrix(i),TDiracMatrix(j)] where [a,b] denotes the com-
 // utator of matrices a and b, and i_ is the positive square root of
@@ -69,6 +69,12 @@ ClassImp(TDiracSpinor)
 
 LDouble_t TDiracSpinor::fResolution = 1e-12;
 
+Complex_t TDiracSpinor::ScalarProd(const TDiracSpinor &other)
+{
+   const TDiracMatrix gamma0(kDiracGamma0);
+   return InnerProd(gamma0 * other);
+}
+ 
 TPauliSpinor TDiracSpinor::Upper() const
 {
    TPauliSpinor upper;
@@ -216,6 +222,13 @@ TDiracSpinor &TDiracSpinor::Rotate
    TDiracMatrix dmR;
    dmR.SetRotation(axis,angle);
    return Operate(dmR);
+}
+
+TDiracSpinor &TDiracSpinor::Boost(const TLorentzBoost &boostOp)
+{
+   TDiracMatrix dmB;
+   dmB.SetBoost(boostOp);
+   return Operate(dmB);
 }
 
 TDiracSpinor &TDiracSpinor::Boost(const LDouble_t betaX,

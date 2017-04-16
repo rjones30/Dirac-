@@ -90,10 +90,34 @@ TFourVectorComplex &TFourVectorComplex::Boost(const LDouble_t betaX,
    return Boost(boostOp);
 }
 
+TFourVectorComplex &TFourVectorComplex::Boost(const LDouble_t *beta)
+{
+   TLorentzBoost boostOp(beta);
+   return Boost(boostOp);
+}
+
+TFourVectorComplex &TFourVectorComplex::Boost(const TThreeVectorReal &beta)
+{
+   TLorentzBoost boostOp(beta);
+   return Boost(boostOp);
+}
+
 TFourVectorComplex &TFourVectorComplex::Boost
                    (const TUnitVector &bhat, const LDouble_t beta)
 {
    TLorentzBoost boostOp(bhat,beta);
+   return Boost(boostOp);
+}
+
+TFourVectorComplex &TFourVectorComplex::BoostToRest(const TFourVector &p)
+{
+   TLorentzBoost boostOp(p/p[0]);
+   return Boost(boostOp);
+}
+
+TFourVectorComplex &TFourVectorComplex::BoostFromRest(const TFourVector &p)
+{
+   TLorentzBoost boostOp(-p/p[0]);
    return Boost(boostOp);
 }
 

@@ -27,14 +27,14 @@ friend class TLorentzBoost;
 friend class TThreeRotation;
  
 protected:
-   LDouble_t	   fVector[4];		// real vector allocated on stack
-   static LDouble_t fResolution;		// vector resolving "distance"
+   LDouble_t        fVector[4];       // real vector allocated on stack
+   static LDouble_t fResolution;      // vector resolving "distance"
  
 public:
    TThreeVectorReal() { }
-   TThreeVectorReal(const LDouble_t x, const LDouble_t y, const LDouble_t z);
-   TThreeVectorReal(const Float_t *array);
-   TThreeVectorReal(const LDouble_t *array);
+   explicit TThreeVectorReal(const LDouble_t x, const LDouble_t y, const LDouble_t z);
+   explicit TThreeVectorReal(const Float_t *array);
+   explicit TThreeVectorReal(const LDouble_t *array);
    TThreeVectorReal(const TThreeVectorReal &another);
  
    virtual ~TThreeVectorReal() { }

@@ -89,10 +89,34 @@ TFourVectorReal &TFourVectorReal::Boost(const LDouble_t betaX,
    return Boost(boostOp);
 }
 
+TFourVectorReal &TFourVectorReal::Boost(const LDouble_t *beta)
+{
+   TLorentzBoost boostOp(beta);
+   return Boost(boostOp);
+}
+
+TFourVectorReal &TFourVectorReal::Boost(const TThreeVectorReal &beta)
+{
+   TLorentzBoost boostOp(beta);
+   return Boost(boostOp);
+}
+
 TFourVectorReal &TFourVectorReal::Boost
                 (const TUnitVector &bhat, const LDouble_t beta)
 {
    TLorentzBoost boostOp(bhat,beta);
+   return Boost(boostOp);
+}
+
+TFourVectorReal &TFourVectorReal::BoostToRest(const TFourVector &p)
+{
+   TLorentzBoost boostOp(p/p[0]);
+   return Boost(boostOp);
+}
+
+TFourVectorReal &TFourVectorReal::BoostFromRest(const TFourVector &p)
+{
+   TLorentzBoost boostOp(-p/p[0]);
    return Boost(boostOp);
 }
 

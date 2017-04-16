@@ -29,16 +29,16 @@ friend class TThreeRotation;
 
 public:
    TFourVectorComplex() : TThreeVectorComplex() { }
-   TFourVectorComplex(const Complex_t &t,
-                      const Complex_t &x,
-                      const Complex_t &y,
-                      const Complex_t &z);
-   TFourVectorComplex(const Float_t *array);
-   TFourVectorComplex(const LDouble_t *array);
-   TFourVectorComplex(const Complex_t *array);
-   TFourVectorComplex(const TFourVectorComplex &another);
+   explicit TFourVectorComplex(const Complex_t &t,
+                               const Complex_t &x,
+                               const Complex_t &y,
+                               const Complex_t &z);
+   explicit TFourVectorComplex(const Float_t *array);
+   explicit TFourVectorComplex(const LDouble_t *array);
+   explicit TFourVectorComplex(const Complex_t *array);
+   explicit TFourVectorComplex(const Complex_t &t, const TThreeVectorComplex &another);
    TFourVectorComplex(const TFourVectorReal &another);
-   TFourVectorComplex(const Complex_t &t, const TThreeVectorComplex &another);
+   TFourVectorComplex(const TFourVectorComplex &another);
  
    virtual ~TFourVectorComplex() { }
 
@@ -46,8 +46,8 @@ public:
  
    Complex_t &operator[](const Int_t index) const;
  
-   LDouble_t Invariant() const;		// use +--- metric and
-   LDouble_t InvariantSqr() const;	// sum over absolute-squares
+   LDouble_t Invariant() const;       // use +--- metric and
+   LDouble_t InvariantSqr() const;    // sum over absolute-squares
    TFourVectorReal RealPart() const;
    TFourVectorReal ImagPart() const;
    void GetCoord(Complex_t &t, Complex_t &x, Complex_t &y, Complex_t &z) const;
@@ -87,7 +87,11 @@ public:
    TFourVectorComplex &Boost(const LDouble_t betaX,
                              const LDouble_t betaY,
                              const LDouble_t betaZ);
+   TFourVectorComplex &Boost(const LDouble_t *beta);
+   TFourVectorComplex &Boost(const TThreeVectorReal &beta);
    TFourVectorComplex &Boost(const TUnitVector &bhat, const LDouble_t beta);
+   TFourVectorComplex &BoostToRest(const TFourVector &p);
+   TFourVectorComplex &BoostFromRest(const TFourVector &p);
    Complex_t ScalarProd(const TFourVectorComplex &other);
    Complex_t ScalarProd(const TFourVectorComplex &v1,
                         const TFourVectorComplex &v2);

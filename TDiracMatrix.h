@@ -43,18 +43,18 @@ class TDiracMatrix {
 friend class TDiracSpinor;
  
 protected:
-   Complex_t       fMatrix[4][4];   // complex matrix allocated on stack
-   static LDouble_t fResolution;	    // matrix resolving "distance"
+   Complex_t        fMatrix[4][4];   // complex matrix allocated on stack
+   static LDouble_t fResolution;     // matrix resolving "distance"
  
 public:
    TDiracMatrix() { }
-   TDiracMatrix(const EDiracIndex i);
-   TDiracMatrix(const EDiracIndex i, const EDiracIndex j);
-   TDiracMatrix(const Int_t a);
-   TDiracMatrix(const LDouble_t a);
-   TDiracMatrix(const Complex_t &a);
+   explicit TDiracMatrix(const EDiracIndex i);
+   explicit TDiracMatrix(const EDiracIndex i, const EDiracIndex j);
+   explicit TDiracMatrix(const Int_t a);
+   explicit TDiracMatrix(const LDouble_t a);
+   explicit TDiracMatrix(const Complex_t &a);
+   explicit TDiracMatrix(const TLorentzTransform &xOp);
    TDiracMatrix(const TDiracMatrix &another);
-   TDiracMatrix(const TLorentzTransform &xOp);
  
    virtual ~TDiracMatrix() { }
 
@@ -295,7 +295,7 @@ inline Complex_t TDiracMatrix::Trace() const
 inline Complex_t TDiracMatrix::Component(const EDiracIndex i) const
 {
 // Returns coefficient b_i from the general expansion for Dirac matrix M
-//  M = a + sum{i=1,5}(b_i * gamma_i) + sum{i=1,5;j=i,5}(c_ij * gamma_ij)
+//  M = a + sum{i=1,5}(b_i * gamma_i) + sum{i=1,5;j=i+1,5}(c_ij * gamma_ij)
 // but where index 0 and 4 are interchangeable.  For the definition of
 // the gamma matrices gamma_i and commutators gamma_ij, see constructor.
 
@@ -308,7 +308,7 @@ inline Complex_t TDiracMatrix::Component(const EDiracIndex i,
                                          const EDiracIndex j) const
 {
 // Returns coefficient c_ij from the general expansion for Dirac matrix M
-//  M = a + sum{i=1,5}(b_i * gamma_i) + sum{i=1,5;j=i,5}(c_ij * gamma_ij)
+//  M = a + sum{i=1,5}(b_i * gamma_i) + sum{i=1,5;j=i+1,5}(c_ij * gamma_ij)
 // but where index 0 and 4 are interchangeable.  For the definition of
 // the gamma matrices gamma_i and commutators gamma_ij, see constructor.
 

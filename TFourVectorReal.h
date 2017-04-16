@@ -33,12 +33,12 @@ friend class TThreeRotation;
  
 public:
    TFourVectorReal() : TThreeVectorReal() { }
-   TFourVectorReal(const LDouble_t t, const LDouble_t x,
-                   const LDouble_t y, const LDouble_t z);
-   TFourVectorReal(const Float_t *array);
-   TFourVectorReal(const LDouble_t *array);
+   explicit TFourVectorReal(const LDouble_t t, const LDouble_t x,
+                            const LDouble_t y, const LDouble_t z);
+   explicit TFourVectorReal(const Float_t *array);
+   explicit TFourVectorReal(const LDouble_t *array);
+   explicit TFourVectorReal(const LDouble_t t, const TThreeVectorReal &r);
    TFourVectorReal(const TFourVectorReal &another);
-   TFourVectorReal(const LDouble_t t, const TThreeVectorReal &r);
  
    virtual ~TFourVectorReal() { }
 
@@ -46,7 +46,7 @@ public:
  
    LDouble_t &operator[](const Int_t index) const;
  
-   LDouble_t Invariant() const;		// uses the +--- metric
+   LDouble_t Invariant() const;        // uses the +--- metric
    LDouble_t InvariantSqr() const;
    void GetCoord(LDouble_t &t, LDouble_t &x, LDouble_t &y, LDouble_t &z) const;
    void GetCoord(LDouble_t *array) const;
@@ -76,7 +76,11 @@ public:
    TFourVectorReal &Boost(const LDouble_t betaX,
                           const LDouble_t betaY,
                           const LDouble_t betaZ);
+   TFourVectorReal &Boost(const LDouble_t *beta);
+   TFourVectorReal &Boost(const TThreeVectorReal &beta);
    TFourVectorReal &Boost(const TUnitVector &bhat, const LDouble_t beta);
+   TFourVectorReal &BoostToRest(const TFourVector &p);
+   TFourVectorReal &BoostFromRest(const TFourVector &p);
    LDouble_t ScalarProd(const TFourVectorReal &other);
  
    TFourVectorReal operator-() const;

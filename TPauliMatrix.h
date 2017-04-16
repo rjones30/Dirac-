@@ -30,15 +30,17 @@ friend class TPauliSpinor;
 
 protected:
    Complex_t       fMatrix[2][2];   // complex matrix allocated on stack
-   static LDouble_t fResolution;	    // matrix resolving "distance"
+   static LDouble_t fResolution;    // matrix resolving "distance"
 
 public:
    TPauliMatrix() { }
-   TPauliMatrix(const EPauliIndex i);
-   TPauliMatrix(const Int_t a);
-   TPauliMatrix(const LDouble_t a);
-   TPauliMatrix(const Complex_t &a);
-   TPauliMatrix(const Complex_t &a, const TThreeVectorComplex &b);
+   explicit TPauliMatrix(const EPauliIndex i);
+   explicit TPauliMatrix(const Int_t a);
+   explicit TPauliMatrix(const Float_t a);
+   explicit TPauliMatrix(const Double_t a);
+   explicit TPauliMatrix(const LDouble_t a);
+   explicit TPauliMatrix(const Complex_t &a);
+   explicit TPauliMatrix(const Complex_t &a, const TThreeVectorComplex &b);
    TPauliMatrix(const TPauliMatrix &another);
  
    virtual ~TPauliMatrix() { }
@@ -136,20 +138,32 @@ public:
 
 inline TPauliMatrix::TPauliMatrix(const Int_t a)
 {
-   fMatrix[0][0] = a;	fMatrix[0][1] = 0;
-   fMatrix[1][0] = 0;	fMatrix[1][1] = a;
+   fMatrix[0][0] = a;    fMatrix[0][1] = 0;
+   fMatrix[1][0] = 0;    fMatrix[1][1] = a;
+}
+
+inline TPauliMatrix::TPauliMatrix(const Float_t a)
+{
+   fMatrix[0][0] = a;    fMatrix[0][1] = 0;
+   fMatrix[1][0] = 0;    fMatrix[1][1] = a;
+}
+
+inline TPauliMatrix::TPauliMatrix(const Double_t a)
+{
+   fMatrix[0][0] = a;    fMatrix[0][1] = 0;
+   fMatrix[1][0] = 0;    fMatrix[1][1] = a;
 }
 
 inline TPauliMatrix::TPauliMatrix(const LDouble_t a)
 {
-   fMatrix[0][0] = a;	fMatrix[0][1] = 0;
-   fMatrix[1][0] = 0;	fMatrix[1][1] = a;
+   fMatrix[0][0] = a;    fMatrix[0][1] = 0;
+   fMatrix[1][0] = 0;    fMatrix[1][1] = a;
 }
 
 inline TPauliMatrix::TPauliMatrix(const Complex_t &a)
 {
-   fMatrix[0][0] = a;	fMatrix[0][1] = 0;
-   fMatrix[1][0] = 0;	fMatrix[1][1] = a;
+   fMatrix[0][0] = a;    fMatrix[0][1] = 0;
+   fMatrix[1][0] = 0;    fMatrix[1][1] = a;
 }
 
 inline Complex_t *TPauliMatrix::operator[](Int_t row) const

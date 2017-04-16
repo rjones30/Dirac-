@@ -16,7 +16,6 @@
  
 #include <math.h>
 
-
 class TDiracMatrix;
 class TLorentzTransform;
 class TLorentzBoost;
@@ -29,16 +28,16 @@ friend class TDiracMatrix;
 friend class TPauliSpinor;
  
 protected:
-   Complex_t   fSpinor[4];	    // complex vector allocated on stack
-   static LDouble_t fResolution;	    // resolution "distance" between objects
+   Complex_t   fSpinor[4];        // complex vector allocated on stack
+   static LDouble_t fResolution;  // resolution "distance" between objects
  
 public:
    TDiracSpinor() { }
-   TDiracSpinor(const Complex_t &a1, const Complex_t &a2,
-                const Complex_t &a3, const Complex_t &a4);
-   TDiracSpinor(const Complex_t *array);
-   TDiracSpinor(const TFourVectorReal &p, const Float_t helicity);
-   TDiracSpinor(const TFourVectorReal &p, const TUnitVector &polar);
+   explicit TDiracSpinor(const Complex_t &a1, const Complex_t &a2,
+                         const Complex_t &a3, const Complex_t &a4);
+   explicit TDiracSpinor(const Complex_t *array);
+   explicit TDiracSpinor(const TFourVectorReal &p, const Float_t helicity);
+   explicit TDiracSpinor(const TFourVectorReal &p, const TUnitVector &polar);
    TDiracSpinor(const TDiracSpinor &another);
  
    virtual ~TDiracSpinor() { }
@@ -93,6 +92,7 @@ public:
                         const LDouble_t &psi);
    TDiracSpinor &Rotate(const TThreeVectorReal &axis);
    TDiracSpinor &Rotate(const TUnitVector &axis, const LDouble_t angle);
+   TDiracSpinor &Boost(const TLorentzBoost &boostOp);
    TDiracSpinor &Boost(const LDouble_t betaX,
                        const LDouble_t betaY,
                        const LDouble_t betaZ);
@@ -101,6 +101,7 @@ public:
    TDiracSpinor &Boost(const TUnitVector &bhat, const LDouble_t beta);
    TDiracSpinor &BoostToRest(const TFourVector &p);
    TDiracSpinor &BoostFromRest(const TFourVector &p);
+   Complex_t InnerProd(const TDiracSpinor &other);
    Complex_t ScalarProd(const TDiracSpinor &other);
  
    TDiracSpinor operator-() const;
@@ -135,6 +136,7 @@ public:
  
    ClassDef(TDiracSpinor,1)  // Complex Dirac spinor class
 };
+
 
 //----- inlines ----------------------------------------------------------------
  
@@ -363,14 +365,14 @@ inline TDiracSpinor &TDiracSpinor::Normalize(const TFourVectorReal &p)
    return Normalize(sqrt(2*abs(p[0])));
 }
 
-inline Complex_t TDiracSpinor::ScalarProd(const TDiracSpinor &other)
+inline Complex_t TDiracSpinor::InnerProd(const TDiracSpinor &other)
 {
    return ( conj(fSpinor[0])*other.fSpinor[0] +
             conj(fSpinor[1])*other.fSpinor[1] +
             conj(fSpinor[2])*other.fSpinor[2] +
             conj(fSpinor[3])*other.fSpinor[3] );
 }
- 
+
 inline TDiracSpinor TDiracSpinor::operator-() const
 {
    TDiracSpinor result;

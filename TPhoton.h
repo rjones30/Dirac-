@@ -13,19 +13,19 @@
 #include "TPauliMatrix.h"
 
 const LDouble_t alphaQED=1/137.036;
-const LDouble_t hbarcSqr=389.37966;	// in GeV*GeV*ub
+const LDouble_t hbarcSqr=389.37966;    // in GeV*GeV*ub
 
 
 class TPhoton {
 
 protected:
-   TFourVectorReal fMomentum;	  // four-momentum of photon
-   TPauliMatrix	   fSpinDensity;  // spin density matrix in helicity basis
+   TFourVectorReal fMomentum;      // four-momentum of photon
+   TPauliMatrix    fSpinDensity;   // spin density matrix in helicity basis
 
 public:
    TPhoton() { }
-   TPhoton(const TFourVectorReal &p);
-   TPhoton(const TThreeVectorReal &p);
+   explicit TPhoton(const TFourVectorReal &p);
+   explicit TPhoton(const TThreeVectorReal &p);
    virtual ~TPhoton() { }
    TFourVectorReal Mom() const;
    TThreeVectorReal Pol() const;
@@ -64,14 +64,14 @@ public:
 inline TPhoton::TPhoton(const TFourVectorReal &p)
 {
    fMomentum = p;
-   fSpinDensity = 0.5L;
+   fSpinDensity = TPauliMatrix(0.5);
 }
 
 inline TPhoton::TPhoton(const TThreeVectorReal &p)
 {
    TFourVectorReal p4(p.Length(),p);
    fMomentum = p4;
-   fSpinDensity = 0.5L;
+   fSpinDensity = TPauliMatrix(0.5);
 }
 
 inline TFourVectorReal TPhoton::Mom() const
@@ -103,7 +103,7 @@ inline TFourVectorComplex TPhoton::EpsStar(const Int_t mode) const
 
 inline TPhoton &TPhoton::AllPol()
 {
-   fSpinDensity = 1.0L;
+   fSpinDensity = TPauliMatrix(1.0);
    return *this;
 }
 

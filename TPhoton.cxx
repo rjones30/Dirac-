@@ -82,14 +82,14 @@ TFourVectorComplex TPhoton::Eps(const Int_t mode) const
 {
    // Vector potential 4-vector for photon object is returned.  There
    // are four linearly-independent solutions (modes) which are:
-   // 	mode=1: right-circular polarization
-   //	mode=2: left-circular polarization
-   //	mode=3: longitudinal polarization
-   //	mode=4: momentum vector (renormalized)
+   //     mode=1: right-circular polarization
+   //    mode=2: left-circular polarization
+   //    mode=3: longitudinal polarization
+   //    mode=4: momentum vector (renormalized)
    // Modes 1-3 obey the Lorentz gauge condition k.Eps(mode)=0; mode 4 is
    // provided to complement the set.  These four modes are an orthonormal
    // set in the Minkowski sense (+--- metric), that is
-   //	Eps(m1).Conj() . Eps(m2) = (m1==m2)*eta[m1]
+   //    Eps(m1).Conj() . Eps(m2) = (m1==m2)*eta[m1]
    // where eta[1]=eta[2]=-1 and eta[3]=-eta[4].  The transverse modes 1-2
    // always have an invariant norm of -1, whereas the norm of modes 3 and
    // 4 are determined by whether the photon is time-like (eta[4]=+1) or
@@ -118,20 +118,20 @@ TFourVectorComplex TPhoton::Eps(const Int_t mode) const
    const Complex_t i_(0,1);
    TFourVectorComplex eps(fMomentum);
    switch (mode) {
-   case 1:	// right-circular polarization (helicity frame)
+   case 1:    // right-circular polarization (helicity frame)
       eps[0] = 0;
       (TThreeVectorComplex &)eps = xhat + i_*yhat;
       eps /= sqrt2;
       break;
-   case 2:	// left-circular polarization (helicity frame)
+   case 2:    // left-circular polarization (helicity frame)
       eps[0] = 0;
       (TThreeVectorComplex &)eps = xhat - i_*yhat;
       eps /= sqrt2;
       break;
-   case 3:	// longitudinal mode (virtual photons only)
+   case 3:    // longitudinal mode (virtual photons only)
       eps[0] = fMomentum.Length();
       eps.Normalize(fMomentum[0]);
-   case 4:	// ghost mode (absent in Lorentz gauge)
+   case 4:    // ghost mode (absent in Lorentz gauge)
       LDouble_t norm=eps.InvariantSqr();
       if (norm > 0)
          eps /= sqrt(norm);

@@ -24,15 +24,15 @@ class TPauliSpinor {
 friend class TPauliMatrix;
  
 protected:
-   Complex_t       fSpinor[2];	  // complex state vector allocated on stack
-   static LDouble_t fResolution;	  // vector resolving "distance"
+   Complex_t        fSpinor[2];      // complex state vector allocated on stack
+   static LDouble_t fResolution;     // vector resolving "distance"
  
 public:
    TPauliSpinor() { }
-   TPauliSpinor(const Complex_t &a1, const Complex_t &a2);
-   TPauliSpinor(const Complex_t *array);
-   TPauliSpinor(const LDouble_t theta, const LDouble_t phi);
-   TPauliSpinor(const TUnitVector &pol);
+   explicit TPauliSpinor(const Complex_t &a1, const Complex_t &a2);
+   explicit TPauliSpinor(const Complex_t *array);
+   explicit TPauliSpinor(const LDouble_t theta, const LDouble_t phi);
+   explicit TPauliSpinor(const TUnitVector &pol);
    TPauliSpinor(const TPauliSpinor &another);
  
    virtual ~TPauliSpinor() { }
@@ -78,6 +78,7 @@ public:
                         const LDouble_t &psi);
    TPauliSpinor &Rotate(const TThreeVectorReal &axis);
    TPauliSpinor &Rotate(const TUnitVector &axis, const LDouble_t angle);
+   Complex_t InnerProd(const TPauliSpinor &other);
    Complex_t ScalarProd(const TPauliSpinor &other);
  
    TPauliSpinor operator-() const;
@@ -326,10 +327,15 @@ inline TPauliSpinor &TPauliSpinor::SetPolar(const TUnitVector &pol)
    return *this;
 }
 
-inline Complex_t TPauliSpinor::ScalarProd(const TPauliSpinor &other)
+inline Complex_t TPauliSpinor::InnerProd(const TPauliSpinor &other)
 {
    return ( conj(fSpinor[0])*other.fSpinor[0] + 
             conj(fSpinor[1])*other.fSpinor[1] );
+}
+ 
+inline Complex_t TPauliSpinor::ScalarProd(const TPauliSpinor &other)
+{
+   return InnerProd(other);
 }
  
 inline TPauliSpinor TPauliSpinor::operator-() const
