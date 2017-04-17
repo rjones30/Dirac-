@@ -169,14 +169,9 @@ TDiracSpinor &TDiracSpinor::SetStateV(const TFourVectorReal &p,
                                       const TUnitVector &polar)
 {
    // Helicity-frame polarization is provided in argument polar, otherwise 
-   // the same as SetStateU(TFourVectorReal &p, Float_t helicity).
+   // the same as SetStateV(TFourVectorReal &p, Float_t helicity).
 
-   TPauliSpinor chi(-polar);
-   TDiracSpinor v1(p,+1);
-   TDiracSpinor v2(p,-1);
-   *this  = v1 *= chi[1];
-   *this += v2 *= chi[0];
-   return *this;
+   return SetStateU(-p,polar);
 }
  
 TDiracSpinor &TDiracSpinor::Operate(const TDiracMatrix &dmOp)
