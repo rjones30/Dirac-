@@ -25,7 +25,8 @@ SRCS          = TThreeVectorReal.cxx \
                 TDiracMatrix.cxx \
                 TPhoton.cxx \
                 TLepton.cxx \
-                TCrossSection.cxx
+                TCrossSection.cxx \
+                TCrossSection_v1.cxx
 
 OBJS = $(foreach src, $(SRCS), $(subst cxx,o,$(src))) \
        $(foreach src, $(SRCS), $(subst .cxx,Dict.o,$(src)))
@@ -35,7 +36,7 @@ OBJS = $(foreach src, $(SRCS), $(subst cxx,o,$(src))) \
 all: libDirac.so
 
 .cxx.o:
-	@g++ -c $(CXXFLAGS) $<
+	@g++ -c $(CDBFLAGS) $<
 
 .o.so:
 	@echo "Building" $@
@@ -118,6 +119,10 @@ TCrossSectionDict.cxx: TCrossSection.h TCrossSectionLinkDef.h
 	@echo Generating $@
 	@rootcling -f $@ -c $^
 
+TCrossSection_v1Dict.cxx: TCrossSection_v1.h TCrossSection_v1LinkDef.h
+	@echo Generating $@
+	@rootcling -f $@ -c $^
+
 TThreeVectorReal.o:	 TThreeVectorReal.h TThreeVectorReal.cxx
 TThreeVectorComplex.o:	 TThreeVectorComplex.h TThreeVectorComplex.cxx \
 			 TThreeVectorReal.h
@@ -172,6 +177,13 @@ TLepton.o:		 TLepton.h TLepton.cxx \
 			 TFourVectorComplex.h TFourVectorReal.h \
 			 TThreeVectorComplex.h TThreeVectorReal.h
 TCrossSection.o:	 TCrossSection.h TCrossSection.cxx \
+			 TLepton.h TPhoton.h \
+			 TDiracMatrix.h TDiracSpinor.h \
+			 TPauliSpinor.h TPauliMatrix.h \
+			 TLorentzTransform.h TLorentzBoost.h TThreeRotation.h \
+			 TFourVectorComplex.h TFourVectorReal.h \
+			 TThreeVectorComplex.h TThreeVectorReal.h
+TCrossSection_v1.o:	 TCrossSection_v1.h TCrossSection_v1.cxx \
 			 TLepton.h TPhoton.h \
 			 TDiracMatrix.h TDiracSpinor.h \
 			 TPauliSpinor.h TPauliMatrix.h \
