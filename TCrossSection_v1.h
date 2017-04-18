@@ -1,12 +1,21 @@
 //
-// TCrossSection.h 
+// TCrossSection_v1.h 
 //
 // This file is distributed as part of the Dirac++ package,
 // a general toolkit for computing the amplitudes for Feynman
 // graphs. See DiracPackage.h for details.
 
-#ifndef ROOT_TCrossSection
-#define ROOT_TCrossSection
+
+
+// Warning: the algorithms in this class are now obsolete.
+// New class TCrossSection implements the same interface,
+// using improved algorithms!
+// -- Richard Jones, April 18, 2017
+
+
+
+#ifndef ROOT_TCrossSection_v1
+#define ROOT_TCrossSection_v1
 
 #include "Double.h"
 #include "TBuffer.h"
@@ -15,10 +24,10 @@ class TPhoton;
 class TLepton;
 class TThreeVectorReal;
 
-class TCrossSection {
+class TCrossSection_v1 {
 
 public:
-   virtual ~TCrossSection() { }
+   virtual ~TCrossSection_v1() { }
 
    static LDouble_t Compton(const TPhoton &gIn, const TLepton &eIn,
                            const TPhoton &gOut, const TLepton &eOut);
@@ -37,7 +46,7 @@ public:
 
    void Print(Option_t *option="");
 
-   ClassDef(TCrossSection,1)  // Several useful QED cross sections
+   ClassDef(TCrossSection_v1,1)  // Several useful QED cross sections
 };
 
 #endif

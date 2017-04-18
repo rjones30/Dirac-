@@ -1,5 +1,5 @@
 //
-// TCrossSection.cxx
+// TCrossSection_v1.cxx
 //
 // author:  Richard T. Jones  11/16/98
 // version:  Sep. 10, 2011  v1.01
@@ -16,9 +16,26 @@
  * suitability of this software for any purpose.                         *
  * It is provided "as is" without express or implied warranty.           *
  *************************************************************************/
+
+
+
+// The algorithms for computing QED spin-dependent amplitudes implemented
+// in this class turned out to be vulnerable to large rounding errors for
+// a broad range of kinematics that are important in scattering processes
+// at high energy. This is because they first square the amplitudes, then
+// compute the sums over Dirac indices. Contracting over Dirac indices
+// before squaring the amplitudes allows large fermion propagators that
+// appear when the kinematics come out close to the pole to cancel with
+// many orders of magnitude smaller rounding errors. The improved code
+// is now found in class TCrossSection, and TCrossSection_v1 is obsolete
+// except for purposes of comparison.
+// -- Richard Jones, April 18, 2017
+
+
+
 //////////////////////////////////////////////////////////////////////////
 //
-// The TCrossSection class is simply a collection of static functions
+// The TCrossSection_v1 class is simply a collection of static functions
 // that return the differential cross sections for a small set of
 // electromagnetic reactions.  They are calculated to first order in
 // QED according to the following Feynman rules.
@@ -101,9 +118,9 @@
 #define DEBUGGING 1
 
 #include <iostream>
-#include "TCrossSection.h"
+#include "TCrossSection_v1.h"
 
-ClassImp(TCrossSection)
+ClassImp(TCrossSection_v1)
 
 #include "TPhoton.h"
 #include "TLepton.h"
@@ -114,8 +131,8 @@ const LDouble_t PI_=2*atan2(1.,0.);
 inline LDouble_t sqr(LDouble_t x) { return x*x; }
 inline Complex_t sqr(Complex_t x) { return x*x; }
 
-LDouble_t TCrossSection::Compton(const TPhoton &gIn, const TLepton &eIn,
-                                const TPhoton &gOut, const TLepton &eOut)
+LDouble_t TCrossSection_v1::Compton(const TPhoton &gIn, const TLepton &eIn,
+                                 const TPhoton &gOut, const TLepton &eOut)
 {
    // Calculates the Compton differential cross section for scattering of
    // a photon from a free lepton.  Units are microbarns per steradian
@@ -206,12 +223,13 @@ LDouble_t TCrossSection::Compton(const TPhoton &gIn, const TLepton &eIn,
    KleinNishinaResult *= (gF->Mom()[0]/gI->Mom()[0]) +
                          (gI->Mom()[0]/gF->Mom()[0]) - sinSqrTheta;
    KleinNishinaResult *= hbarcSqr;
+   std::cout << "returning the Klein Nishina value..." << std::endl;
    return KleinNishinaResult;
 }
 
-LDouble_t TCrossSection::Bremsstrahlung(
-                        const TLepton &eIn, const TLepton &eOut,
-                        const TPhoton &gOut)
+LDouble_t TCrossSection_v1::Bremsstrahlung(const TLepton &eIn,
+                                        const TLepton &eOut,
+                                        const TPhoton &gOut)
 {
    // Calculates the bremsstrahlung cross section for scattering of
    // a lepton from an atom at a particular recoil momentum vector q.
@@ -271,6 +289,15 @@ LDouble_t TCrossSection::Bremsstrahlung(
       }
    }
 
+#if DEBUGGING
+   if (real(ampSquared) < 0 || fabs(ampSquared.imag()) > fabs(ampSquared / 1e8L))
+   {
+      std::cout << "Warning: problem with Bremsstrahlung amplitudes:" << std::endl
+                << "  These guys should be all real positive:" << std::endl
+                << "    ampSquared = " << ampSquared << std::endl;
+   }
+#endif
+
    // Obtain the kinematical factors:
    //    (1) 1/flux factor from initial state 1/(2E)
    //    (2) rho from density of final states factor
@@ -292,9 +319,9 @@ LDouble_t TCrossSection::Bremsstrahlung(
    return diffXsect;
 }
 
-LDouble_t TCrossSection::PairProduction(
-                        const TPhoton &gIn,
-                        const TLepton &eOut, const TLepton &pOut)
+LDouble_t TCrossSection_v1::PairProduction(const TPhoton &gIn,
+                                        const TLepton &eOut,
+                                        const TLepton &pOut)
 {
    // Calculates the e+e- pair production cross section for a
    // gamma ray off an atom at a particular recoil momentum vector q.
@@ -350,9 +377,18 @@ LDouble_t TCrossSection::PairProduction(
    Complex_t ampSquared=0;
    for (Int_t j=0; j<2; j++) {
       for (Int_t jj=0; jj<2; jj++) {
-         ampSquared += (invAmp[j]*invAmpBar[jj]).Trace() * gI->SDM()[jj][j];
+         ampSquared += (invAmp[j]*invAmpBar[jj]).Trace() * gI->SDM()[j][jj];
       }
    }
+
+#if DEBUGGING
+   if (real(ampSquared) < 0 || fabs(ampSquared.imag()) > fabs(ampSquared / 1e8L))
+   {
+      std::cout << "Warning: problem with PairProduction amplitudes:" << std::endl
+                << "  These guys should be all real positive:" << std::endl
+                << "    ampSquared = " << ampSquared << std::endl;
+   }
+#endif
 
    // Obtain the kinematical factors:
    //    (1) 1/flux factor from initial state 1/(2E)
@@ -374,7 +410,7 @@ LDouble_t TCrossSection::PairProduction(
    return diffXsect;
 }
 
-LDouble_t TCrossSection::TripletProduction(
+LDouble_t TCrossSection_v1::TripletProduction(
                         const TPhoton &gIn, const TLepton &eIn,
                         const TLepton &pOut, const TLepton &eOut2,
                         const TLepton &eOut3)
@@ -718,81 +754,16 @@ LDouble_t TCrossSection::TripletProduction(
    Complex_t ampSquared=0;
    for (Int_t j=0; j<2; j++) {
       for (Int_t jj=0; jj<2; jj++) {
-         ampSquared += Mfi2[j][jj] * g0->SDM()[jj][j];
+         ampSquared += Mfi2[j][jj] * g0->SDM()[j][jj];
       }
    }
 
 #if DEBUGGING
    if (real(ampSquared) < 0 || fabs(ampSquared.imag()) > fabs(ampSquared / 1e8L))
    {
-      std::cout << "Summary of triplets amplitude products:" << std::endl
+      std::cout << "Warning: problem with triplets amplitudes:" << std::endl
                 << "  These guys should be all real positive:" << std::endl
                 << "    ampSquared = " << ampSquared << std::endl
-                << "    CD2CD2bar[0][0] = " << CD2CD2bar[0][0] << std::endl
-                << "    CD2CD2bar[1][1] = " << CD2CD2bar[1][1] << std::endl
-                << "    BH2BH2bar[0][0] = " << BH2BH2bar[0][0] << std::endl
-                << "    BH2BH2bar[1][1] = " << BH2BH2bar[1][1] << std::endl
-                << "    CD3CD3bar[0][0] = " << CD3CD3bar[0][0] << std::endl
-                << "    CD3CD3bar[1][1] = " << CD3CD3bar[1][1] << std::endl
-                << "    BH3BH3bar[0][0] = " << BH3BH3bar[0][0] << std::endl
-                << "    BH3BH3bar[1][1] = " << BH3BH3bar[1][1] << std::endl
-                << "  The rest of these should be conjugate pairs:" << std::endl
-                << "    CD2CD2bar[i][j]: " << CD2CD2bar[0][1] << ", "
-                                           << CD2CD2bar[1][0] <<  std::endl
-                << "    BH2BH2bar[i][j]: " << BH2BH2bar[0][1] << ", "
-                                           << BH2BH2bar[1][0] <<  std::endl
-                << "    CD3CD3bar[i][j]: " << CD3CD3bar[0][1] << ", "
-                                           << CD3CD3bar[1][0] <<  std::endl
-                << "    BH3BH3bar[i][j]: " << BH3BH3bar[0][1] << ", "
-                                           << BH3BH3bar[1][0] <<  std::endl
-                << "    CD2BH2bar[0][0]: " << CD2BH2bar[0][0] << ", "
-                                           << BH2CD2bar[0][0] <<  std::endl
-                << "    CD2BH2bar[1][1]: " << CD2BH2bar[1][1] << ", "
-                                           << BH2CD2bar[1][1] <<  std::endl
-                << "    CD2BH2bar[1][0]: " << CD2BH2bar[1][0] << ", "
-                                           << BH2CD2bar[0][1] <<  std::endl
-                << "    CD2BH2bar[0][1]: " << CD2BH2bar[0][1] << ", "
-                                           << BH2CD2bar[1][0] <<  std::endl
-                << "    CD2CD3bar[0][0]: " << CD2CD3bar[0][0] << ", "
-                                           << CD3CD2bar[0][0] <<  std::endl
-                << "    CD2CD3bar[1][1]: " << CD2CD3bar[1][1] << ", "
-                                           << CD3CD2bar[1][1] <<  std::endl
-                << "    CD2CD3bar[1][0]: " << CD2CD3bar[1][0] << ", "
-                                           << CD3CD2bar[0][1] <<  std::endl
-                << "    CD2CD3bar[0][1]: " << CD2CD3bar[0][1] << ", "
-                                           << CD3CD2bar[1][0] <<  std::endl
-                << "    CD2BH3bar[0][0]: " << CD2BH3bar[0][0] << ", "
-                                           << BH3CD2bar[0][0] <<  std::endl
-                << "    CD2BH3bar[1][1]: " << CD2BH3bar[1][1] << ", "
-                                           << BH3CD2bar[1][1] <<  std::endl
-                << "    CD2BH3bar[1][0]: " << CD2BH3bar[1][0] << ", "
-                                           << BH3CD2bar[0][1] <<  std::endl
-                << "    CD2BH3bar[0][1]: " << CD2BH3bar[0][1] << ", "
-                                           << BH3CD2bar[1][0] <<  std::endl
-                << "    BH2CD3bar[0][0]: " << BH2CD3bar[0][0] << ", "
-                                           << CD3BH2bar[0][0] <<  std::endl
-                << "    BH2CD3bar[1][1]: " << BH2CD3bar[1][1] << ", "
-                                           << CD3BH2bar[1][1] <<  std::endl
-                << "    BH2CD3bar[1][0]: " << BH2CD3bar[1][0] << ", "
-                                           << CD3BH2bar[0][1] <<  std::endl
-                << "    BH2CD3bar[0][1]: " << BH2CD3bar[0][1] << ", "
-                                           << CD3BH2bar[1][0] <<  std::endl
-                << "    BH2BH3bar[0][0]: " << BH2BH3bar[0][0] << ", "
-                                           << BH3BH2bar[0][0] <<  std::endl
-                << "    BH2BH3bar[1][1]: " << BH2BH3bar[1][1] << ", "
-                                           << BH3BH2bar[1][1] <<  std::endl
-                << "    BH2BH3bar[1][0]: " << BH2BH3bar[1][0] << ", "
-                                           << BH3BH2bar[0][1] <<  std::endl
-                << "    BH2BH3bar[0][1]: " << BH2BH3bar[0][1] << ", "
-                                           << BH3BH2bar[1][0] <<  std::endl
-                << "    CD3BH3bar[0][0]: " << CD3BH3bar[0][0] << ", "
-                                           << BH3CD3bar[0][0] <<  std::endl
-                << "    CD3BH3bar[1][1]: " << CD3BH3bar[1][1] << ", "
-                                           << BH3CD3bar[1][1] <<  std::endl
-                << "    CD3BH3bar[1][0]: " << CD3BH3bar[1][0] << ", "
-                                           << BH3CD3bar[0][1] <<  std::endl
-                << "    CD3BH3bar[0][1]: " << CD3BH3bar[0][1] << ", "
-                                           << BH3CD3bar[1][0] <<  std::endl
                 ;
    }
 #endif
@@ -815,7 +786,7 @@ LDouble_t TCrossSection::TripletProduction(
    return diffXsect;
 }
 
-LDouble_t TCrossSection::eeBremsstrahlung(const TLepton &eIn0,
+LDouble_t TCrossSection_v1::eeBremsstrahlung(const TLepton &eIn0,
                                           const TLepton &eIn1,
                                           const TLepton &eOut2, 
                                           const TLepton &eOut3,
@@ -1166,74 +1137,9 @@ LDouble_t TCrossSection::eeBremsstrahlung(const TLepton &eIn0,
 #if DEBUGGING
    if (real(ampSquared) < 0 || fabs(ampSquared.imag()) > fabs(ampSquared / 1e8L))
    {
-      std::cout << "Summary of eeBremsstrahlung amplitudes:" << std::endl
+      std::cout << "Warning: problem with eeBremsstrahlung amplitudes:" << std::endl
                 << "  These guys should be all real positive:" << std::endl
                 << "    ampSquared = " << ampSquared << std::endl
-                << "    AAbar[0][0] = " << AAbar[0][0] << std::endl
-                << "    AAbar[1][1] = " << AAbar[1][1] << std::endl
-                << "    BBbar[0][0] = " << BBbar[0][0] << std::endl
-                << "    BBbar[1][1] = " << BBbar[1][1] << std::endl
-                << "    CCbar[0][0] = " << CCbar[0][0] << std::endl
-                << "    CCbar[1][1] = " << CCbar[1][1] << std::endl
-                << "    DDbar[0][0] = " << DDbar[0][0] << std::endl
-                << "    DDbar[1][1] = " << DDbar[1][1] << std::endl
-                << "  The rest of these should be conjugate pairs:" << std::endl
-                << "    AAbar[i][j]: " << AAbar[0][1] << ", "
-                                       << AAbar[1][0] <<  std::endl
-                << "    BBbar[i][j]: " << BBbar[0][1] << ", "
-                                       << BBbar[1][0] <<  std::endl
-                << "    CCbar[i][j]: " << CCbar[0][1] << ", "
-                                       << CCbar[1][0] <<  std::endl
-                << "    DDbar[i][j]: " << DDbar[0][1] << ", "
-                                       << DDbar[1][0] <<  std::endl
-                << "    ABbar[0][0]: " << ABbar[0][0] << ", "
-                                       << BAbar[0][0] <<  std::endl
-                << "    ABbar[1][1]: " << ABbar[1][1] << ", "
-                                       << BAbar[1][1] <<  std::endl
-                << "    ABbar[1][0]: " << ABbar[1][0] << ", "
-                                       << BAbar[0][1] <<  std::endl
-                << "    ABbar[0][1]: " << ABbar[0][1] << ", "
-                                       << BAbar[1][0] <<  std::endl
-                << "    ACbar[0][0]: " << ACbar[0][0] << ", "
-                                       << CAbar[0][0] <<  std::endl
-                << "    ACbar[1][1]: " << ACbar[1][1] << ", "
-                                       << CAbar[1][1] <<  std::endl
-                << "    ACbar[1][0]: " << ACbar[1][0] << ", "
-                                       << CAbar[0][1] <<  std::endl
-                << "    ACbar[0][1]: " << ACbar[0][1] << ", "
-                                       << CAbar[1][0] <<  std::endl
-                << "    ADbar[0][0]: " << ADbar[0][0] << ", "
-                                       << DAbar[0][0] <<  std::endl
-                << "    ADbar[1][1]: " << ADbar[1][1] << ", "
-                                       << DAbar[1][1] <<  std::endl
-                << "    ADbar[1][0]: " << ADbar[1][0] << ", "
-                                       << DAbar[0][1] <<  std::endl
-                << "    ADbar[0][1]: " << ADbar[0][1] << ", "
-                                       << DAbar[1][0] <<  std::endl
-                << "    BCbar[0][0]: " << BCbar[0][0] << ", "
-                                       << CBbar[0][0] <<  std::endl
-                << "    BCbar[1][1]: " << BCbar[1][1] << ", "
-                                       << CBbar[1][1] <<  std::endl
-                << "    BCbar[1][0]: " << BCbar[1][0] << ", "
-                                       << CBbar[0][1] <<  std::endl
-                << "    BCbar[0][1]: " << BCbar[0][1] << ", "
-                                       << CBbar[1][0] <<  std::endl
-                << "    BDbar[0][0]: " << BDbar[0][0] << ", "
-                                       << DBbar[0][0] <<  std::endl
-                << "    BDbar[1][1]: " << BDbar[1][1] << ", "
-                                       << DBbar[1][1] <<  std::endl
-                << "    BDbar[1][0]: " << BDbar[1][0] << ", "
-                                       << DBbar[0][1] <<  std::endl
-                << "    BDbar[0][1]: " << BDbar[0][1] << ", "
-                                       << DBbar[1][0] <<  std::endl
-                << "    CDbar[0][0]: " << CDbar[0][0] << ", "
-                                       << DCbar[0][0] <<  std::endl
-                << "    CDbar[1][1]: " << CDbar[1][1] << ", "
-                                       << DCbar[1][1] <<  std::endl
-                << "    CDbar[1][0]: " << CDbar[1][0] << ", "
-                                       << DCbar[0][1] <<  std::endl
-                << "    CDbar[0][1]: " << CDbar[0][1] << ", "
-                                       << DCbar[1][0] <<  std::endl
                 ;
    }
 #endif
@@ -1259,12 +1165,12 @@ LDouble_t TCrossSection::eeBremsstrahlung(const TLepton &eIn0,
    return diffXsect;
 }
 
-void TCrossSection::Streamer(TBuffer &buf)
+void TCrossSection_v1::Streamer(TBuffer &buf)
 {
    // All members are static; this function is a noop.
 }
 
-void TCrossSection::Print(Option_t *option)
+void TCrossSection_v1::Print(Option_t *option)
 {
    // All members are static; this function is a noop.
 }
