@@ -781,13 +781,13 @@ LDouble_t TCrossSection::eeBremsstrahlung(const TLepton &eIn0,
          A = gamma[mu] * epropA1 * epsF + epsF * epropA2 * gamma[mu];
          A *= gpropA;
          TDiracMatrix B;
-         B = gamma[mu] + epropB1 * epsF + epsF * epropB2 * gamma[mu];
+         B = gamma[mu] * epropB1 * epsF + epsF * epropB2 * gamma[mu];
          B *= gpropB;
          TDiracMatrix C;
-         C = gamma[mu] + epropC1 * epsF + epsF * epropC2 * gamma[mu];
+         C = gamma[mu] * epropC1 * epsF + epsF * epropC2 * gamma[mu];
          C *= gpropC;
          TDiracMatrix D;
-         D = gamma[mu] + epropD1 * epsF + epsF * epropD2 * gamma[mu];
+         D = gamma[mu] * epropD1 * epsF + epsF * epropD2 * gamma[mu];
          D *= gpropD;
          for (Int_t h0=0; h0 < 2; h0++) {
             for (Int_t h1=0; h1 < 2; h1++) {
