@@ -131,8 +131,10 @@ const LDouble_t PI_=2*atan2(1.,0.);
 inline LDouble_t sqr(LDouble_t x) { return x*x; }
 inline Complex_t sqr(Complex_t x) { return x*x; }
 
-LDouble_t TCrossSection_v1::Compton(const TPhoton &gIn, const TLepton &eIn,
-                                 const TPhoton &gOut, const TLepton &eOut)
+LDouble_t TCrossSection_v1::Compton(const TPhoton &gIn,
+                                    const TLepton &eIn,
+                                    const TPhoton &gOut,
+                                    const TLepton &eOut)
 {
    // Calculates the Compton differential cross section for scattering of
    // a photon from a free lepton.  Units are microbarns per steradian
@@ -228,8 +230,8 @@ LDouble_t TCrossSection_v1::Compton(const TPhoton &gIn, const TLepton &eIn,
 }
 
 LDouble_t TCrossSection_v1::Bremsstrahlung(const TLepton &eIn,
-                                        const TLepton &eOut,
-                                        const TPhoton &gOut)
+                                           const TLepton &eOut,
+                                           const TPhoton &gOut)
 {
    // Calculates the bremsstrahlung cross section for scattering of
    // a lepton from an atom at a particular recoil momentum vector q.
@@ -320,8 +322,8 @@ LDouble_t TCrossSection_v1::Bremsstrahlung(const TLepton &eIn,
 }
 
 LDouble_t TCrossSection_v1::PairProduction(const TPhoton &gIn,
-                                        const TLepton &eOut,
-                                        const TLepton &pOut)
+                                           const TLepton &eOut,
+                                           const TLepton &pOut)
 {
    // Calculates the e+e- pair production cross section for a
    // gamma ray off an atom at a particular recoil momentum vector q.
@@ -410,10 +412,11 @@ LDouble_t TCrossSection_v1::PairProduction(const TPhoton &gIn,
    return diffXsect;
 }
 
-LDouble_t TCrossSection_v1::TripletProduction(
-                        const TPhoton &gIn, const TLepton &eIn,
-                        const TLepton &pOut, const TLepton &eOut2,
-                        const TLepton &eOut3)
+LDouble_t TCrossSection_v1::TripletProduction(const TPhoton &gIn,
+                                              const TLepton &eIn,
+                                              const TLepton &pOut,
+                                              const TLepton &eOut2,
+                                              const TLepton &eOut3)
 {
    // Calculates the e-e+e- triplet production cross section for a gamma
    // ray off a free electron at a particular recoil momentum vector qR.
@@ -787,10 +790,10 @@ LDouble_t TCrossSection_v1::TripletProduction(
 }
 
 LDouble_t TCrossSection_v1::eeBremsstrahlung(const TLepton &eIn0,
-                                          const TLepton &eIn1,
-                                          const TLepton &eOut2, 
-                                          const TLepton &eOut3,
-                                          const TPhoton &gOut)
+                                             const TLepton &eIn1,
+                                             const TLepton &eOut2, 
+                                             const TLepton &eOut3,
+                                             const TPhoton &gOut)
 {
    // Calculates the e-,e- bremsstrahlung cross section for the radiative
    // scattering of an energetic electron off a free electron in the target.
