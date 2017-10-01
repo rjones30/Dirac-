@@ -31,8 +31,8 @@ protected:
 public:
    TThreeVectorComplex() { }
    explicit TThreeVectorComplex(const Complex_t &x,
-                               const Complex_t &y,
-                               const Complex_t &z);
+                                const Complex_t &y,
+                                const Complex_t &z);
    explicit TThreeVectorComplex(const Float_t *array);
    explicit TThreeVectorComplex(const LDouble_t *array);
    explicit TThreeVectorComplex(const Complex_t *array);

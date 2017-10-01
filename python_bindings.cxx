@@ -71,6 +71,39 @@ LDouble_t TThreeVectorReal_getitem(const TThreeVectorReal &obj, Int_t index) {
    return obj[index];
 }
 
+
+void (TThreeVectorComplex::*TThreeVectorComplex_GetCartesian3)(Complex_t &x, Complex_t &y, Complex_t &z) const =
+     &TThreeVectorComplex::GetCartesian;
+void (TThreeVectorComplex::*TThreeVectorComplex_GetCartesian1)(Complex_t *array) const =
+     &TThreeVectorComplex::GetCartesian;
+
+LDouble_t (TThreeVectorComplex::*TThreeVectorComplex_DistanceTo3)(Complex_t x, Complex_t y, Complex_t z) const =
+     &TThreeVectorComplex::DistanceTo;
+LDouble_t (TThreeVectorComplex::*TThreeVectorComplex_DistanceTo1)(const Complex_t *array) const =
+     &TThreeVectorComplex::DistanceTo;
+LDouble_t (TThreeVectorComplex::*TThreeVectorComplex_DistanceTo)(const TThreeVectorComplex &vec2) const =
+     &TThreeVectorComplex::DistanceTo;
+
+TThreeVectorComplex &(TThreeVectorComplex::*TThreeVectorComplex_Rotate1)(const TThreeRotation &rotOp) =
+     &TThreeVectorComplex::Rotate;
+TThreeVectorComplex &(TThreeVectorComplex::*TThreeVectorComplex_Rotate2)(const TUnitVector &ahat, LDouble_t angle) =
+     &TThreeVectorComplex::Rotate;
+TThreeVectorComplex &(TThreeVectorComplex::*TThreeVectorComplex_Rotate3)(LDouble_t phi, LDouble_t theta, LDouble_t psi) =
+     &TThreeVectorComplex::Rotate;
+
+TThreeVectorComplex &(TThreeVectorComplex::*TThreeVectorComplex_Cross)(const TThreeVectorComplex &other) =
+     &TThreeVectorComplex::Cross;
+TThreeVectorComplex &(TThreeVectorComplex::*TThreeVectorComplex_Cross2)(const TThreeVectorComplex &va, const TThreeVectorComplex &vb) =
+     &TThreeVectorComplex::Cross;
+
+void TThreeVectorComplex_Print(TThreeVectorComplex &obj) {
+   obj.Print();
+}
+
+Complex_t TThreeVectorComplex_getitem(const TThreeVectorComplex &obj, Int_t index) {
+   return obj[index];
+}
+
 // Create a python module containing all of the user classes
 // that are needed to interact with Dirac++ objects from python.
 // Here it is named libdiracxx (happens to also be the name of
@@ -159,5 +192,65 @@ BOOST_PYTHON_MODULE(libDirac)
       .def("__neg__", &TThreeVectorReal::operator-)
       .def("Print", &TThreeVectorReal::Print)
       .def("Print", &TThreeVectorReal_Print)
+   ;
+
+   boost::python::class_<TThreeVectorComplex, TThreeVectorComplex*>
+         ("TThreeVectorComplex",
+          "three vector with complex components")
+      .def(boost::python::init<const Complex_t, const Complex_t, const Complex_t>())
+      .def(boost::python::init<const Float_t *>())
+      .def(boost::python::init<const LDouble_t *>())
+      .def(boost::python::init<const Complex_t *>())
+      .def(boost::python::init<const TThreeVectorReal &>())
+      .def(boost::python::init<const TThreeVectorComplex &>())
+      .def("__getitem__", &TThreeVectorComplex_getitem)
+      .def("SetResolution", &TThreeVectorComplex::SetResolution)
+      .def("Resolution", &TThreeVectorComplex::Resolution)
+      .def("Length", &TThreeVectorComplex::Length)
+      .def("LengthSqr", &TThreeVectorComplex::LengthSqr)
+      .def("RealPart", &TThreeVectorComplex::RealPart)
+      .def("ImagPart", &TThreeVectorComplex::ImagPart)
+      .def("GetCartesian", TThreeVectorComplex_GetCartesian3)
+      .def("GetCartesian", TThreeVectorComplex_GetCartesian1)
+      .def("DistanceTo", TThreeVectorComplex_DistanceTo3)
+      .def("DistanceTo", TThreeVectorComplex_DistanceTo1)
+      .def("DistanceTo", TThreeVectorComplex_DistanceTo)
+      .def(boost::python::self_ns::self += TThreeVectorComplex())
+      .def(boost::python::self_ns::self -= TThreeVectorComplex())
+      .def(boost::python::self_ns::self *= Complex_t())
+      .def(boost::python::self_ns::self *= LDouble_t())
+      .def(boost::python::self_ns::self /= Complex_t())
+      .def(boost::python::self_ns::self /= LDouble_t())
+      .def(boost::python::self_ns::self + TThreeVectorComplex())
+      .def(boost::python::self_ns::self - TThreeVectorComplex())
+      .def(boost::python::self_ns::self * Complex_t())
+      .def(boost::python::self_ns::self / Complex_t())
+      .def(TThreeVectorComplex() + boost::python::self_ns::self)
+      .def(TThreeVectorComplex() - boost::python::self_ns::self)
+      .def(Complex_t() * boost::python::self_ns::self)
+      .def("__eq__", &TThreeVectorComplex::operator==)
+      .def("__ne__", &TThreeVectorComplex::operator!=)
+      .def("Zero", &TThreeVectorComplex::Zero,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Conj", &TThreeVectorComplex::Conj,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SpaceInv", &TThreeVectorComplex::SpaceInv,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Normalize", &TThreeVectorComplex::Normalize,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Rotate", TThreeVectorComplex_Rotate1,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Rotate", TThreeVectorComplex_Rotate3,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Rotate", TThreeVectorComplex_Rotate2,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Cross", TThreeVectorComplex_Cross,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Cross", TThreeVectorComplex_Cross2,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Dot", &TThreeVectorComplex::Dot)
+      .def("__neg__", &TThreeVectorComplex::operator-)
+      .def("Print", &TThreeVectorComplex::Print)
+      .def("Print", &TThreeVectorComplex_Print)
    ;
 }
