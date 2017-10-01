@@ -55,8 +55,8 @@ public:
    void GetCartesian(LDouble_t &x, LDouble_t &y, LDouble_t &z) const;
    void GetCartesian(LDouble_t *array) const;
    LDouble_t DistanceTo(const LDouble_t x,
-                       const LDouble_t y,
-                       const LDouble_t z) const;
+                        const LDouble_t y,
+                        const LDouble_t z) const;
    LDouble_t DistanceTo(const LDouble_t *array) const;
    LDouble_t DistanceTo(const TThreeVectorReal &vec2) const;
  

@@ -1,8 +1,10 @@
 #---------------------------------------------------
-CXXFLAGS      = -O4 -fPIC $(shell root-config --cflags)
-CDBFLAGS      = -g -fPIC $(shell root-config --cflags)
+CXXFLAGS      = -O4 -fPIC $(shell root-config --cflags) -I . \
+                          $(shell python-config --includes)
+CDBFLAGS      = -g -fPIC $(shell root-config --cflags) -I . \
+                         $(shell python-config --includes)
 LDFLAGS       = -g -Wl,--export-dynamic
-SOFLAGS       = -shared
+SOFLAGS       = -shared -Wl,--export-dynamic
 LD            = g++
 
 ROOTLIBS      = $(shell root-config --libs)
@@ -58,9 +60,9 @@ debug: debug.o $(OBJS)
 clean:
 	@rm -f $(OBJS) core.* *Dict.* *.o *_rdict.pcm *.so *.d 
 
-libDirac.so: $(OBJS)
+libDirac.so: $(OBJS) python_bindings.o
 	@echo "Building shared library ..."
-	@$(LD) $(SOFLAGS) $(OBJS) -o $@
+	@$(LD) $(SOFLAGS) -Wl,-soname,$@ $^ -o $@ -lboost_python
 	@echo "done"
 
 TThreeVectorRealDict.cxx: TThreeVectorReal.h TThreeVectorRealLinkDef.h
