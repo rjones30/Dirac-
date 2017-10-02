@@ -177,6 +177,226 @@ Complex_t TFourVectorComplex_getitem(const TFourVectorComplex &obj, Int_t index)
    return obj[index];
 }
 
+
+TThreeRotation &(TThreeRotation::*TThreeRotation_SetAxis)(const TThreeVectorReal &axis) =
+   &TThreeRotation::SetAxis;
+TThreeRotation &(TThreeRotation::*TThreeRotation_SetAxis2)(const TUnitVector &ahat, LDouble_t angle) =
+   &TThreeRotation::SetAxis;
+
+void TThreeRotation_Print(TThreeRotation &obj) {
+   obj.Print();
+}
+
+
+TLorentzBoost &(TLorentzBoost::*TLorentzBoost_SetBeta)(LDouble_t betaX, LDouble_t betaY, LDouble_t betaZ) =
+   &TLorentzBoost::SetBeta;
+TLorentzBoost &(TLorentzBoost::*TLorentzBoost_SetBeta1)(const LDouble_t *beta) =
+   &TLorentzBoost::SetBeta;
+TLorentzBoost &(TLorentzBoost::*TLorentzBoost_SetBeta2)(const TUnitVector &bhat, LDouble_t beta) =
+   &TLorentzBoost::SetBeta;
+TLorentzBoost &(TLorentzBoost::*TLorentzBoost_SetBeta3)(const TThreeVectorReal &beta) =
+   &TLorentzBoost::SetBeta;
+TLorentzBoost &(TLorentzBoost::*TLorentzBoost_SetBeta4)(const TFourVectorReal &p) =
+   &TLorentzBoost::SetBeta;
+
+void TLorentzBoost_Print(TLorentzBoost &obj) {
+   obj.Print();
+}
+
+
+void TLorentzTransform_Print(TLorentzTransform &obj) {
+   obj.Print();
+}
+
+
+Complex_t *TPauliMatrix_getitem(const TPauliMatrix &obj, Int_t index) {
+   return obj[index];
+}
+
+void (TPauliMatrix::*TPauliMatrix_Decompose1)(LDouble_t &a, TThreeVectorReal &b) const =
+   &TPauliMatrix::Decompose;
+void (TPauliMatrix::*TPauliMatrix_Decompose2)(Complex_t &a, TThreeVectorComplex &b) const =
+   &TPauliMatrix::Decompose;
+
+TPauliMatrix &(TPauliMatrix::*TPauliMatrix_Compose1)(LDouble_t a, const TThreeVectorReal &polar) =
+   &TPauliMatrix::Compose;
+TPauliMatrix &(TPauliMatrix::*TPauliMatrix_Compose2)(const Complex_t &a, const TThreeVectorComplex &polar) =
+   &TPauliMatrix::Compose;
+
+TPauliMatrix &(TPauliMatrix::*TPauliMatrix_SetDiagonal1)(const Complex_t &a) =
+   &TPauliMatrix::SetDiagonal;
+TPauliMatrix &(TPauliMatrix::*TPauliMatrix_SetDiagonal2)(const Complex_t &a11, const Complex_t &a22) =
+   &TPauliMatrix::SetDiagonal;
+
+TPauliMatrix &(TPauliMatrix::*TPauliMatrix_SetRotation)(const TThreeRotation &rotOp) =
+   &TPauliMatrix::SetRotation;
+TPauliMatrix &(TPauliMatrix::*TPauliMatrix_SetRotation1)(const TThreeVectorReal &axis) =
+   &TPauliMatrix::SetRotation;
+TPauliMatrix &(TPauliMatrix::*TPauliMatrix_SetRotation2)(const TUnitVector &axis, LDouble_t angle) =
+   &TPauliMatrix::SetRotation;
+TPauliMatrix &(TPauliMatrix::*TPauliMatrix_SetRotation3)(LDouble_t phi, LDouble_t theta, LDouble_t psi) =
+   &TPauliMatrix::SetRotation;
+
+void TPauliMatrix_Print(TPauliMatrix &obj) {
+   obj.Print();
+}
+
+Complex_t *TDiracMatrix_getitem(const TDiracMatrix &obj, int index) {
+   return obj[index];
+}
+
+Complex_t (TDiracMatrix::*TDiracMatrix_Component1)(const EDiracIndex i) const =
+   &TDiracMatrix::Component;
+Complex_t (TDiracMatrix::*TDiracMatrix_Component2)(const EDiracIndex i, const EDiracIndex j) const =
+   &TDiracMatrix::Component;
+
+TDiracMatrix &(TDiracMatrix::*TDiracMatrix_SetDiagonal1)(const Complex_t &a) =
+   &TDiracMatrix::SetDiagonal;
+TDiracMatrix &(TDiracMatrix::*TDiracMatrix_SetDiagonal4)(const Complex_t &a11, const Complex_t &a22, const Complex_t &a33, const Complex_t &a44) =
+   &TDiracMatrix::SetDiagonal;
+
+TDiracMatrix &(TDiracMatrix::*TDiracMatrix_SetUUbar1)(const TFourVectorReal &p) =
+   &TDiracMatrix::SetUUbar;
+TDiracMatrix &(TDiracMatrix::*TDiracMatrix_SetUUbar2)(const TFourVectorReal &p, const Float_t helicity) =
+   &TDiracMatrix::SetUUbar;
+TDiracMatrix &(TDiracMatrix::*TDiracMatrix_SetUUbar3)(const TFourVectorReal &p, const TDiracSpinor &u) =
+   &TDiracMatrix::SetUUbar;
+TDiracMatrix &(TDiracMatrix::*TDiracMatrix_SetUUbar4)(const TFourVectorReal &p, const TThreeVectorReal &polar) =
+   &TDiracMatrix::SetUUbar;
+TDiracMatrix &(TDiracMatrix::*TDiracMatrix_SetUUbar5)(const TFourVectorReal &p, const TPauliMatrix &density) =
+   &TDiracMatrix::SetUUbar;
+
+TDiracMatrix &(TDiracMatrix::*TDiracMatrix_SetVVbar1)(const TFourVectorReal &p) =
+   &TDiracMatrix::SetVVbar;
+TDiracMatrix &(TDiracMatrix::*TDiracMatrix_SetVVbar2)(const TFourVectorReal &p, const Float_t helicity) =
+   &TDiracMatrix::SetVVbar;
+TDiracMatrix &(TDiracMatrix::*TDiracMatrix_SetVVbar3)(const TFourVectorReal &p, const TDiracSpinor &u) =
+   &TDiracMatrix::SetVVbar;
+TDiracMatrix &(TDiracMatrix::*TDiracMatrix_SetVVbar4)(const TFourVectorReal &p, const TThreeVectorReal &polar) =
+   &TDiracMatrix::SetVVbar;
+TDiracMatrix &(TDiracMatrix::*TDiracMatrix_SetVVbar5)(const TFourVectorReal &p, const TPauliMatrix &density) =
+   &TDiracMatrix::SetVVbar;
+
+TDiracMatrix &(TDiracMatrix::*TDiracMatrix_SetRotation)(const TThreeRotation &rotOp) =
+   &TDiracMatrix::SetRotation;
+TDiracMatrix &(TDiracMatrix::*TDiracMatrix_SetRotation1)(const TThreeVectorReal &axis) =
+   &TDiracMatrix::SetRotation;
+TDiracMatrix &(TDiracMatrix::*TDiracMatrix_SetRotation2)(LDouble_t phi, LDouble_t theta, LDouble_t psi) =
+   &TDiracMatrix::SetRotation;
+TDiracMatrix &(TDiracMatrix::*TDiracMatrix_SetRotation3)(LDouble_t betaX, LDouble_t betaY, LDouble_t betaZ) =
+   &TDiracMatrix::SetRotation;
+
+TDiracMatrix &(TDiracMatrix::*TDiracMatrix_SetBoost)(const TLorentzBoost &boostOp) =
+   &TDiracMatrix::SetBoost;
+TDiracMatrix &(TDiracMatrix::*TDiracMatrix_SetBoost1)(const TThreeVectorReal &beta) =
+   &TDiracMatrix::SetBoost;
+TDiracMatrix &(TDiracMatrix::*TDiracMatrix_SetBoost2)(const TUnitVector &bhat, const LDouble_t &beta) =
+   &TDiracMatrix::SetBoost;
+TDiracMatrix &(TDiracMatrix::*TDiracMatrix_SetBoost3)(LDouble_t betaX, LDouble_t betaY, LDouble_t betaZ) =
+   &TDiracMatrix::SetBoost;
+
+TDiracMatrix &(TDiracMatrix::*TDiracMatrix_Slash1)(const TFourVectorReal &p) =
+   &TDiracMatrix::Slash;
+TDiracMatrix &(TDiracMatrix::*TDiracMatrix_Slash2)(const TFourVectorComplex &A) =
+   &TDiracMatrix::Slash;
+
+void TDiracMatrix_Print(TDiracMatrix &obj) {
+   obj.Print();
+}
+
+
+Complex_t &TPauliSpinor_getitem(const TPauliSpinor &obj, int index) {
+   return obj[index];
+}
+
+LDouble_t (TPauliSpinor::*TPauliSpinor_DistanceTo1)(const TPauliSpinor &another) const =
+   &TPauliSpinor::DistanceTo;
+LDouble_t (TPauliSpinor::*TPauliSpinor_DistanceTo2)(const Complex_t *array) const =
+   &TPauliSpinor::DistanceTo;
+
+Bool_t (TPauliSpinor::*TPauliSpinor_equals)(const TPauliSpinor &other) const =
+   &TPauliSpinor::operator==;
+Bool_t (TPauliSpinor::*TPauliSpinor_nequals)(const TPauliSpinor &other) const =
+   &TPauliSpinor::operator!=;
+
+TPauliSpinor &(TPauliSpinor::*TPauliSpinor_Normalize)() =
+   &TPauliSpinor::Normalize;
+TPauliSpinor &(TPauliSpinor::*TPauliSpinor_Normalize1)(const LDouble_t &norm) =
+   &TPauliSpinor::Normalize;
+
+TPauliSpinor &(TPauliSpinor::*TPauliSpinor_SetPolar)(const TUnitVector &pol) =
+   &TPauliSpinor::SetPolar;
+TPauliSpinor &(TPauliSpinor::*TPauliSpinor_SetPolar2)(const LDouble_t &theta, const LDouble_t &phi) =
+   &TPauliSpinor::SetPolar;
+
+TPauliSpinor &(TPauliSpinor::*TPauliSpinor_Rotate)(const TThreeRotation &rotOp) =
+   &TPauliSpinor::Rotate;
+TPauliSpinor &(TPauliSpinor::*TPauliSpinor_Rotate1)(const TThreeVectorReal &axis) =
+   &TPauliSpinor::Rotate;
+TPauliSpinor &(TPauliSpinor::*TPauliSpinor_Rotate2)(const TUnitVector &axis, LDouble_t angle) =
+   &TPauliSpinor::Rotate;
+TPauliSpinor &(TPauliSpinor::*TPauliSpinor_Rotate3)(const LDouble_t &phi, const LDouble_t &theta, const LDouble_t &psi) =
+   &TPauliSpinor::Rotate;
+
+void TPauliSpinor_Print(TPauliSpinor &obj) {
+   obj.Print();
+}
+
+
+Complex_t &TDiracSpinor_getitem(const TDiracSpinor &obj, int index) {
+   return obj[index];
+}
+
+LDouble_t (TDiracSpinor::*TDiracSpinor_DistanceTo1)(const TDiracSpinor &another) const =
+   &TDiracSpinor::DistanceTo;
+LDouble_t (TDiracSpinor::*TDiracSpinor_DistanceTo2)(const Complex_t *array) const =
+   &TDiracSpinor::DistanceTo;
+
+Bool_t (TDiracSpinor::*TDiracSpinor_equals)(const TDiracSpinor &other) const =
+   &TDiracSpinor::operator==;
+Bool_t (TDiracSpinor::*TDiracSpinor_nequals)(const TDiracSpinor &other) const =
+   &TDiracSpinor::operator!=;
+
+TDiracSpinor &(TDiracSpinor::*TDiracSpinor_Normalize)(const LDouble_t &norm) =
+   &TDiracSpinor::Normalize;
+TDiracSpinor &(TDiracSpinor::*TDiracSpinor_Normalize1)(const TFourVectorReal &p) =
+   &TDiracSpinor::Normalize;
+
+TDiracSpinor &(TDiracSpinor::*TDiracSpinor_SetStateU)(const TFourVectorReal &p, Float_t helicity) =
+   &TDiracSpinor::SetStateU;
+TDiracSpinor &(TDiracSpinor::*TDiracSpinor_SetStateU2)(const TFourVectorReal &p, const TUnitVector &polar) =
+   &TDiracSpinor::SetStateU;
+
+TDiracSpinor &(TDiracSpinor::*TDiracSpinor_SetStateV)(const TFourVectorReal &p, Float_t helicity) =
+   &TDiracSpinor::SetStateV;
+TDiracSpinor &(TDiracSpinor::*TDiracSpinor_SetStateV2)(const TFourVectorReal &p, const TUnitVector &polar) =
+   &TDiracSpinor::SetStateV;
+
+TDiracSpinor &(TDiracSpinor::*TDiracSpinor_Rotate)(const TThreeRotation &rotOp) =
+   &TDiracSpinor::Rotate;
+TDiracSpinor &(TDiracSpinor::*TDiracSpinor_Rotate1)(const TThreeVectorReal &axis) =
+   &TDiracSpinor::Rotate;
+TDiracSpinor &(TDiracSpinor::*TDiracSpinor_Rotate2)(const TUnitVector &axis, LDouble_t angle) =
+   &TDiracSpinor::Rotate;
+TDiracSpinor &(TDiracSpinor::*TDiracSpinor_Rotate3)(const LDouble_t &phi, const LDouble_t &theta, const LDouble_t &psi) =
+   &TDiracSpinor::Rotate;
+
+TDiracSpinor &(TDiracSpinor::*TDiracSpinor_Boost)(const TLorentzBoost &boostOp) =
+   &TDiracSpinor::Boost;
+TDiracSpinor &(TDiracSpinor::*TDiracSpinor_Boost1)(const TThreeVectorReal &beta) =
+   &TDiracSpinor::Boost;
+TDiracSpinor &(TDiracSpinor::*TDiracSpinor_Boost2)(const TUnitVector &bhat, LDouble_t beta) =
+   &TDiracSpinor::Boost;
+TDiracSpinor &(TDiracSpinor::*TDiracSpinor_Boost3)(LDouble_t betaX, LDouble_t betaY, LDouble_t betaZ) =
+   &TDiracSpinor::Boost;
+TDiracSpinor &(TDiracSpinor::*TDiracSpinor_Boost4)(const LDouble_t *beta) =
+   &TDiracSpinor::Boost;
+
+void TDiracSpinor_Print(TDiracSpinor &obj) {
+   obj.Print();
+}
+
+///////////////////////////////////////////////////////////
 // Create a python module containing all of the user classes
 // that are needed to interact with Dirac++ objects from python.
 // Here it is named libdiracxx (happens to also be the name of
@@ -382,7 +602,8 @@ BOOST_PYTHON_MODULE(libDirac)
       .def("Print", &TFourVectorReal_Print)
    ;
 
-   boost::python::class_<TFourVectorComplex, TFourVectorComplex*>
+   boost::python::class_<TFourVectorComplex, TFourVectorComplex*,
+          boost::python::bases<TThreeVectorReal> >
          ("TFourVectorComplex",
           "four vector with complex components")
       .def(boost::python::init<const Complex_t &, const Complex_t &, const Complex_t &, const Complex_t &>())
@@ -446,5 +667,454 @@ BOOST_PYTHON_MODULE(libDirac)
       .def("__neg__", &TFourVectorComplex::operator-)
       .def("Print", &TFourVectorComplex::Print)
       .def("Print", &TFourVectorComplex_Print)
+   ;
+
+   boost::python::class_<TThreeRotation, TThreeRotation*,
+          boost::python::bases<TLorentzTransform> >
+         ("TThreeRotation",
+          "rotation operation in 3-space")
+      .def(boost::python::init<const TThreeVectorReal &>())
+      .def(boost::python::init<const TUnitVector &, const LDouble_t>())
+      .def(boost::python::init<LDouble_t, LDouble_t, LDouble_t>())
+      .def(boost::python::init<const TThreeRotation &>())
+      .def("Axis", &TThreeRotation::Axis)
+      .def("GetAxis", &TThreeRotation::GetAxis)
+      .def("GetEuler", &TThreeRotation::GetEuler)
+      .def(boost::python::self_ns::self *= TThreeRotation())
+      .def(boost::python::self_ns::self * TThreeVectorReal())
+      .def(boost::python::self_ns::self * TThreeVectorComplex())
+      .def(boost::python::self_ns::self * TThreeRotation())
+      .def("GetEuler", &TThreeRotation::GetEuler)
+      .def("Null", &TThreeRotation::Null,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Transpose", &TThreeRotation::Transpose,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Invert", &TThreeRotation::Invert,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetAxis", TThreeRotation_SetAxis,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetAxis", TThreeRotation_SetAxis2,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetEuler", &TThreeRotation::SetEuler,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Print", &TThreeRotation::Print)
+      .def("Print", &TThreeRotation_Print)
+   ;
+
+   boost::python::class_<TLorentzBoost, TLorentzBoost*,
+          boost::python::bases<TLorentzTransform> >
+         ("TLorentzBoost",
+          "Lorentz boost in 4-space")
+      .def(boost::python::init<const TThreeVectorReal &>())
+      .def(boost::python::init<const TFourVectorReal &>())
+      .def(boost::python::init<LDouble_t, LDouble_t, LDouble_t>())
+      .def(boost::python::init<const LDouble_t*>())
+      .def(boost::python::init<const TUnitVector &, LDouble_t>())
+      .def(boost::python::init<const TLorentzBoost &>())
+      .def("Beta", &TLorentzBoost::Beta)
+      .def("Null", &TLorentzBoost::Null,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Transpose", &TLorentzBoost::Transpose,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Invert", &TLorentzBoost::Invert,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetBeta", TLorentzBoost_SetBeta,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetBeta", TLorentzBoost_SetBeta1,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetBeta", TLorentzBoost_SetBeta2,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetBeta", TLorentzBoost_SetBeta3,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetBeta", TLorentzBoost_SetBeta4,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Print", &TLorentzBoost::Print)
+      .def("Print", &TLorentzBoost_Print)
+   ;
+
+   boost::python::class_<TLorentzTransform, TLorentzTransform*>
+         ("TLorentzTransform",
+          "general Lorentz transform in 4-space")
+      .def(boost::python::init<const TLorentzTransform &>())
+      .def("SetResolution", &TLorentzTransform::SetResolution)
+      .def("Resolution", &TLorentzTransform::Resolution)
+      .def("IsNull", &TLorentzTransform::IsNull)
+      .def("IsRotation", &TLorentzTransform::IsRotation)
+      .def("IsLorentzBoost", &TLorentzTransform::IsLorentzBoost)
+      .def("IsOrthogonal", &TLorentzTransform::IsOrthogonal)
+      .def("IsIsochronous", &TLorentzTransform::IsIsochronous)
+      .def("IsProper", &TLorentzTransform::IsProper)
+      .def("Factorize", &TLorentzTransform::Factorize)
+      .def("Null", &TLorentzBoost::Null,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("TimeRev", &TLorentzBoost::TimeRev,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SpaceInv", &TLorentzBoost::SpaceInv,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Transpose", &TLorentzBoost::Transpose,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Invert", &TLorentzBoost::Invert,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def(boost::python::self_ns::self *= TLorentzTransform())
+      .def(boost::python::self_ns::self * TLorentzTransform())
+      .def(boost::python::self_ns::self * TFourVectorComplex())
+      .def(boost::python::self_ns::self * TFourVectorReal())
+      .def("__eq__", &TLorentzTransform::operator==)
+      .def("__ne__", &TLorentzTransform::operator!=)
+      .def("Print", &TLorentzBoost::Print)
+      .def("Print", &TLorentzBoost_Print)
+   ;
+
+   boost::python::class_<TPauliMatrix, TPauliMatrix*>
+         ("TPauliMatrix",
+          "general 3x3 complex matrix")
+      .def(boost::python::init<const EPauliIndex>())
+      .def(boost::python::init<Float_t>())
+      .def(boost::python::init<Double_t>())
+      .def(boost::python::init<LDouble_t>())
+      .def(boost::python::init<Complex_t>())
+      .def(boost::python::init<Complex_t, const TThreeVectorComplex &>())
+      .def(boost::python::init<const TPauliMatrix &>())
+      .def("__getitem__", &TPauliMatrix_getitem,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetResolution", &TPauliMatrix::SetResolution)
+      .def("Resolution", &TPauliMatrix::Resolution)
+      .def("IsIdentity", &TPauliMatrix::IsIdentity)
+      .def("IsUnitary", &TPauliMatrix::IsUnitary)
+      .def("IsDiagonal", &TPauliMatrix::IsDiagonal)
+      .def("IsHermetian", &TPauliMatrix::IsHermetian)
+      .def("IsIdempotent", &TPauliMatrix::IsIdempotent)
+      .def("Trace", &TPauliMatrix::Trace)
+      .def("Determ", &TPauliMatrix::Determ)
+      .def("Decompose", TPauliMatrix_Decompose1)
+      .def("Decompose", TPauliMatrix_Decompose2)
+      .def("GetDiagonal", &TPauliMatrix::GetDiagonal)
+      .def(boost::python::self_ns::self += TPauliMatrix())
+      .def(boost::python::self_ns::self += Complex_t())
+      .def(boost::python::self_ns::self += LDouble_t())
+      .def(boost::python::self_ns::self -= TPauliMatrix())
+      .def(boost::python::self_ns::self -= Complex_t())
+      .def(boost::python::self_ns::self -= LDouble_t())
+      .def(boost::python::self_ns::self *= TPauliMatrix())
+      .def(boost::python::self_ns::self *= Complex_t())
+      .def(boost::python::self_ns::self *= LDouble_t())
+      .def(boost::python::self_ns::self /= TPauliMatrix())
+      .def(boost::python::self_ns::self /= Complex_t())
+      .def(boost::python::self_ns::self /= LDouble_t())
+      .def(boost::python::self_ns::self + TPauliMatrix())
+      .def(boost::python::self_ns::self + Complex_t())
+      .def(Complex_t() + boost::python::self_ns::self)
+      .def(boost::python::self_ns::self - TPauliMatrix())
+      .def(boost::python::self_ns::self - Complex_t())
+      .def(Complex_t() - boost::python::self_ns::self)
+      .def(boost::python::self_ns::self * TPauliMatrix())
+      .def(boost::python::self_ns::self * Complex_t())
+      .def(Complex_t() * boost::python::self_ns::self)
+      .def(boost::python::self_ns::self / TPauliMatrix())
+      .def(boost::python::self_ns::self / Complex_t())
+      .def(Complex_t() / boost::python::self_ns::self)
+      .def("__eq__", &TPauliMatrix::operator==)
+      .def("__ne__", &TPauliMatrix::operator!=)
+      .def("Zero", &TPauliMatrix::Zero,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Conj", &TPauliMatrix::Conj,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Invert", &TPauliMatrix::Invert,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Adjoint", &TPauliMatrix::Adjoint,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Transpose", &TPauliMatrix::Transpose,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Compose", TPauliMatrix_Compose1,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Compose", TPauliMatrix_Compose2,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetDiagonal", TPauliMatrix_SetDiagonal1,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetDiagonal", TPauliMatrix_SetDiagonal2,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetDensity", &TPauliMatrix::SetDensity,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetRotation", TPauliMatrix_SetRotation,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetRotation", TPauliMatrix_SetRotation1,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetRotation", TPauliMatrix_SetRotation2,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetRotation", TPauliMatrix_SetRotation3,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SimTransform", &TPauliMatrix::SimTransform,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("UniTransform", &TPauliMatrix::UniTransform,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("__neg__", &TPauliMatrix::operator-)
+      .def("Print", &TPauliMatrix::Print)
+      .def("Print", &TPauliMatrix_Print)
+   ;
+
+   boost::python::class_<TDiracMatrix, TDiracMatrix*>
+         ("TDiracMatrix",
+          "general 4x4 complex matrix")
+      .def(boost::python::init<const EDiracIndex>())
+      .def(boost::python::init<const EDiracIndex, const EDiracIndex>())
+      .def(boost::python::init<LDouble_t>())
+      .def(boost::python::init<Complex_t>())
+      .def(boost::python::init<const TLorentzTransform &>())
+      .def(boost::python::init<const TDiracMatrix &>())
+      .def("__getitem__", &TDiracMatrix_getitem,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetResolution", &TDiracMatrix::SetResolution)
+      .def("Resolution", &TDiracMatrix::Resolution)
+      .def("IsIdentity", &TDiracMatrix::IsIdentity)
+      .def("IsUnitary", &TDiracMatrix::IsUnitary)
+      .def("IsDiagonal", &TDiracMatrix::IsDiagonal)
+      .def("IsAntiUnitary", &TDiracMatrix::IsDiagonal)
+      .def("IsHermetian", &TDiracMatrix::IsHermetian)
+      .def("IsIdempotent", &TDiracMatrix::IsIdempotent)
+      .def("Trace", &TDiracMatrix::Trace)
+      .def("Determ", &TDiracMatrix::Determ)
+      .def("Component", TDiracMatrix_Component1)
+      .def("Component", TDiracMatrix_Component2)
+      .def("GetDiagonal", &TDiracMatrix::GetDiagonal)
+      .def(boost::python::self_ns::self += TDiracMatrix())
+      .def(boost::python::self_ns::self += Complex_t())
+      .def(boost::python::self_ns::self += LDouble_t())
+      .def(boost::python::self_ns::self -= TDiracMatrix())
+      .def(boost::python::self_ns::self -= Complex_t())
+      .def(boost::python::self_ns::self -= LDouble_t())
+      .def(boost::python::self_ns::self *= TDiracMatrix())
+      .def(boost::python::self_ns::self *= Complex_t())
+      .def(boost::python::self_ns::self *= LDouble_t())
+      .def(boost::python::self_ns::self /= TDiracMatrix())
+      .def(boost::python::self_ns::self /= Complex_t())
+      .def(boost::python::self_ns::self /= LDouble_t())
+      .def(boost::python::self_ns::self + TDiracMatrix())
+      .def(boost::python::self_ns::self + Complex_t())
+      .def(boost::python::self_ns::self + LDouble_t())
+      .def(Complex_t() + boost::python::self_ns::self)
+      .def(LDouble_t() + boost::python::self_ns::self)
+      .def(boost::python::self_ns::self - TDiracMatrix())
+      .def(boost::python::self_ns::self - Complex_t())
+      .def(boost::python::self_ns::self - LDouble_t())
+      .def(Complex_t() - boost::python::self_ns::self)
+      .def(LDouble_t() - boost::python::self_ns::self)
+      .def(boost::python::self_ns::self * TDiracMatrix())
+      .def(boost::python::self_ns::self * Complex_t())
+      .def(boost::python::self_ns::self * LDouble_t())
+      .def(Complex_t() * boost::python::self_ns::self)
+      .def(LDouble_t() * boost::python::self_ns::self)
+      .def(boost::python::self_ns::self / TDiracMatrix())
+      .def(boost::python::self_ns::self / Complex_t())
+      .def(boost::python::self_ns::self / LDouble_t())
+      .def(Complex_t() / boost::python::self_ns::self)
+      .def(LDouble_t() / boost::python::self_ns::self)
+      .def("__eq__", &TDiracMatrix::operator==)
+      .def("__ne__", &TDiracMatrix::operator!=)
+      .def("Zero", &TDiracMatrix::Zero,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Conj", &TDiracMatrix::Conj,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Invert", &TDiracMatrix::Invert,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Adjoint", &TDiracMatrix::Adjoint,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Transpose", &TDiracMatrix::Transpose,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetDiagonal", TDiracMatrix_SetDiagonal1,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetDiagonal", TDiracMatrix_SetDiagonal4,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetUUbar", TDiracMatrix_SetUUbar1,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetUUbar", TDiracMatrix_SetUUbar2,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetUUbar", TDiracMatrix_SetUUbar3,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetUUbar", TDiracMatrix_SetUUbar4,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetUUbar", TDiracMatrix_SetUUbar5,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetVVbar", TDiracMatrix_SetVVbar1,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetVVbar", TDiracMatrix_SetVVbar2,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetVVbar", TDiracMatrix_SetVVbar3,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetVVbar", TDiracMatrix_SetVVbar4,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetVVbar", TDiracMatrix_SetVVbar5,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetRotation", TDiracMatrix_SetRotation,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetRotation", TDiracMatrix_SetRotation1,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetRotation", TDiracMatrix_SetRotation2,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetRotation", TDiracMatrix_SetRotation3,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetBoost", TDiracMatrix_SetBoost,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetBoost", TDiracMatrix_SetBoost1,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetBoost", TDiracMatrix_SetBoost2,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetBoost", TDiracMatrix_SetBoost3,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetTransform", &TDiracMatrix::SetTransform,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SimTransform", &TDiracMatrix::SimTransform,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("UniTransform", &TDiracMatrix::UniTransform,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Slash", TDiracMatrix_Slash1,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Slash", TDiracMatrix_Slash2,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("__neg__", &TDiracMatrix::operator-,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Print", &TDiracMatrix::Print)
+      .def("Print", &TDiracMatrix_Print)
+   ;
+
+   boost::python::class_<TPauliSpinor, TPauliSpinor*>
+         ("TPauliSpinor",
+          "general 2x1 complex column matrix")
+      .def(boost::python::init<const Complex_t &, const Complex_t &>())
+      .def(boost::python::init<const Complex_t *>())
+      .def(boost::python::init<LDouble_t, LDouble_t>())
+      .def(boost::python::init<const TUnitVector &>())
+      .def(boost::python::init<const TPauliSpinor &>())
+      .def("__getitem__", &TPauliSpinor_getitem,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetResolution", &TPauliSpinor::SetResolution)
+      .def("Resolution", &TPauliSpinor::Resolution)
+      .def("Norm", &TPauliSpinor::Norm)
+      .def("NormSqr", &TPauliSpinor::NormSqr)
+      .def("GetPolar", &TPauliSpinor::GetPolar)
+      .def("Polar", &TPauliSpinor::Polar)
+      .def("DistanceTo", TPauliSpinor_DistanceTo1)
+      .def("DistanceTo", TPauliSpinor_DistanceTo2)
+      .def(boost::python::self_ns::self += TPauliSpinor())
+      .def(boost::python::self_ns::self -= TPauliSpinor())
+      .def(boost::python::self_ns::self *= Complex_t())
+      .def(boost::python::self_ns::self /= Complex_t())
+      .def(boost::python::self_ns::self + TPauliSpinor())
+      .def(boost::python::self_ns::self - TPauliSpinor())
+      .def(boost::python::self_ns::self * Complex_t())
+      .def(boost::python::self_ns::self * LDouble_t())
+      .def(Complex_t() * boost::python::self_ns::self)
+      .def(LDouble_t() * boost::python::self_ns::self)
+      .def(boost::python::self_ns::self / Complex_t())
+      .def("__eq__", TPauliSpinor_equals)
+      .def("__ne__", TPauliSpinor_nequals)
+      .def("Zero", &TPauliSpinor::Zero,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Conj", &TPauliSpinor::Conj,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Normalize", TPauliSpinor_Normalize,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Normalize", TPauliSpinor_Normalize1,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetPolar", TPauliSpinor_SetPolar,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetPolar", TPauliSpinor_SetPolar2,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Operate", &TPauliSpinor::Operate,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Rotate", TPauliSpinor_Rotate,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Rotate", TPauliSpinor_Rotate1,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Rotate", TPauliSpinor_Rotate2,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Rotate", TPauliSpinor_Rotate3,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("InnerProd", &TPauliSpinor::InnerProd)
+      .def("ScalarProd", &TPauliSpinor::ScalarProd)
+      .def("__neg__", &TPauliSpinor::operator-)
+      .def("Print", &TPauliSpinor::Print)
+      .def("Print", &TPauliSpinor_Print)
+   ;
+
+   boost::python::class_<TDiracSpinor, TDiracSpinor*>
+         ("TDiracSpinor",
+          "general 4x1 complex column matrix")
+      .def(boost::python::init<const Complex_t &, const Complex_t &, const Complex_t &, const Complex_t &>())
+      .def(boost::python::init<const Complex_t *>())
+      .def(boost::python::init<const TFourVectorReal &, const Float_t>())
+      .def(boost::python::init<const TFourVectorReal &, const TUnitVector &>())
+      .def(boost::python::init<const TDiracSpinor &>())
+      .def("__getitem__", &TDiracSpinor_getitem,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetResolution", &TDiracSpinor::SetResolution)
+      .def("Resolution", &TDiracSpinor::Resolution)
+      .def("Norm", &TDiracSpinor::Norm)
+      .def("NormSqr", &TDiracSpinor::NormSqr)
+      .def("Upper", &TDiracSpinor::Upper)
+      .def("Lower", &TDiracSpinor::Lower)
+      .def("DistanceTo", TDiracSpinor_DistanceTo1)
+      .def("DistanceTo", TDiracSpinor_DistanceTo2)
+      .def(boost::python::self_ns::self += TDiracSpinor())
+      .def(boost::python::self_ns::self -= TDiracSpinor())
+      .def(boost::python::self_ns::self *= Complex_t())
+      .def(boost::python::self_ns::self /= Complex_t())
+      .def(boost::python::self_ns::self + TDiracSpinor())
+      .def(boost::python::self_ns::self - TDiracSpinor())
+      .def(boost::python::self_ns::self * Complex_t())
+      .def(boost::python::self_ns::self * LDouble_t())
+      .def(Complex_t() * boost::python::self_ns::self)
+      .def(LDouble_t() * boost::python::self_ns::self)
+      .def(boost::python::self_ns::self / Complex_t())
+      .def("__eq__", TDiracSpinor_equals)
+      .def("__ne__", TDiracSpinor_nequals)
+      .def("Zero", &TDiracSpinor::Zero,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Conj", &TDiracSpinor::Conj,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Bar", &TDiracSpinor::Bar,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetUpper", &TDiracSpinor::SetUpper)
+      .def("SetLower", &TDiracSpinor::SetLower)
+      .def("Normalize", TDiracSpinor_Normalize,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Normalize", TDiracSpinor_Normalize1,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetStateU", TDiracSpinor_SetStateU,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetStateU", TDiracSpinor_SetStateU2,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetStateV", TDiracSpinor_SetStateV,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetStateV", TDiracSpinor_SetStateV2,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Operate", &TDiracSpinor::Operate,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Rotate", TDiracSpinor_Rotate,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Rotate", TDiracSpinor_Rotate1,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Rotate", TDiracSpinor_Rotate2,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Rotate", TDiracSpinor_Rotate3,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Boost", TDiracSpinor_Boost,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Boost", TDiracSpinor_Boost1,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Boost", TDiracSpinor_Boost2,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Boost", TDiracSpinor_Boost3,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Boost", TDiracSpinor_Boost4,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("BoostToRest", &TDiracSpinor::BoostToRest,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("BoostFromRest", &TDiracSpinor::BoostFromRest,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("InnerProd", &TDiracSpinor::InnerProd)
+      .def("ScalarProd", &TDiracSpinor::ScalarProd)
+      .def("__neg__", &TDiracSpinor::operator-)
+      .def("Print", &TDiracSpinor::Print)
+      .def("Print", &TDiracSpinor_Print)
    ;
 }
