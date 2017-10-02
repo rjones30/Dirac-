@@ -53,7 +53,7 @@ public:
    void GetCoord(Complex_t &t, Complex_t &x, Complex_t &y, Complex_t &z) const;
    void GetCoord(Complex_t *array) const;
    LDouble_t DistanceTo(const Complex_t t, const Complex_t x,
-                       const Complex_t y, const Complex_t z) const;
+                        const Complex_t y, const Complex_t z) const;
    LDouble_t DistanceTo(const Float_t *array) const;
    LDouble_t DistanceTo(const LDouble_t *array) const;
    LDouble_t DistanceTo(const Complex_t *array) const;
