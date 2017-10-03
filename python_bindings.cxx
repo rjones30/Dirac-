@@ -694,6 +694,39 @@ BOOST_PYTHON_MODULE(libDirac)
       .def("Print", &TFourVectorComplex_Print)
    ;
 
+   boost::python::class_<TLorentzTransform, TLorentzTransform*>
+         ("TLorentzTransform",
+          "general Lorentz transform in 4-space")
+      .def(boost::python::init<const TLorentzTransform &>())
+      .def("SetResolution", &TLorentzTransform::SetResolution)
+      .def("Resolution", &TLorentzTransform::Resolution)
+      .def("IsNull", &TLorentzTransform::IsNull)
+      .def("IsRotation", &TLorentzTransform::IsRotation)
+      .def("IsLorentzBoost", &TLorentzTransform::IsLorentzBoost)
+      .def("IsOrthogonal", &TLorentzTransform::IsOrthogonal)
+      .def("IsIsochronous", &TLorentzTransform::IsIsochronous)
+      .def("IsProper", &TLorentzTransform::IsProper)
+      .def("Factorize", &TLorentzTransform::Factorize)
+      .def("Null", &TLorentzBoost::Null,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("TimeRev", &TLorentzBoost::TimeRev,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SpaceInv", &TLorentzBoost::SpaceInv,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Transpose", &TLorentzBoost::Transpose,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Invert", &TLorentzBoost::Invert,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def(boost::python::self_ns::self *= TLorentzTransform())
+      .def(boost::python::self_ns::self * TLorentzTransform())
+      .def(boost::python::self_ns::self * TFourVectorComplex())
+      .def(boost::python::self_ns::self * TFourVectorReal())
+      .def("__eq__", &TLorentzTransform::operator==)
+      .def("__ne__", &TLorentzTransform::operator!=)
+      .def("Print", &TLorentzBoost::Print)
+      .def("Print", &TLorentzBoost_Print)
+   ;
+
    boost::python::class_<TThreeRotation, TThreeRotation*,
           boost::python::bases<TLorentzTransform> >
          ("TThreeRotation",
@@ -753,39 +786,6 @@ BOOST_PYTHON_MODULE(libDirac)
            boost::python::return_value_policy<boost::python::reference_existing_object>())
       .def("SetBeta", TLorentzBoost_SetBeta4,
            boost::python::return_value_policy<boost::python::reference_existing_object>())
-      .def("Print", &TLorentzBoost::Print)
-      .def("Print", &TLorentzBoost_Print)
-   ;
-
-   boost::python::class_<TLorentzTransform, TLorentzTransform*>
-         ("TLorentzTransform",
-          "general Lorentz transform in 4-space")
-      .def(boost::python::init<const TLorentzTransform &>())
-      .def("SetResolution", &TLorentzTransform::SetResolution)
-      .def("Resolution", &TLorentzTransform::Resolution)
-      .def("IsNull", &TLorentzTransform::IsNull)
-      .def("IsRotation", &TLorentzTransform::IsRotation)
-      .def("IsLorentzBoost", &TLorentzTransform::IsLorentzBoost)
-      .def("IsOrthogonal", &TLorentzTransform::IsOrthogonal)
-      .def("IsIsochronous", &TLorentzTransform::IsIsochronous)
-      .def("IsProper", &TLorentzTransform::IsProper)
-      .def("Factorize", &TLorentzTransform::Factorize)
-      .def("Null", &TLorentzBoost::Null,
-           boost::python::return_value_policy<boost::python::reference_existing_object>())
-      .def("TimeRev", &TLorentzBoost::TimeRev,
-           boost::python::return_value_policy<boost::python::reference_existing_object>())
-      .def("SpaceInv", &TLorentzBoost::SpaceInv,
-           boost::python::return_value_policy<boost::python::reference_existing_object>())
-      .def("Transpose", &TLorentzBoost::Transpose,
-           boost::python::return_value_policy<boost::python::reference_existing_object>())
-      .def("Invert", &TLorentzBoost::Invert,
-           boost::python::return_value_policy<boost::python::reference_existing_object>())
-      .def(boost::python::self_ns::self *= TLorentzTransform())
-      .def(boost::python::self_ns::self * TLorentzTransform())
-      .def(boost::python::self_ns::self * TFourVectorComplex())
-      .def(boost::python::self_ns::self * TFourVectorReal())
-      .def("__eq__", &TLorentzTransform::operator==)
-      .def("__ne__", &TLorentzTransform::operator!=)
       .def("Print", &TLorentzBoost::Print)
       .def("Print", &TLorentzBoost_Print)
    ;
