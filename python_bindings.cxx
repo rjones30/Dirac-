@@ -396,6 +396,31 @@ void TDiracSpinor_Print(TDiracSpinor &obj) {
    obj.Print();
 }
 
+
+TLepton &(TLepton::*TLepton_SetMom)(const TFourVectorReal &p) =
+   &TLepton::SetMom;
+TLepton &(TLepton::*TLepton_SetMom1)(const TThreeVectorReal &p) =
+   &TLepton::SetMom;
+
+void TLepton_Print(TLepton &obj) {
+   obj.Print();
+}
+
+
+TPhoton &(TPhoton::*TPhoton_SetMom)(const TFourVectorReal &p) =
+   &TPhoton::SetMom;
+TPhoton &(TPhoton::*TPhoton_SetMom1)(const TThreeVectorReal &p) =
+   &TPhoton::SetMom;
+
+void TPhoton_Print(TPhoton &obj) {
+   obj.Print();
+}
+
+
+void TGhoston_Print(TGhoston &obj) {
+   obj.Print();
+}
+
 ///////////////////////////////////////////////////////////
 // Create a python module containing all of the user classes
 // that are needed to interact with Dirac++ objects from python.
@@ -1116,5 +1141,67 @@ BOOST_PYTHON_MODULE(libDirac)
       .def("__neg__", &TDiracSpinor::operator-)
       .def("Print", &TDiracSpinor::Print)
       .def("Print", &TDiracSpinor_Print)
+   ;
+
+   boost::python::class_<TLepton, TLepton*>
+         ("TLepton",
+          "object representing a lepton")
+      .def(boost::python::init<LDouble_t>())
+      .def(boost::python::init<const TFourVectorReal &>())
+      .def(boost::python::init<const TFourVectorReal &, LDouble_t>())
+      .def(boost::python::init<const TThreeVectorReal &>())
+      .def(boost::python::init<const TThreeVectorReal &, LDouble_t>())
+      .def(boost::python::init<const TLepton>())
+      .def("Mass", &TLepton::Mass)
+      .def("Mom", &TLepton::Mom)
+      .def("Pol", &TLepton::Pol)
+      .def("SDM", &TLepton::SDM,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetMom", TLepton_SetMom,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetMom", TLepton_SetMom1,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetPol", &TLepton::SetPol,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("AllPol", &TLepton::AllPol,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Print", &TLepton::Print)
+      .def("Print", &TLepton_Print)
+   ;
+
+   boost::python::class_<TPhoton, TPhoton*>
+         ("TPhoton",
+          "object representing a photon")
+      .def(boost::python::init<const TFourVectorReal &>())
+      .def(boost::python::init<const TThreeVectorReal &>())
+      .def(boost::python::init<const TPhoton &>())
+      .def("Mom", &TPhoton::Mom)
+      .def("Pol", &TPhoton::Pol)
+      .def("Eps", &TPhoton::Eps)
+      .def("EpsStar", &TPhoton::EpsStar)
+      .def("SDM", &TPhoton::SDM,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetMom", TPhoton_SetMom,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetMom", TPhoton_SetMom1,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetPol", &TPhoton::SetPol,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("AllPol", &TPhoton::AllPol,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("Print", &TPhoton::Print)
+      .def("Print", &TPhoton_Print)
+   ;
+
+   boost::python::class_<TGhoston, TGhoston*,
+          boost::python::bases<TPhoton> >
+         ("TGhoston",
+          "object representing a ghost photon (longitudinal mode)")
+      .def(boost::python::init<const TFourVectorReal &>())
+      .def(boost::python::init<const TThreeVectorReal &>())
+      .def("Eps", &TGhoston::Eps)
+      .def("EpsStar", &TGhoston::EpsStar)
+      .def("Print", &TGhoston::Print)
+      .def("Print", &TGhoston_Print)
    ;
 }
