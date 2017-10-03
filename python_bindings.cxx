@@ -421,6 +421,11 @@ void TGhoston_Print(TGhoston &obj) {
    obj.Print();
 }
 
+
+void TCrossSection_Print(TCrossSection &obj) {
+   obj.Print();
+}
+
 ///////////////////////////////////////////////////////////
 // Create a python module containing all of the user classes
 // that are needed to interact with Dirac++ objects from python.
@@ -1203,5 +1208,22 @@ BOOST_PYTHON_MODULE(libDirac)
       .def("EpsStar", &TGhoston::EpsStar)
       .def("Print", &TGhoston::Print)
       .def("Print", &TGhoston_Print)
+   ;
+
+   boost::python::class_<TCrossSection, TCrossSection*>
+         ("TCrossSection",
+          "methods for computing various QED polarized cross sections")
+      .def("Compton", &TCrossSection::Compton)
+      .staticmethod("Compton")
+      .def("Bremsstrahlung", &TCrossSection::Bremsstrahlung)
+      .staticmethod("Bremsstrahlung")
+      .def("PairProduction", &TCrossSection::PairProduction)
+      .staticmethod("PairProduction")
+      .def("TripletProduction", &TCrossSection::TripletProduction)
+      .staticmethod("TripletProduction")
+      .def("eeBremsstrahlung", &TCrossSection::eeBremsstrahlung)
+      .staticmethod("eeBremsstrahlung")
+      .def("Print", &TCrossSection::Print)
+      .def("Print", &TCrossSection_Print)
    ;
 }
