@@ -498,25 +498,25 @@ LDouble_t TCrossSection::TripletProduction(const TPhoton &gIn,
    const LDouble_t mLepton = e0->Mass();
 
    // Obtain the four lepton state vectors
-   TDiracSpinor u0[2];
+   TDiracSpinor u0[2]; // incoming electron
    u0[0].SetStateU(e0->Mom(), +0.5);
    u0[1].SetStateU(e0->Mom(), -0.5);
-   TDiracSpinor v1[2];
+   TDiracSpinor v1[2]; // outgoing positron
    v1[0].SetStateV(e1->Mom(), +0.5);
    v1[1].SetStateV(e1->Mom(), -0.5);
-   TDiracSpinor u2[2];
+   TDiracSpinor u2[2]; // outgoing electron 2
    u2[0].SetStateU(e2->Mom(), +0.5);
    u2[1].SetStateU(e2->Mom(), -0.5);
-   TDiracSpinor u3[2];
+   TDiracSpinor u3[2]; // outgoing electron 3
    u3[0].SetStateU(e3->Mom(), +0.5);
    u3[1].SetStateU(e3->Mom(), -0.5);
 
    // There are 8 tree-level diagrams for triplet production.  They can be
    // organized into pairs that share a similar structure.  Two of them
    // resemble Compton scattering with e+e- (Dalitz) splitting of the final
-   // gamma (CD), and two resemble Bethe-Heitler scattering from an electron
-   // target (BH).  The next 2 are clones of the CD diagrams, with final-state
-   // electrons swapped with each other.  The final 2 are clones of the BH
+   // gamma (CD), and two resemble gamma decay plus scattering from an electron
+   // target (GD).  The next 2 are clones of the CD diagrams, with final-state
+   // electrons swapped with each other.  The final 2 are clones of the GD
    // diagrams with final-state electrons swapped.  Each diagram amplitude
    // involves 2 Dirac matrix product chains, one beginning with the final-
    // state positron (1) and the other beginning with the initial-state
@@ -525,52 +525,46 @@ LDouble_t TCrossSection::TripletProduction(const TPhoton &gIn,
    // The following naming scheme will help to keep track of which amplitude
    // factor is being computed:
    //
-   //    {dm}{diag}{swap}{leg}
+   //    {dm}{diag}{swap}
    // where
    //    {dm} = dm or some other symbol for Dirac matrix
-   //    {diag} = CD or BH, distinguishes type of diagram
+   //    {diag} = CD or GD, distinguishes type of diagram
    //    {swap} = 2 or 3, which final electron connects to the initial one
-   //    {leg} = 0 or 1, chain with initial electron (0) or final positron (1)
-   // For example, dmBH31 refers to the Dirac matrix product coming from the
-   // left leg (leg=1) containing the final-state positron of the Bethe-Heitler
-   // (diag=BH) pair of diagrams with final-state electron (swap=3) connected
+   // For example, dmGD3 refers to the Dirac matrix product coming from the
+   // (diag=GD) pair of diagrams with final-state electron (swap=3) connected
    // to the initial-state electron.
 
    // Pre-compute the electron propagators (a,b suffix for 2 diagrams in pair)
    TDiracMatrix dm;
    LDouble_t edenomCD2a = +2 * g0->Mom().ScalarProd(e0->Mom());
    LDouble_t edenomCD2b = -2 * g0->Mom().ScalarProd(e2->Mom());
-   LDouble_t edenomBH2a = -2 * g0->Mom().ScalarProd(e1->Mom());
-   LDouble_t edenomBH2b = -2 * g0->Mom().ScalarProd(e3->Mom());
+   LDouble_t edenomGD2a = -2 * g0->Mom().ScalarProd(e1->Mom());
+   LDouble_t edenomGD2b = -2 * g0->Mom().ScalarProd(e3->Mom());
    TDiracMatrix epropCD2a = dm.Slash(g0->Mom() + e0->Mom()) + mLepton;
    TDiracMatrix epropCD2b = dm.Slash(e2->Mom() - g0->Mom()) + mLepton;
-   TDiracMatrix epropBH2a = dm.Slash(g0->Mom() - e1->Mom()) + mLepton;
-   TDiracMatrix epropBH2b = dm.Slash(e3->Mom() - g0->Mom()) + mLepton;
+   TDiracMatrix epropGD2a = dm.Slash(g0->Mom() - e1->Mom()) + mLepton;
+   TDiracMatrix epropGD2b = dm.Slash(e3->Mom() - g0->Mom()) + mLepton;
    epropCD2a /= edenomCD2a;
    epropCD2b /= edenomCD2b;
-   epropBH2a /= edenomBH2a;
-   epropBH2b /= edenomBH2b;
+   epropGD2a /= edenomGD2a;
+   epropGD2b /= edenomGD2b;
    TDiracMatrix epropCD3a(epropCD2a);
-   TDiracMatrix epropCD3b(epropBH2b);
-   TDiracMatrix epropBH3a(epropBH2a);
-   TDiracMatrix epropBH3b(epropCD2b);
+   TDiracMatrix epropCD3b(epropGD2b);
+   TDiracMatrix epropGD3a(epropGD2a);
+   TDiracMatrix epropGD3b(epropCD2b);
 
    // Pre-compute the photon propagators (no a,b suffix needed)
    LDouble_t gpropCD2 = 1 / (e1->Mom() + e3->Mom()).InvariantSqr();
-   LDouble_t gpropBH2 = 1 / (e0->Mom() - e2->Mom()).InvariantSqr();
+   LDouble_t gpropGD2 = 1 / (e0->Mom() - e2->Mom()).InvariantSqr();
    LDouble_t gpropCD3 = 1 / (e1->Mom() + e2->Mom()).InvariantSqr();
-   LDouble_t gpropBH3 = 1 / (e0->Mom() - e3->Mom()).InvariantSqr();
+   LDouble_t gpropGD3 = 1 / (e0->Mom() - e3->Mom()).InvariantSqr();
 
    // Evaluate the leading order Feynman amplitude
    const TDiracMatrix gamma0(kDiracGamma0);
    const TDiracMatrix gamma1(kDiracGamma1);
    const TDiracMatrix gamma2(kDiracGamma2);
    const TDiracMatrix gamma3(kDiracGamma3);
-   TDiracMatrix gamma[4];
-   gamma[0] = gamma0;
-   gamma[1] = gamma1;
-   gamma[2] = gamma2;
-   gamma[3] = gamma3;
+   TDiracMatrix gamma[4] = {gamma0, gamma1, gamma2, gamma3};
 
    // Compute the product chains of Dirac matrices
    Complex_t invAmp[2][2][2][2][2] = {0};
@@ -581,15 +575,15 @@ LDouble_t TCrossSection::TripletProduction(const TPhoton &gIn,
          TDiracMatrix CD2;
          CD2 = gamma[mu] * epropCD2a * epsI + epsI * epropCD2b * gamma[mu];
          CD2 *= gpropCD2;
-         TDiracMatrix BH2;
-         BH2 = gamma[mu] * epropBH2a * epsI + epsI * epropBH2b * gamma[mu];
-         BH2 *= gpropBH2;
+         TDiracMatrix GD2;
+         GD2 = gamma[mu] * epropGD2a * epsI + epsI * epropGD2b * gamma[mu];
+         GD2 *= gpropGD2;
          TDiracMatrix CD3;
          CD3 = gamma[mu] * epropCD3a * epsI + epsI * epropCD3b * gamma[mu];
          CD3 *= gpropCD3;
-         TDiracMatrix BH3;
-         BH3 = gamma[mu] * epropBH3a * epsI + epsI * epropBH3b * gamma[mu];
-         BH3 *= gpropBH3;
+         TDiracMatrix GD3;
+         GD3 = gamma[mu] * epropGD3a * epsI + epsI * epropGD3b * gamma[mu];
+         GD3 *= gpropGD3;
          for (Int_t h0=0; h0 < 2; h0++) {
             for (Int_t h1=0; h1 < 2; h1++) {
                for (Int_t h2=0; h2 < 2; h2++) {
@@ -601,9 +595,9 @@ LDouble_t TCrossSection::TripletProduction(const TPhoton &gIn,
                             - u2[h2].ScalarProd(gamma[mu] * v1[h1]) *
                               u3[h3].ScalarProd(CD3 * u0[h0])
                             + u2[h2].ScalarProd(gamma[mu] * u0[h0]) *
-                              u3[h3].ScalarProd(BH2 * v1[h1])
+                              u3[h3].ScalarProd(GD2 * v1[h1])
                             - u3[h3].ScalarProd(gamma[mu] * u0[h0]) *
-                              u2[h2].ScalarProd(BH3 * v1[h1]))
+                              u2[h2].ScalarProd(GD3 * v1[h1]))
                           );
                   }
                }
@@ -663,6 +657,227 @@ LDouble_t TCrossSection::TripletProduction(const TPhoton &gIn,
 
    LDouble_t fluxFactor = 4*g0->Mom()[0]*(e0->Mom().Length()+e0->Mom()[0]);
    LDouble_t rhoFactor = 1/(8*e3->Mom()[0]*(e1->Mom()+e2->Mom()).Length());
+   LDouble_t piFactor = pow(2*PI_,4-9)*pow(4*PI_,3);
+   LDouble_t diffXsect = hbarcSqr * pow(alphaQED,3) * real(ampSquared)
+                        / fluxFactor * rhoFactor * piFactor;
+   return diffXsect;
+}
+
+LDouble_t TCrossSection::BetheHeitlerNucleon(const TPhoton &gIn,
+                                             const TLepton &nIn,
+                                             const TLepton &pOut,
+                                             const TLepton &eOut,
+                                             const TLepton &nOut,
+                                             LDouble_t F1spacelike,
+                                             LDouble_t F2spacelike,
+                                             LDouble_t F1timelike,
+                                             LDouble_t F2timelike)
+{
+   // Calculates the e+e- Bethe Heitler production cross section for a gamma
+   // ray off a free nucleon at a particular recoil momentum vector qR.
+   // This is similar to TripletProduction, except that the nucleon has an
+   // amomalous magnetic moment in addition to its Dirac magnetic moment,
+   // and there are no identical particles to symmetrize in the final state.
+   // The values of the F1 and F2 form factors that accompany these two terms
+   // in the current must be evaluated by the user at the value of q2 for the
+   // input kinematics and supplied as inputs through arguments F1 and F2.
+   // The cross section is returned as d(sigma)/(dE+ dphi+ d^3q) where E+ is
+   // the energy of the final-state positron and phi+ is its azimuthal angle
+   // about the direction formed by the momentum pOut.Mom() + eOut2.Mom().
+   // The polar angles of the pair are fixed by momentum conservation.
+   // It is assumed that momentum conservation is respected by the momenta
+   //     gIn.Mom() + pIn.Mom() = pOut.Mom() + eOut2.Mom() + eOut3.Mom()
+   // but it is not checked.  The calculation is performed in whatever frame
+   // the user specifies through the momenta passed in the argument objects.
+   // Units are microbarns/GeV^4/r.
+
+   TPhoton gIncoming(gIn), *g0=&gIncoming;
+   TLepton nIncoming(nIn), *n0=&nIncoming;
+   TLepton pOutgoing(pOut), *e1=&pOutgoing;
+   TLepton eOutgoing(eOut), *e2=&eOutgoing;
+   TLepton nOutgoing(nOut), *n3=&nOutgoing;
+
+   const LDouble_t mLepton = e1->Mass();
+   const LDouble_t mNucleon = n0->Mass();
+
+   // Obtain the four fermion state vectors
+   TDiracSpinor u0[2]; // incoming nucleon
+   u0[0].SetStateU(n0->Mom(), +0.5);
+   u0[1].SetStateU(n0->Mom(), -0.5);
+   TDiracSpinor v1[2]; // outgoing positron
+   v1[0].SetStateV(e1->Mom(), +0.5);
+   v1[1].SetStateV(e1->Mom(), -0.5);
+   TDiracSpinor u2[2]; // outgoing electron
+   u2[0].SetStateU(e2->Mom(), +0.5);
+   u2[1].SetStateU(e2->Mom(), -0.5);
+   TDiracSpinor u3[2]; // outgoing nucleon
+   u3[0].SetStateU(n3->Mom(), +0.5);
+   u3[1].SetStateU(n3->Mom(), -0.5);
+
+   // There are 4 tree-level diagrams for Bethe-Heitler production.  They can
+   // be organized into pairs that share a similar structure.  Two of them
+   // resemble Compton scattering with e+e- (Dalitz) splitting of the final
+   // gamma (CD), and two resemble gamma decay plus rescattering from a nucleon
+   // target (GD).  Each diagram amplitude involves 2 Dirac matrix product 
+   // chains, one beginning with the final-state positron (1) and the other
+   // beginning with the initial-state nucleon (0).  Each of these comes with
+   // one Lorentz index [mu=0..4] and one photon spin index [j=0,1] which must
+   // be summed over at the end.  The following naming scheme will help to keep
+   // track of which amplitude factor is being computed:
+   //
+   //    {dm}{diag}
+   // where
+   //    {dm} = dm or some other symbol for Dirac matrix
+   //    {diag} = CD or GD, distinguishes type of diagram
+   // For example, dmGD refers to the Dirac matrix product coming from the
+   // (diag=GD) pair.
+
+   // Pre-compute the fermion propagators (a,b suffix for 2 diagrams in pair)
+   TDiracMatrix dm;
+   LDouble_t ndenomCDa = +2 * g0->Mom().ScalarProd(n0->Mom());
+   LDouble_t ndenomCDb = -2 * g0->Mom().ScalarProd(n3->Mom());
+   LDouble_t edenomGDa = -2 * g0->Mom().ScalarProd(e1->Mom());
+   LDouble_t edenomGDb = -2 * g0->Mom().ScalarProd(e2->Mom());
+   TDiracMatrix npropCDa = dm.Slash(g0->Mom() + n0->Mom()) + mNucleon;
+   TDiracMatrix npropCDb = dm.Slash(n3->Mom() - g0->Mom()) + mNucleon;
+   TDiracMatrix epropGDa = dm.Slash(g0->Mom() - e1->Mom()) + mLepton;
+   TDiracMatrix epropGDb = dm.Slash(e2->Mom() - g0->Mom()) + mLepton;
+   npropCDa /= ndenomCDa;
+   npropCDb /= ndenomCDb;
+   epropGDa /= edenomGDa;
+   epropGDb /= edenomGDb;
+
+   // Pre-compute the photon propagators (no a,b suffix needed)
+   LDouble_t gpropCD = 1 / (e1->Mom() + e2->Mom()).InvariantSqr();
+   LDouble_t gpropGD = 1 / (n0->Mom() - n3->Mom()).InvariantSqr();
+
+   // Evaluate the leading order Feynman amplitude
+   const TDiracMatrix gamma0(kDiracGamma0);
+   const TDiracMatrix gamma1(kDiracGamma1);
+   const TDiracMatrix gamma2(kDiracGamma2);
+   const TDiracMatrix gamma3(kDiracGamma3);
+   const TDiracMatrix sigma01(kDiracGamma0, kDiracGamma1);
+   const TDiracMatrix sigma02(kDiracGamma0, kDiracGamma2);
+   const TDiracMatrix sigma03(kDiracGamma0, kDiracGamma3);
+   const TDiracMatrix sigma12(kDiracGamma1, kDiracGamma2);
+   const TDiracMatrix sigma13(kDiracGamma1, kDiracGamma3);
+   const TDiracMatrix sigma23(kDiracGamma2, kDiracGamma3);
+
+   TDiracMatrix gamma[4] = {gamma0, gamma1, gamma2, gamma3};
+   TFourVectorReal qCD(e1->Mom() + e2->Mom());
+   TDiracMatrix JnucleonCD[4] =
+            {
+               gamma0 * F1timelike +
+                Complex_t(0, F2timelike / (2 * mNucleon)) *
+                 (-sigma01 * qCD[1] - sigma02 * qCD[2] - sigma03 * qCD[3]),
+               gamma1 * F1timelike +
+                Complex_t(0, F2timelike / (2 * mNucleon)) *
+                 (-sigma01 * qCD[0] - sigma12 * qCD[2] - sigma13 * qCD[3]),
+               gamma2 * F1timelike +
+                Complex_t(0, F2timelike / (2 * mNucleon)) *
+                 (-sigma02 * qCD[0] + sigma12 * qCD[1] - sigma23 * qCD[3]),
+               gamma3 * F1timelike +
+                Complex_t(0, F2timelike / (2 * mNucleon)) *
+                 (-sigma03 * qCD[0] + sigma13 * qCD[1] + sigma23 * qCD[2])
+            };
+   TFourVectorReal qGD(n3->Mom() - n0->Mom());
+   TDiracMatrix JnucleonGD[4] = 
+            {
+               gamma0 * F1spacelike +
+                Complex_t(0, F2spacelike / (2 * mNucleon)) *
+                 (-sigma01 * qGD[1] - sigma02 * qGD[2] - sigma03 * qGD[3]),
+               gamma1 * F1spacelike +
+                Complex_t(0, F2spacelike / (2 * mNucleon)) *
+                 (-sigma01 * qGD[0] - sigma12 * qGD[2] - sigma13 * qGD[3]),
+               gamma2 * F1spacelike +
+                Complex_t(0, F2spacelike / (2 * mNucleon)) *
+                 (-sigma02 * qGD[0] + sigma12 * qGD[1] - sigma23 * qGD[3]),
+               gamma3 * F1spacelike +
+                Complex_t(0, F2spacelike / (2 * mNucleon)) *
+                 (-sigma03 * qGD[0] + sigma13 * qGD[1] + sigma23 * qGD[2])
+            };
+
+   // Compute the product chains of Dirac matrices
+   Complex_t invAmp[2][2][2][2][2] = {0};
+   for (Int_t gi=0; gi < 2; gi++) {
+      for (Int_t mu=0; mu < 4; mu++) {
+         TDiracMatrix epsI;
+         epsI.Slash(g0->Eps(gi+1));
+         TDiracMatrix CD;
+         CD = JnucleonCD[mu] * npropCDa * epsI + epsI * npropCDb * JnucleonCD[mu];
+         CD *= gpropCD;
+         TDiracMatrix GD;
+         GD = gamma[mu] * epropGDa * epsI + epsI * epropGDb * gamma[mu];
+         GD *= gpropGD;
+         for (Int_t h0=0; h0 < 2; h0++) {
+            for (Int_t h1=0; h1 < 2; h1++) {
+               for (Int_t h2=0; h2 < 2; h2++) {
+                  for (Int_t h3=0; h3 < 2; h3++) {
+                     invAmp[h0][h1][h2][h3][gi] += 
+                           Complex_t(((mu == 0)? +1.L : -1.L) * (
+                              u2[h2].ScalarProd(gamma[mu] * v1[h1]) *
+                              u3[h3].ScalarProd(CD * u0[h0])
+                            + u3[h3].ScalarProd(JnucleonGD[mu] * u0[h0]) *
+                              u2[h2].ScalarProd(GD * v1[h1]))
+                          );
+                  }
+               }
+            }
+         }
+      }
+   }
+
+   // Sum over spins
+   Complex_t ampSquared(0);
+   for (Int_t gi=0; gi < 2; gi++) {
+    for (Int_t gibar=0; gibar < 2; gibar++) {
+     for (Int_t h0=0; h0 < 2; ++h0) {
+      for (Int_t h0bar=0; h0bar < 2; ++h0bar) {
+       for (Int_t h1=0; h1 < 2; ++h1) {
+        for (Int_t h1bar=0; h1bar < 2; ++h1bar) {
+         for (Int_t h2=0; h2 < 2; ++h2) {
+          for (Int_t h2bar=0; h2bar < 2; ++h2bar) {
+           for (Int_t h3=0; h3 < 2; ++h3) {
+            for (Int_t h3bar=0; h3bar < 2; ++h3bar) {
+               ampSquared += invAmp[h0][h1][h2][h3][gi] *
+                   std::conj(invAmp[h0bar][h1bar][h2bar][h3bar][gibar]) *
+                             n0->SDM()[h0][h0bar] *
+                             e1->SDM()[h1][h1bar] *
+                             e2->SDM()[h2bar][h2] *
+                             n3->SDM()[h3bar][h3] *
+                             g0->SDM()[gi][gibar];
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+
+#if DEBUGGING
+   if (real(ampSquared) < 0 || fabs(ampSquared.imag()) > fabs(ampSquared / 1e8L))
+   {
+      std::cout << "Warning: bad Bethe-Heitler amplitude: " << std::endl
+                << "  These guys should be all real positive:" << std::endl
+                << "    ampSquared = " << ampSquared << std::endl;
+   }
+#endif
+
+   // Obtain the kinematical factors:
+   //    (1) 1/flux from initial state 1/(4 kin [p0 + E0])
+   //    (2) rho from density of final states factor
+   // where the general relativistic expression for rho is
+   //  rho = pow(2*PI_,4-3*N) delta4(Pin-Pout) [d4 P1] [d4 P2] ... [d4 PN]
+   // using differential forms [d4 P] = d4P delta(P.P - m*m) where P.P is
+   // the invariant norm of four-vector P, m is the known mass of the
+   // corresponding particle, and N is the number of final state particles.
+   //    (3) absorb three powers of 4*PI_ into pow(alphaQED,3)
+
+   LDouble_t fluxFactor = 4*g0->Mom()[0]*(n0->Mom().Length()+n0->Mom()[0]);
+   LDouble_t rhoFactor = 1/(8*n3->Mom()[0]*(e1->Mom()+e2->Mom()).Length());
    LDouble_t piFactor = pow(2*PI_,4-9)*pow(4*PI_,3);
    LDouble_t diffXsect = hbarcSqr * pow(alphaQED,3) * real(ampSquared)
                         / fluxFactor * rhoFactor * piFactor;
@@ -765,11 +980,7 @@ LDouble_t TCrossSection::eeBremsstrahlung(const TLepton &eIn0,
    const TDiracMatrix gamma1(kDiracGamma1);
    const TDiracMatrix gamma2(kDiracGamma2);
    const TDiracMatrix gamma3(kDiracGamma3);
-   TDiracMatrix gamma[4];
-   gamma[0] = gamma0;
-   gamma[1] = gamma1;
-   gamma[2] = gamma2;
-   gamma[3] = gamma3;
+   TDiracMatrix gamma[4] = {gamma0, gamma1, gamma2, gamma3};
 
    // Compute the product chains of Dirac matrices
    Complex_t invAmp[2][2][2][2][2] = {0};

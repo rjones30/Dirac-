@@ -29,6 +29,15 @@ public:
    static LDouble_t TripletProduction(const TPhoton &gIn, const TLepton &eIn,
                                       const TLepton &pOut, const TLepton &eOut2,
                                       const TLepton &eOut3);
+   static LDouble_t BetheHeitlerNucleon(const TPhoton &gIn,
+                                        const TLepton &nIn,
+                                        const TLepton &pOut,
+                                        const TLepton &eOut,
+                                        const TLepton &nOut,
+                                        LDouble_t F1spacelike,
+                                        LDouble_t F2spacelik,
+                                        LDouble_t F1timelike,
+                                        LDouble_t F2timelike);
    static LDouble_t eeBremsstrahlung(const TLepton &eIn0,
                                      const TLepton &eIn1,
                                      const TLepton &eOut2, 
