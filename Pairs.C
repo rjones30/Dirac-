@@ -2,11 +2,14 @@
 // Pairs.C
 //
 // Calculates the e+e- pair production rate including polarization
-// effects for a given kinematics.  The kinematics are set by the
-// initial photon energy kin, the mass of the e+e- pair M, the recoil
-// momentum squared qR^2, the azimuthal angle of the recoil momentum
-// phiR, the azimuthal angle of the outgoing positron about the pair
-// momentum axis phi+, and energy of the outgoing positron E+.  The
+// effects for a given kinematics on an atomic target, where the atomic
+// structure is represented by a scalar form factor.  For the case of
+// fermionic targets, see Triplets.C for scattering from free electrons
+// or BetheHeitler.C for scattering from a free nucleon   The kinematics
+// are set by the initial photon energy kin, the mass of the e+e- pair M,
+// the recoil momentum squared qR^2, the azimuthal angle of the recoil
+// momentum phiR, the azimuthal angle of the outgoing positron about the
+// pair momentum axis phi+, and energy of the outgoing positron E+.  The
 // returned value is the differential cross section measured in
 // microbarns/GeV^4/r, differential in (d^3 qR  dphi- dE-). Another
 // useful expression for the differential measure is
@@ -70,7 +73,7 @@ Double_t Pairs(Double_t *var, Double_t *par)
    TPhoton gIn;
    TLepton eOut(mElectron), pOut(mElectron);
 
-   // Solve for the rest of the kinematics
+   // Solve for the rest of the kinematics, limit of high mass target
    LDouble_t qR=sqrt(qR2);
    LDouble_t Eele=kin-Epos;
    LDouble_t qmin=kin-sqrt(sqr(kin)-sqr(Mpair));
