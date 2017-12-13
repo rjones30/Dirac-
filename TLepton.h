@@ -14,6 +14,8 @@
 
 const LDouble_t mElectron=0.51099907e-3;
 const LDouble_t mMuon=0.105658389;
+const LDouble_t mProton=0.9382723128;
+const LDouble_t mNeutron=0.9395656328;
 
 
 class TLepton {
