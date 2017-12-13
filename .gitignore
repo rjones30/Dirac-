@@ -5,7 +5,8 @@
 /test
 *-orig
 *.pyc
+*.d
 *.o
 *.so
-*Dict_rdict.pcm
-*Dict.cxx
+*ict_rdict.pcm
+*ict.cxx
