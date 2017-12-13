@@ -135,7 +135,7 @@ public:
    TDiracMatrix &Slash(const TFourVectorReal &p);
    TDiracMatrix &Slash(const TFourVectorComplex &A);
  
-   TDiracMatrix &operator-();
+   TDiracMatrix operator-() const;
    friend TDiracMatrix operator+(const TDiracMatrix &v1,
                                  const TDiracMatrix &v2);
    friend TDiracMatrix operator+(const Complex_t &a1,
@@ -559,12 +559,14 @@ inline TDiracMatrix &TDiracMatrix::Slash(const TFourVectorComplex &a)
                    a[3]*TDiracMatrix(kDiracGamma3) );
 }
 
-inline TDiracMatrix &TDiracMatrix::operator-()
+inline TDiracMatrix TDiracMatrix::operator-() const
 {
-   Complex_t *d = (Complex_t *)&fMatrix[0][0];
-   for (Int_t i=0; i<16; i++, d++)
-      *d = -(*d);
-   return *this;
+   TDiracMatrix res;
+   Complex_t *dst = (Complex_t *)&res.fMatrix[0][0];
+   Complex_t *src = (Complex_t *)&fMatrix[0][0];
+   for (Int_t i=0; i<16; i++)
+      dst[i] = -src[i];
+   return res;
 }
 
 inline TDiracMatrix operator+(const TDiracMatrix &v1,
