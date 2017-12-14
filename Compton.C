@@ -13,31 +13,11 @@
 #include "TLepton.h"
 #include "TCrossSection.h"
 #include "constants.h"
+#include "sqr.h"
 
 #include <TROOT.h>
 #include <TCanvas.h>
 #include <TF1.h>
-
-#ifndef DEFINE_SQR_ON_STANDARD_TYPES
-#define DEFINE_SQR_ON_STANDARD_TYPES
-inline unsigned int sqr(unsigned int x) { return x*x; }
-inline Int_t sqr(Int_t x) { return x*x; }
-inline Float_t sqr(Float_t x) { return x*x; }
-inline Double_t sqr(Double_t x) { return x*x; }
-inline LDouble_t sqr(LDouble_t x) { return x*x; }
-inline Complex_t sqr(Complex_t x) { return x*x; }
-#endif
-
-#ifndef STANDARD_VECTOR_CONSTANTS
-#define STANDARD_VECTOR_CONSTANTS
-const TThreeVectorReal zeroVector(0,0,0);
-const TThreeVectorReal posXhat(1,0,0);
-const TThreeVectorReal negXhat(-1,0,0);
-const TThreeVectorReal posYhat(0,1,0);
-const TThreeVectorReal negYhat(0,-1,0);
-const TThreeVectorReal posZhat(0,0,1);
-const TThreeVectorReal negZhat(0,0,-1);
-#endif
 
 Double_t Compton(Double_t *var, Double_t *par)
 {
@@ -53,43 +33,43 @@ Double_t Compton(Double_t *var, Double_t *par)
    // Solve for the rest of the kinematics
    LDouble_t kout = kin/(1+(kin/mElectron)*(1-cos(theta)));
    TThreeVectorReal p;
-   gIn.SetMom(p.SetPolar(kin,0,0));
-   eIn.SetMom(zeroVector);
+   gIn.SetMom(TThreeVectorReal(0,0,kin));
+   eIn.SetMom(TThreeVectorReal(0,0,0));
    gOut.SetMom(p.SetPolar(kout,theta,phi));
    eOut.SetMom(gIn.Mom()+eIn.Mom()-gOut.Mom());
 
    // Set the initial,final polarizations
    switch (siggIn) {
     case -1:
-      gIn.SetPol(p.SetPolar(1,PI_,0));
+      gIn.SetPol(TThreeVectorReal(0,0,-1));
       break;
     case  0:
-      gIn.SetPol(zeroVector);
+      gIn.SetPol(TThreeVectorReal(0,0,0));
       break;
     case +1:
-      gIn.SetPol(p.SetPolar(1,0,0));
+      gIn.SetPol(TThreeVectorReal(0,0,1));
       break;
     default:
       std::cout << "Compton.C :"
            << "bad photon helicity specified, default to zero!"
            << std::endl;
-      gIn.SetPol(zeroVector);
+      gIn.SetPol(TThreeVectorReal(0,0,0));
    }
    switch (sigeIn) {
     case -1:
-      eIn.SetPol(p.SetPolar(1,PI_,0));
+      eIn.SetPol(TThreeVectorReal(0,0,-1));
       break;
     case  0:
-      eIn.SetPol(zeroVector);
+      eIn.SetPol(TThreeVectorReal(0,0,0));
       break;
     case +1:
-      eIn.SetPol(p.SetPolar(1,0,0));
+      eIn.SetPol(TThreeVectorReal(0,0,1));
       break;
     default:
       std::cout << "Compton.C :"
            << "bad electron helicity specified, default to zero!"
            << std::endl;
-      eIn.SetPol(zeroVector);
+      eIn.SetPol(TThreeVectorReal(0,0,0));
    }
    gOut.AllPol();
    eOut.AllPol();
@@ -169,8 +149,8 @@ Double_t ComptonBackScatter(Double_t *var, Double_t *par)
    eOut.SetMom(p.SetPolar(kstar,theta,phi));
 
    // Set the initial,final polarizations
-   gIn.SetPol(zeroVector);
-   eIn.SetPol(zeroVector);
+   gIn.SetPol(TThreeVectorReal(0,0,0));
+   eIn.SetPol(TThreeVectorReal(0,0,0));
    gOut.AllPol();
    eOut.AllPol();
 

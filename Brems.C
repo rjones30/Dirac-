@@ -15,30 +15,10 @@
 #include "TLepton.h"
 #include "TCrossSection.h"
 #include "constants.h"
+#include "sqr.h"
 
 #include <TCanvas.h>
 #include <TF1.h>
-
-#ifndef DEFINE_SQR_ON_STANDARD_TYPES
-#define DEFINE_SQR_ON_STANDARD_TYPES
-inline unsigned int sqr(unsigned int x) { return x*x; }
-inline Int_t sqr(Int_t x) { return x*x; }
-inline Float_t sqr(Float_t x) { return x*x; }
-inline Double_t sqr(Double_t x) { return x*x; }
-inline LDouble_t sqr(LDouble_t x) { return x*x; }
-inline Complex_t sqr(Complex_t x) { return x*x; }
-#endif
-
-#ifndef STANDARD_VECTOR_CONSTANTS
-#define STANDARD_VECTOR_CONSTANTS
-const TThreeVectorReal zeroVector(0,0,0);
-const TThreeVectorReal posXhat(1,0,0);
-const TThreeVectorReal negXhat(-1,0,0);
-const TThreeVectorReal posYhat(0,1,0);
-const TThreeVectorReal negYhat(0,-1,0);
-const TThreeVectorReal posZhat(0,0,1);
-const TThreeVectorReal negZhat(0,0,-1);
-#endif
 
 Double_t Brems(Double_t *var, Double_t *par)
 {
@@ -51,9 +31,9 @@ Double_t Brems(Double_t *var, Double_t *par)
    TPhoton gOut;
 
    // Solve for the rest of the kinematics
-   LDouble_t pout = pin-kout;
    TThreeVectorReal p;
-   eIn.SetMom(p.SetPolar(pin,0,0));
+   LDouble_t pout = pin-kout;
+   eIn.SetMom(TThreeVectorReal(0,0,pin));
    LDouble_t theta=0, thetaSqr;
    for (Int_t i=0; i<5; i++) {
       thetaSqr = (pout/kout)*(2*pin*qRecoil[3])/sqr(mElectron) -1
@@ -68,7 +48,7 @@ Double_t Brems(Double_t *var, Double_t *par)
    eOut.SetMom(p);
 
    // Set the initial,final polarizations
-   eIn.SetPol(zeroVector);
+   eIn.SetPol(TThreeVectorReal(0,0,0));
    gOut.AllPol();
    eOut.AllPol();
 
@@ -123,9 +103,9 @@ Double_t BremsPolarization(Double_t *var, Double_t *par)
    TPhoton gOut;
 
    // Solve for the rest of the kinematics
-   LDouble_t pout = pin-kout;
    TThreeVectorReal p;
-   eIn.SetMom(p.SetPolar(pin,0,0));
+   LDouble_t pout = pin-kout;
+   eIn.SetMom(TThreeVectorReal(0,0,pin));
    LDouble_t theta=0, thetaSqr;
    for (Int_t i=0; i<5; i++) {
       thetaSqr = (pout/kout)*(2*pin*qRecoil[3])/sqr(mElectron) -1
@@ -140,14 +120,11 @@ Double_t BremsPolarization(Double_t *var, Double_t *par)
    eOut.SetMom(p);
 
    // Measure the transverse polarization in the plane of qRecoil
-   eIn.SetPol(posZhat);
+   eIn.SetPol(TThreeVectorReal(0,0,1));
    eOut.AllPol();
-   TThreeVectorReal xhat,yhat;
-   xhat.SetPolar(1,PI_/2,-phi);
-   yhat.SetPolar(1,PI_/2,-phi+PI_/2);
-   gOut.SetPol(xhat);
+   gOut.SetPol(TThreeVectorReal(1,0,0));
    LDouble_t Xrate=TCrossSection::Bremsstrahlung(eIn,eOut,gOut);
-   gOut.SetPol(yhat);
+   gOut.SetPol(TThreeVectorReal(0,1,0));
    LDouble_t Yrate=TCrossSection::Bremsstrahlung(eIn,eOut,gOut);
 
    return (Xrate-Yrate)/(Xrate+Yrate);

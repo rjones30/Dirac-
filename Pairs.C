@@ -28,6 +28,7 @@
 #include "TLorentzBoost.h"
 #include "TCrossSection.h"
 #include "constants.h"
+#include "sqr.h"
 
 #include <TRandom2.h>
 #include <TCanvas.h>
@@ -35,31 +36,7 @@
 #include <TFile.h>
 #include <TF1.h>
 
-#ifndef DEFINE_SQR_ON_STANDARD_TYPES
-#define DEFINE_SQR_ON_STANDARD_TYPES
-inline unsigned int sqr(unsigned int x) { return x*x; }
-inline Int_t sqr(Int_t x) { return x*x; }
-inline Float_t sqr(Float_t x) { return x*x; }
-inline Double_t sqr(Double_t x) { return x*x; }
-inline LDouble_t sqr(LDouble_t x) { return x*x; }
-inline Complex_t sqr(Complex_t x) { return x*x; }
-#endif
-
-#ifndef STANDARD_VECTOR_CONSTANTS
-#define STANDARD_VECTOR_CONSTANTS
-const TThreeVectorReal zeroVector(0,0,0);
-const TThreeVectorReal posXhat(1,0,0);
-const TThreeVectorReal negXhat(-1,0,0);
-const TThreeVectorReal posYhat(0,1,0);
-const TThreeVectorReal negYhat(0,-1,0);
-const TThreeVectorReal posZhat(0,0,1);
-const TThreeVectorReal negZhat(0,0,-1);
-#endif
-
-#ifndef DEFINE_GLOBAL_RANDOM_GEN
-#define DEFINE_GLOBAL_RANDOM_GEN
-TRandom2 random_gen(0);
-#endif
+TRandom2 Pairs_random_gen(0);
 
 Double_t Pairs(Double_t *var, Double_t *par)
 {
@@ -92,8 +69,7 @@ Double_t Pairs(Double_t *var, Double_t *par)
       return 0;
    }
 
-   TThreeVectorReal p;
-   gIn.SetMom(p.SetPolar(kin,0,0));
+   gIn.SetMom(TThreeVectorReal(0,0,kin));
    LDouble_t pStar2=sqr(Mpair/2)-sqr(mElectron);
    if (pStar2 < 0) {
       // std::cout << "no kinematic solution because pStar2 < 0" << std::endl;
@@ -118,7 +94,7 @@ Double_t Pairs(Double_t *var, Double_t *par)
    eOut.SetMom(p2);
 
    // Set the initial,final polarizations
-   gIn.SetPol(posXhat);
+   gIn.SetPol(TThreeVectorReal(1,0,0));
    eOut.AllPol();
    pOut.AllPol();
 
@@ -160,7 +136,7 @@ Int_t demoPairs(Double_t E0=9.,
                 Double_t phiR=0.)
 {
    TCanvas *c1 = new TCanvas("c1","Pair Production Rate",200,10,700,500);
-   TF1 *f1 = new TF1("f1",Pairs,0,Epos,6);
+   TF1 *f1 = new TF1("f1",Pairs,0,E0,6);
    Double_t params[6];
    params[0] = E0;
    params[1] = Epos;
@@ -211,27 +187,27 @@ Int_t genPairs(Int_t N, Double_t kin=9., TFile *hfile=0, TTree *tree=0, Int_t pr
       event.weight = 1;
 
       // generate Epos uniform on [0,E0]
-      event.Epos = random_gen.Uniform(event.E0);
+      event.Epos = Pairs_random_gen.Uniform(event.E0);
       event.weight *= event.E0;
    
       // generate phi12 uniform on [0,2pi]
-      event.phi12 = random_gen.Uniform(2*PI_);
+      event.phi12 = Pairs_random_gen.Uniform(2*PI_);
       event.weight *= 2*PI_;
 
       // generate phiR uniform on [0,2pi]
-      event.phiR = random_gen.Uniform(2*PI_);
+      event.phiR = Pairs_random_gen.Uniform(2*PI_);
       event.weight *= 2*PI_;
    
 #ifdef OLD_WEIGHTING
 
       // generate Mpair with weight (M0/M)^3
       LDouble_t M0=2*mElectron;
-      event.Mpair = M0/sqrt(random_gen.Uniform(1.));
+      event.Mpair = M0/sqrt(Pairs_random_gen.Uniform(1.));
       event.weight *= pow(event.Mpair,3)/(2*M0*M0);
 
       // generate qR2 with weight 1/(q02 + qR2)^2
       LDouble_t q02=sqr(5e-5); // 50 keV/c cutoff parameter
-      LDouble_t u=random_gen.Uniform(1);
+      LDouble_t u=Pairs_random_gen.Uniform(1);
       event.qR2 = q02*(1-u)/(u+1e-50);
       event.weight *= sqr(event.qR2+q02)/q02;
 
@@ -241,7 +217,7 @@ Int_t genPairs(Int_t N, Double_t kin=9., TFile *hfile=0, TTree *tree=0, Int_t pr
       LDouble_t Mmin=2*mElectron;
       LDouble_t Mcut=5e-3; // 5 MeV cutoff parameter
       LDouble_t um0 = 1+sqr(Mcut/Mmin);
-      LDouble_t um = pow(um0,random_gen.Uniform(1));
+      LDouble_t um = pow(um0,Pairs_random_gen.Uniform(1));
       event.Mpair = Mcut/sqrt(um-1);
       event.weight *= event.Mpair*(sqr(Mcut)+sqr(event.Mpair))
                       *log(um0)/(2*sqr(Mcut));
@@ -250,7 +226,7 @@ Int_t genPairs(Int_t N, Double_t kin=9., TFile *hfile=0, TTree *tree=0, Int_t pr
       LDouble_t qRmin = sqr(event.Mpair)/(2*event.E0);
       LDouble_t qRcut = 1e-3; // 1 MeV/c cutoff parameter
       LDouble_t uq0 = qRmin/(qRcut+sqrt(sqr(qRcut)+sqr(qRmin)));
-      LDouble_t uq = pow(uq0,random_gen.Uniform(1));
+      LDouble_t uq = pow(uq0,Pairs_random_gen.Uniform(1));
       event.qR2 = sqr(2*qRcut*uq/(1-sqr(uq)));
       event.weight *= event.qR2*sqrt(1+event.qR2/sqr(qRcut))
                       *(-2*log(uq0));

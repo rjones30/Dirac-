@@ -14,30 +14,10 @@
 #include "TLepton.h"
 #include "TCrossSection.h"
 #include "constants.h"
+#include "sqr.h"
 
 #include <TCanvas.h>
 #include <TF1.h>
-
-#ifndef DEFINE_SQR_ON_STANDARD_TYPES
-#define DEFINE_SQR_ON_STANDARD_TYPES
-inline unsigned int sqr(unsigned int x) { return x*x; }
-inline Int_t sqr(Int_t x) { return x*x; }
-inline Float_t sqr(Float_t x) { return x*x; }
-inline Double_t sqr(Double_t x) { return x*x; }
-inline LDouble_t sqr(LDouble_t x) { return x*x; }
-inline Complex_t sqr(Complex_t x) { return x*x; }
-#endif
-
-#ifndef STANDARD_VECTOR_CONSTANTS
-#define STANDARD_VECTOR_CONSTANTS
-const TThreeVectorReal zeroVector(0,0,0);
-const TThreeVectorReal posXhat(1,0,0);
-const TThreeVectorReal negXhat(-1,0,0);
-const TThreeVectorReal posYhat(0,1,0);
-const TThreeVectorReal negYhat(0,-1,0);
-const TThreeVectorReal posZhat(0,0,1);
-const TThreeVectorReal negZhat(0,0,-1);
-#endif
 
 Complex_t Qpolar(Double_t *var, Double_t *par)
 {
@@ -76,23 +56,23 @@ Complex_t Qpolar(Double_t *var, Double_t *par)
    // Set the initial,final polarizations
    switch ((int)sigeIn) {
     case -1:
-      qIn.SetPol(negZhat);
-      qFi.SetPol(negZhat);
+      qIn.SetPol(TThreeVectorReal(0,0,-1));
+      qFi.SetPol(TThreeVectorReal(0,0,-1));
       break;
     case  0:
-      qIn.SetPol(zeroVector);
-      qFi.SetPol(zeroVector);
+      qIn.SetPol(TThreeVectorReal(0,0,0));
+      qFi.SetPol(TThreeVectorReal(0,0,0));
       break;
     case +1:
-      qIn.SetPol(posZhat);
-      qFi.SetPol(posZhat);
+      qIn.SetPol(TThreeVectorReal(0,0,1));
+      qFi.SetPol(TThreeVectorReal(0,0,1));
       break;
     default:
       cout << "Qpolar.C :"
            << "bad quark helicity specified, default to zero!"
            << endl;
-      qIn.SetPol(zeroVector);
-      qFi.SetPol(zeroVector);
+      qIn.SetPol(TThreeVectorReal(0,0,0));
+      qFi.SetPol(TThreeVectorReal(0,0,0));
    }
 
    // Compute the current amplitude

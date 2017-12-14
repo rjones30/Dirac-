@@ -23,6 +23,7 @@
 #include "TCrossSection.h"
 #include "TLorentzBoost.h"
 #include "constants.h"
+#include "sqr.h"
 
 #include <TRandom2.h>
 #include <TCanvas.h>
@@ -31,32 +32,8 @@
 #include <TH2D.h>
 #include <TF1.h>
 
-#ifndef DEFINE_SQR_ON_STANDARD_TYPES
-#define DEFINE_SQR_ON_STANDARD_TYPES
-inline unsigned int sqr(unsigned int x) { return x*x; }
-inline Int_t sqr(Int_t x) { return x*x; }
-inline Float_t sqr(Float_t x) { return x*x; }
-inline Double_t sqr(Double_t x) { return x*x; }
-inline LDouble_t sqr(LDouble_t x) { return x*x; }
-inline Complex_t sqr(Complex_t x) { return x*x; }
-#endif
-
-#ifndef STANDARD_VECTOR_CONSTANTS
-#define STANDARD_VECTOR_CONSTANTS
-const TThreeVectorReal zeroVector(0,0,0);
-const TThreeVectorReal posXhat(1,0,0);
-const TThreeVectorReal negXhat(-1,0,0);
-const TThreeVectorReal posYhat(0,1,0);
-const TThreeVectorReal negYhat(0,-1,0);
-const TThreeVectorReal posZhat(0,0,1);
-const TThreeVectorReal negZhat(0,0,-1);
-#endif
-
-#ifndef DEFINE_GLOBAL_RANDOM_GEN
-#define DEFINE_GLOBAL_RANDOM_GEN
-TRandom2 random_gen(0);
-#endif
-TH2D *random_bias2D_u0u1 = 0;
+TRandom2 Triplets_random_gen(0);
+TH2D *Triplets_random_bias2D_u0u1 = 0;
 
 //#define H_DIPOLE_FORM_FACTOR 1
 LDouble_t FFberyllium(LDouble_t qR);
@@ -64,11 +41,11 @@ LDouble_t FFberyllium(LDouble_t qR);
 Double_t Triplets(Double_t *var, Double_t *par)
 {
    LDouble_t kin=par[0];
-   LDouble_t Epos=par[1];
+   LDouble_t Epos=par[1]=var[0];
    LDouble_t phi12=par[2];
    LDouble_t Mpair=par[3];
    LDouble_t qR2=par[4];
-   LDouble_t phiR=par[5]=var[0];
+   LDouble_t phiR=par[5];
 
    // Solve for the 4-vector qR
    if (kin < 0 || Epos < mElectron || Mpair < 2 * mElectron || qR2 < 0) {
@@ -134,16 +111,15 @@ Double_t Triplets(Double_t *var, Double_t *par)
    // Define the particle objects
    TPhoton g0;
    TLepton e0(mElectron),e1(mElectron),e2(mElectron),e3(mElectron);
-   TThreeVectorReal p;
-   g0.SetMom(p.SetPolar(kin,0,0));
-   e0.SetMom(zeroVector);
+   g0.SetMom(TThreeVectorReal(0,0,kin));
+   e0.SetMom(TThreeVectorReal(0,0,0));
    e1.SetMom(q1);
    e2.SetMom(q2);
    e3.SetMom(q3);
 
    // Set the initial, final polarizations
-   g0.SetPol(posXhat);
-   e0.SetPol(zeroVector);
+   g0.SetPol(TThreeVectorReal(1,0,0));
+   e0.SetPol(TThreeVectorReal(0,0,0));
    e1.AllPol();
    e2.AllPol();
    e3.AllPol();
@@ -156,12 +132,12 @@ Double_t Triplets(Double_t *var, Double_t *par)
 
 void set_bias2D_u0u1(TH2D *bias2D)
 {
-   random_bias2D_u0u1 = bias2D;
+   Triplets_random_bias2D_u0u1 = bias2D;
 }
 
 TH2D *get_bias2D_u0u1(TH2D *bias2D)
 {
-   return random_bias2D_u0u1;
+   return Triplets_random_bias2D_u0u1;
 }
 
 Int_t demoTriplets(Double_t E0=9.,
@@ -172,7 +148,7 @@ Int_t demoTriplets(Double_t E0=9.,
                    Double_t phiR=0.)
 {
    TCanvas *c1 = new TCanvas("c1","Triplet Production Cross Section",200,10,700,500);
-   TF1 *f1 = new TF1("f1",Triplets,0,2*PI_,6);
+   TF1 *f1 = new TF1("f1",Triplets,0,E0,6);
    Double_t params[6];
    params[0] = E0;
    params[1] = Epos;
@@ -225,18 +201,18 @@ Int_t genTriplets(Int_t N, Double_t kin=9., TFile *hfile=0, TTree *tree=0, Int_t
    LDouble_t sum2=0;
    for (int n=1; n<=N; n++) { 
       event.weight = 1;
-      random_gen.RndmArray(5, event.urand);
-      if (random_bias2D_u0u1) {
-         random_bias2D_u0u1->GetRandom2(event.urand[0], event.urand[1]);
+      Triplets_random_gen.RndmArray(5, event.urand);
+      if (Triplets_random_bias2D_u0u1) {
+         Triplets_random_bias2D_u0u1->GetRandom2(event.urand[0], event.urand[1]);
          static LDouble_t fmean = 0;
          if (fmean == 0) {
-            fmean = random_bias2D_u0u1->Integral() /
-                    random_bias2D_u0u1->GetNbinsX() /
-                    random_bias2D_u0u1->GetNbinsY();
+            fmean = Triplets_random_bias2D_u0u1->Integral() /
+                    Triplets_random_bias2D_u0u1->GetNbinsX() /
+                    Triplets_random_bias2D_u0u1->GetNbinsY();
          }
-         int i0 = random_bias2D_u0u1->GetXaxis()->FindBin(event.urand[0]);
-         int i1 = random_bias2D_u0u1->GetYaxis()->FindBin(event.urand[1]);
-         event.weight = fmean / random_bias2D_u0u1->GetBinContent(i0,i1);
+         int i0 = Triplets_random_bias2D_u0u1->GetXaxis()->FindBin(event.urand[0]);
+         int i1 = Triplets_random_bias2D_u0u1->GetYaxis()->FindBin(event.urand[1]);
+         event.weight = fmean / Triplets_random_bias2D_u0u1->GetBinContent(i0,i1);
       }
 
       // generate E+ uniform on [0,E0]
