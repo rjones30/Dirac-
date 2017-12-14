@@ -2,7 +2,7 @@
 // BetheHeitler.C
 //
 // Calculates the e+e- pair production rate including polarization
-// effects for a given kinematics on a free fermion target, where the
+// effects for a given kinematics on a free nucleon target, where the
 // target structure is represented by the Dirac and Pauli form factors.
 // For the case of scattering from free electrons see Triplets.C, or
 // or Pairs.C for coherent scattering from a neutral atom at low Q2.
