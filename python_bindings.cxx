@@ -1000,8 +1000,7 @@ BOOST_PYTHON_MODULE(libDirac)
            boost::python::return_value_policy<boost::python::reference_existing_object>())
       .def("Slash", TDiracMatrix_Slash2,
            boost::python::return_value_policy<boost::python::reference_existing_object>())
-      .def("__neg__", &TDiracMatrix::operator-,
-           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("__neg__", &TDiracMatrix::operator-)
       .def("Print", &TDiracMatrix::Print)
       .def("Print", &TDiracMatrix_Print)
    ;
