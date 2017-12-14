@@ -66,7 +66,7 @@ void TestThreeVectorReal()
    v3z.Rotate(-1.2,2.5,0);
    LDouble_t v3zhat[]={0,0,10};
    std::cout << "Rotate(phi,theta,0) gets back z axis? ";
-   std::cout << ((v3z == v3zhat) ? "yes!" : "no!" ) << std::endl;
+   std::cout << ((v3z == TThreeVectorReal(v3zhat)) ? "yes!" : "no!" ) << std::endl;
 
    std::cout << "(w cross x) != 0 ? ";
    std::cout << ((v3z.Cross(v3w,v3x).Length() >= v3w.Resolution()) ? "yes!" : "no!" ) << std::endl;
@@ -117,7 +117,7 @@ void TestThreeVectorComplex()
    v3z.Rotate(v3r.Phi(),v3r.Theta(),0);
    LDouble_t v3zhat[]={0,0,10};
    std::cout << "Rotate(phi,theta,0) gets back z axis? ";
-   std::cout << ((v3z == v3zhat) ? "yes!" : "no!" ) << std::endl;
+   std::cout << ((v3z == TThreeVectorReal(v3zhat)) ? "yes!" : "no!" ) << std::endl;
 
    std::cout << "(w cross x) != 0 ? ";
    std::cout << ((v3z.Cross(v3w,v3x).Length() >= v3w.Resolution()) ? "yes!" : "no!" ) << std::endl;
