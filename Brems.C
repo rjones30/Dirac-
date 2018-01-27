@@ -34,15 +34,24 @@ Double_t Brems(Double_t *var, Double_t *par)
    TThreeVectorReal p;
    LDouble_t pout = pin-kout;
    eIn.SetMom(TThreeVectorReal(0,0,pin));
-   LDouble_t theta=0, thetaSqr;
-   for (Int_t i=0; i<5; i++) {
-      thetaSqr = (pout/kout)*(2*pin*qRecoil[3])/sqr(mElectron) -1
-                -(pin/kout)*(qRecoil.LengthSqr())/sqr(mElectron)
-                -(2*qRecoil[1]/mElectron)*theta*cos(phi);
-      if (thetaSqr < 0) { return 0; }
-      theta = sqrt(thetaSqr);
+   LDouble_t A = kout * (pin - qRecoil[3]);
+   LDouble_t B = 2 * qRecoil[1] * kout * cos(phi);
+   LDouble_t C = qRecoil.LengthSqr() + 
+                 2 * kout * (sqrt(sqr(pin) + sqr(mElectron)) - pin) -
+                 2 * qRecoil[3] * pout;
+   LDouble_t discrim = B*B - 4*A*C;
+   LDouble_t theta1, theta2;
+   if (discrim >= 0) {
+      theta1 = (-B - sqrt(discrim)) / (2*A);
+      theta2 = (-B + sqrt(discrim)) / (2*A);
    }
-   theta *= (mElectron/pin);
+   else {
+      return 0;
+   }
+   LDouble_t theta = (theta1 > 0)? theta1 : theta2;
+   if (theta <= 0)
+      return 0;
+
    gOut.SetMom(p.SetPolar(kout,theta,phi));
    p = eIn.Mom()-qRecoil-p;
    eOut.SetMom(p);
