@@ -3,6 +3,7 @@
 /tmp
 /bin
 /test
+/work
 *-orig
 *.pyc
 *.d
@@ -10,3 +11,4 @@
 *.so
 *ict_rdict.pcm
 *ict.cxx
+*.root
