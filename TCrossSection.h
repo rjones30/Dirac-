@@ -35,7 +35,7 @@ public:
                                         const TLepton &eOut,
                                         const TLepton &nOut,
                                         LDouble_t F1spacelike,
-                                        LDouble_t F2spacelik,
+                                        LDouble_t F2spacelike,
                                         LDouble_t F1timelike,
                                         LDouble_t F2timelike);
    static LDouble_t eeBremsstrahlung(const TLepton &eIn0,
