@@ -15,8 +15,6 @@
 // microbarns/GeV^4/r, differential in (d^3 qR  dphi- dE-). Another
 // useful expression for the differential measure is
 //    (d^3 qR dphi- dE-) = (M / 2 kin) (dM dqR^2 dphiR dphi- dE-)
-// The cross section contains the form factor squared that is supposed 
-// to represent the carbon atom.
 //
 // author: richard.t.jones at uconn.edu
 // version: december 10, 2017
