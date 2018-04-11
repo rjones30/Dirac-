@@ -18,6 +18,7 @@
 #include <TROOT.h>
 #include <TCanvas.h>
 #include <TF1.h>
+#include <TAxis.h>
 
 Double_t Compton(Double_t *var, Double_t *par)
 {
@@ -48,6 +49,9 @@ Double_t Compton(Double_t *var, Double_t *par)
       break;
     case +1:
       gIn.SetPol(TThreeVectorReal(0,0,1));
+      break;
+    case +2:
+      gIn.SetPol(TThreeVectorReal(0,1,0));
       break;
     default:
       std::cout << "Compton.C :"
@@ -97,7 +101,23 @@ Double_t ComptonAsym(Double_t *var, Double_t *par)
    return (sigpm - sigmm) / (sigpm + sigmm);
 }
 
-Int_t demoCompton()
+Int_t demoCompton(Double_t Ephot, Double_t phi)
+{
+   TCanvas *c1 = new TCanvas("c1","Compton Cross Section",200,10,700,500);
+   TF1 *comp = new TF1("comp",Compton,0,3.1416,5);
+   comp->SetParameter(0,Ephot);
+   comp->SetParameter(1,phi);
+   comp->SetParameter(3,+2);
+   comp->SetParameter(4,0);
+   comp->GetXaxis()->SetTitle("#theta (radians)");
+   comp->GetYaxis()->SetTitle("d#sigma/d#Omega (#mub)");
+   comp->GetYaxis()->SetTitleOffset(1.5);
+   comp->Draw();
+   c1->Update();
+   return 0;
+}
+
+Int_t demoComptonAsym()
 {
    TCanvas *c1 = new TCanvas("c1","Compton Cross Section",200,10,700,500);
    TF1 *asym = new TF1("asym",ComptonAsym,0,3.1416,5);
@@ -109,7 +129,7 @@ Int_t demoCompton()
    return 0;
 }
 
-Int_t demoCompton(Double_t Ephot)
+Int_t demoComptonAsym(Double_t Ephot)
 {
    TF1 *asym2 = new TF1("asym2",ComptonAsym,0,3.1416,5);
    asym2->SetParameter(0,Ephot);
