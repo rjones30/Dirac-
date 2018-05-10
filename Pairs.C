@@ -11,11 +11,11 @@
 // momentum phiR, the azimuthal angle of the outgoing positron about the
 // pair momentum axis phi+, and energy of the outgoing positron E+.  The
 // returned value is the differential cross section measured in
-// microbarns/GeV^4/r, differential in (d^3 qR  dphi- dE-). Another
-// useful expression for the differential measure is
+// microbarns/GeV^4/r per atom, differential in (d^3 qR  dphi- dE-).
+// Another useful expression for the differential measure is
 //    (d^3 qR dphi- dE-) = (M / 2 kin) (dM dqR^2 dphiR dphi- dE-)
 // The cross section contains the form factor squared that is supposed 
-// to represent the carbon atom.
+// to represent the target atom.
 //
 // author: richard.t.jones at uconn.edu
 // version: january 1, 2000
@@ -37,6 +37,9 @@
 #include <TF1.h>
 
 TRandom2 Pairs_random_gen(0);
+
+//#define H_DIPOLE_FORM_FACTOR 1
+LDouble_t FFatomic(LDouble_t qR);
 
 Double_t Pairs(Double_t *var, Double_t *par)
 {
@@ -98,11 +101,9 @@ Double_t Pairs(Double_t *var, Double_t *par)
    eOut.AllPol();
    pOut.AllPol();
 
-   // Multiply the basic cross section by the carbon atomic form factor
-   // Here I chose a simple parameterization for the form factor
-   const LDouble_t Z=6;
-   const LDouble_t beta2=111*pow(Z,-1/3.)/mElectron;    // ff cutoff in /GeV
-   const LDouble_t Fff=1/(1+sqr(beta2)*qRecoil.LengthSqr());
+   // Multiply the basic cross section by the atomic form factor, asumed to be 9Be
+   const LDouble_t Z=4;
+   const LDouble_t Fff=FFatomic(qRecoil.Length());
    LDouble_t result = TCrossSection::PairProduction(gIn,eOut,pOut);
    result *= sqr(Z*(1-Fff));
    return result;
@@ -260,4 +261,38 @@ Int_t genPairs(Int_t N, Double_t kin=9., TFile *hfile=0, TTree *tree=0, Int_t pr
       hfile->Write();
    }
    return 0;
+}
+
+LDouble_t FFatomic(LDouble_t qR)
+{
+   // return the atomic form factor of 4Be normalized to unity
+   // at zero momentum transfer qR (GeV/c). Length is in Angstroms.
+
+#if H_DIPOLE_FORM_FACTOR
+
+   LDouble_t a0Bohr = 0.529177 / 1.97327e-6;
+   LDouble_t ff = 1 / pow(1 + pow(a0Bohr * qR, 2), 2);
+
+#else
+
+   double Z=4;
+
+   // parameterization given by online database at
+   // http://lampx.tugraz.at/~hadley/ss1/crystaldiffraction\
+   //      /atomicformfactors/formfactors.php
+
+   LDouble_t acoeff[] = {1.5919, 1.1278, 0.5391, 0.7029};
+   LDouble_t bcoeff[] = {43.6427, 1.8623, 103.483, 0.5420};
+   LDouble_t ccoeff[] = {0.0385};
+
+   LDouble_t q_invA = qR / 1.97327e-6;
+   LDouble_t ff = ccoeff[0];
+   for (int i=0; i < 4; ++i) {
+      ff += acoeff[i] * exp(-bcoeff[i] * pow(q_invA / (4 * M_PI), 2));
+   }
+   ff /= Z;
+
+#endif
+
+   return ff;
 }

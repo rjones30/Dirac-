@@ -8,8 +8,8 @@
 // qR (2 transverse components only), the azimuthal angle of the plane
 // containing the e+e- pair phi+, and the energy of the pair positron
 // E+. The returned value is the differential cross section measured
-// microbarns/GeV^4/r, differential in (d^3 qR  dphi+ dE+).  Another 
-// useful expression for the differential measure is
+// microbarns/GeV^4/r per electron, differential in (d^3 qR  dphi+ dE+).
+// Another useful expression for the differential measure is
 //    (d^3 qR dphi+ dE+) = (M / 2 kin) (dM dqR^2 dphiR dphi+ dE+)
 //
 // author: richard.t.jones at uconn.edu
@@ -36,7 +36,7 @@ TRandom2 Triplets_random_gen(0);
 TH2D *Triplets_random_bias2D_u0u1 = 0;
 
 //#define H_DIPOLE_FORM_FACTOR 1
-LDouble_t FFberyllium(LDouble_t qR);
+LDouble_t FFatomic(LDouble_t qR);
 
 Double_t Triplets(Double_t *var, Double_t *par)
 {
@@ -125,8 +125,7 @@ Double_t Triplets(Double_t *var, Double_t *par)
    e3.AllPol();
 
    LDouble_t result = TCrossSection::TripletProduction(g0,e0,e1,e2,e3);
-   LDouble_t Q2 = 2*mElectron*(E3 - mElectron);
-   LDouble_t FF = FFberyllium(sqrt(Q2));
+   LDouble_t FF = FFatomic(e3.Mom().Length());
    return result * (1 - FF*FF);
 }
 
@@ -261,7 +260,7 @@ Int_t genTriplets(Int_t N, Double_t kin=9., TFile *hfile=0, TTree *tree=0, Int_t
       }
 
       Double_t *par=&event.E0;
-      Double_t *var=&event.phiR;
+      Double_t *var=&event.Epos;
       event.diffXS = Triplets(var,par);
       event.weightedXS = event.diffXS*event.weight;
       if (event.weight <= 0) {
@@ -297,17 +296,19 @@ Int_t genTriplets(Int_t N, Double_t kin=9., TFile *hfile=0, TTree *tree=0, Int_t
    return 0;
 }
 
-LDouble_t FFberyllium(LDouble_t qR)
+LDouble_t FFatomic(LDouble_t qR)
 {
    // return the atomic form factor of 4Be normalized to unity
-   // at large momentum transfer qR (GeV/c).
+   // at zero momentum transfer qR (GeV/c). Length is in Angstroms.
 
 #if H_DIPOLE_FORM_FACTOR
 
    LDouble_t a0Bohr = 0.529177 / 1.97327e-6;
-   LDouble_t ff = 1 / pow(1 + pow(a0Bohr * qR, 2) / 4, 2);
+   LDouble_t ff = 1 / pow(1 + pow(a0Bohr * qR, 2), 2);
 
 #else
+
+   double Z=4;
 
    // parameterization given by online database at
    // http://lampx.tugraz.at/~hadley/ss1/crystaldiffraction\
@@ -322,7 +323,7 @@ LDouble_t FFberyllium(LDouble_t qR)
    for (int i=0; i < 4; ++i) {
       ff += acoeff[i] * exp(-bcoeff[i] * pow(q_invA / (4 * M_PI), 2));
    }
-   ff /= 4;
+   ff /= Z;
 
 #endif
 
