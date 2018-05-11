@@ -82,7 +82,7 @@ TFourVectorComplex TPhoton::Eps(const Int_t mode) const
 {
    // Vector potential 4-vector for photon object is returned.  There
    // are four linearly-independent solutions (modes) which are:
-   //     mode=1: right-circular polarization
+   //    mode=1: right-circular polarization
    //    mode=2: left-circular polarization
    //    mode=3: longitudinal polarization
    //    mode=4: momentum vector (renormalized)
@@ -142,6 +142,78 @@ TFourVectorComplex TPhoton::Eps(const Int_t mode) const
       break;
    }
    return eps;
+}
+
+TPhoton &TPhoton::SetPlanePolarization(const TThreeVectorReal &phat,
+                                       LDouble_t pol)
+{
+   // This method is provided for setting a photon to a state of 
+   // linear polarization along a particular physical plane, without
+   // needing to remember what the Stokes parameters mean, or how
+   // the somewhat confusing basis vectors in Eps() are defined for
+   // the helicity basis states. Just set phat to the direction of
+   // the polarization vector orthogonal to the photon momentum and
+   // pol to the degree of linear polarization, and you are all set.
+   // Remember that if you change the momentum, you need to come back
+   // and invoke this method again to keep the polarization consistent.
+
+   TThreeVectorComplex eps(Eps(1));
+   TThreeVectorReal epsx(eps.RealPart());
+   TThreeVectorReal epsy(eps.ImagPart());
+   TThreeVectorReal s(epsx.Dot(phat), epsy.Dot(phat), 0);
+   s *= pol / s.Length();
+   return SetPol(s);
+}
+
+TPhoton &TPhoton::SetEllipticalPolarization(const TThreeVectorReal &phat,
+                                            LDouble_t circ,
+                                            LDouble_t pol)
+{
+   // This method is provided for setting a photon to a state of 
+   // linear polarization along a particular physical plane, without
+   // needing to remember what the Stokes parameters mean, or how
+   // the somewhat confusing basis vectors in Eps() are defined for
+   // the helicity basis states. Just set phat to the direction of
+   // the major axis of the ellipse traced out by the tip of the
+   // electric field vector orthogonal to the photon momentum, circ
+   // to the circularity of the polarization ellipse, and pol to the
+   // degree of polarization, and you are all set. The value of circ
+   // should be +1 for right-circular, -1 for left-circular, 0 for
+   // linear, and in between the cos(theta_Stokes) for the general case.
+   // Remember that if you change the momentum, you need to come back
+   // and invoke this method again to keep the polarization consistent.
+
+   TThreeVectorComplex eps(Eps(1));
+   TThreeVectorReal epsx = eps.RealPart();
+   TThreeVectorReal epsy = eps.ImagPart();
+   TThreeVectorReal s(epsx.Dot(phat), epsy.Dot(phat), 0);
+   if (fabs(circ) < 1) {
+      s *= sqrt(1 - circ*circ) / s.Length();
+      s += TThreeVectorReal(0,0,circ);
+      s *= pol;
+   }
+   else if (circ > 0) {
+      s = TThreeVectorReal(0,0,1);
+   }
+   else {
+      s = TThreeVectorReal(0,0,-1);
+   }
+   return SetPol(s);
+}
+
+TThreeVectorReal TPhoton::GetPolarizationPlane() const
+{
+   // This method is provided for checking the polarization plane
+   // of a photon, without needing to remember what the Stokes
+   // parameters mean, or how the somewhat confusing basis vectors
+   // in Eps() are defined for the helicity basis states, so as to
+   // be able to interpret what is returned by the Pol() method.
+
+   TThreeVectorComplex eps(Eps(1));
+   TThreeVectorReal epsx = eps.RealPart();
+   TThreeVectorReal epsy = eps.ImagPart();
+   TThreeVectorReal pol(Pol());
+   return sqrt(2) * (pol[1] * epsx + pol[2] * epsy);
 }
 
 void TPhoton::Streamer(TBuffer &buf)
