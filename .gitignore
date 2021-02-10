@@ -4,6 +4,12 @@
 /bin
 /test
 /work
+/work0
+/work1
+/work2
+/work3
+/work4
+/work5
 *-orig
 *.pyc
 *.d

@@ -35,6 +35,12 @@ public:
    TPhoton &SetMom(const TFourVectorReal &p);
    TPhoton &SetMom(const TThreeVectorReal &p);
    TPhoton &SetPol(const TThreeVectorReal &polar);
+   TPhoton &SetPlanePolarization(const TThreeVectorReal &phat,
+                                 LDouble_t pol=1);
+   TPhoton &SetEllipticalPolarization(const TThreeVectorReal &phat,
+                                      LDouble_t circ,
+                                      LDouble_t pol=1);
+   TThreeVectorReal GetPolarizationPlane() const;
    TPhoton &AllPol();
 
    friend TBuffer &operator>>(TBuffer &buf, TPhoton *&obj);

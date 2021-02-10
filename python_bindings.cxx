@@ -1193,6 +1193,11 @@ BOOST_PYTHON_MODULE(libDirac)
            boost::python::return_value_policy<boost::python::reference_existing_object>())
       .def("AllPol", &TPhoton::AllPol,
            boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetPlanePolarization", &TPhoton::SetPlanePolarization,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("SetEllipticalPolarization", &TPhoton::SetEllipticalPolarization,
+           boost::python::return_value_policy<boost::python::reference_existing_object>())
+      .def("GetPolarizationPlane", &TPhoton::GetPolarizationPlane)
       .def("Print", &TPhoton::Print)
       .def("Print", &TPhoton_Print)
    ;
