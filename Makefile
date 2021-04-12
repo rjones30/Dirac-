@@ -1,8 +1,15 @@
 #---------------------------------------------------
+ifndef PYTHON_CONFIG
+  PYTHON_CONFIG = python-config
+endif
+ifndef BOOST_PYTHON_LIB
+  BOOST_PYTHON_LIB = boost_python
+endif
+
 CXXFLAGS      = -O4 -fPIC $(shell root-config --cflags) -I . \
-                          $(shell python-config --includes)
+                          $(shell $(PYTHON_CONFIG) --includes)
 CDBFLAGS      = -g -fPIC $(shell root-config --cflags) -I . \
-                         $(shell python-config --includes)
+                         $(shell $(PYTHON_CONFIG) --includes)
 LDFLAGS       = -g -Wl,--export-dynamic
 SOFLAGS       = -shared -Wl,--export-dynamic
 LD            = g++
@@ -62,7 +69,7 @@ clean:
 
 libDirac.so: $(OBJS) python_bindings.o
 	@echo "Building shared library ..."
-	@$(LD) $(SOFLAGS) -Wl,-soname,$@ $^ -o $@ -lboost_python
+	@$(LD) $(SOFLAGS) -Wl,-soname,$@ $^ -o $@ -l$(BOOST_PYTHON_LIB)
 	@echo "done"
 
 TThreeVectorRealDict.cxx: TThreeVectorReal.h TThreeVectorRealLinkDef.h
