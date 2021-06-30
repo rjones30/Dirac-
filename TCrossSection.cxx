@@ -473,10 +473,10 @@ LDouble_t TCrossSection::TripletProduction(const TPhoton &gIn,
                                            const TLepton &eOut2,
                                            const TLepton &eOut3)
 {
-   // Calculates the e-e+e- triplet production cross section for a gamma
+   // Calculates the l-l+e- triplet production cross section for a gamma
    // ray off a free electron at a particular recoil momentum vector qR.
    // The cross section is returned as d(sigma)/(dE+ dphi+ d^3q) where E+ is
-   // the energy of the final-state positron and phi+ is its azimuthal angle
+   // the energy of the final-state +lepton and phi+ is its azimuthal angle
    // about the direction formed by the momentum pOut.Mom() + eOut2.Mom().
    // The polar angles of the pair are fixed by momentum conservation.
    // It is assumed that momentum conservation is respected by the momenta
@@ -501,10 +501,10 @@ LDouble_t TCrossSection::TripletProduction(const TPhoton &gIn,
    TDiracSpinor u0[2]; // incoming electron
    u0[0].SetStateU(e0->Mom(), +0.5);
    u0[1].SetStateU(e0->Mom(), -0.5);
-   TDiracSpinor v1[2]; // outgoing positron
+   TDiracSpinor v1[2]; // outgoing +lepton of pair
    v1[0].SetStateV(e1->Mom(), +0.5);
    v1[1].SetStateV(e1->Mom(), -0.5);
-   TDiracSpinor u2[2]; // outgoing electron 2
+   TDiracSpinor u2[2]; // outgoing -lepton of pair
    u2[0].SetStateU(e2->Mom(), +0.5);
    u2[1].SetStateU(e2->Mom(), -0.5);
    TDiracSpinor u3[2]; // outgoing electron 3
@@ -580,10 +580,16 @@ LDouble_t TCrossSection::TripletProduction(const TPhoton &gIn,
          GD2 *= gpropGD2;
          TDiracMatrix CD3;
          CD3 = gamma[mu] * epropCD3a * epsI + epsI * epropCD3b * gamma[mu];
-         CD3 *= gpropCD3;
          TDiracMatrix GD3;
          GD3 = gamma[mu] * epropGD3a * epsI + epsI * epropGD3b * gamma[mu];
-         GD3 *= gpropGD3;
+         if (e2->Mass() == e3->Mass) {
+            CD3 *= gpropCD3;
+            GD3 *= gpropGD3;
+         }
+         else {
+            CD3 *= 0;
+            GD3 *= 0;
+         }
          for (Int_t h0=0; h0 < 2; h0++) {
             for (Int_t h1=0; h1 < 2; h1++) {
                for (Int_t h2=0; h2 < 2; h2++) {
