@@ -582,7 +582,7 @@ LDouble_t TCrossSection::TripletProduction(const TPhoton &gIn,
          CD3 = gamma[mu] * epropCD3a * epsI + epsI * epropCD3b * gamma[mu];
          TDiracMatrix GD3;
          GD3 = gamma[mu] * epropGD3a * epsI + epsI * epropGD3b * gamma[mu];
-         if (e2->Mass() == e3->Mass) {
+         if (e2->Mass() == e3->Mass()) {
             CD3 *= gpropCD3;
             GD3 *= gpropGD3;
          }
@@ -1085,6 +1085,194 @@ LDouble_t TCrossSection::eeBremsstrahlung(const TLepton &eIn0,
    kinFactor /= 4 * e1->Mom()[0] * e3->Mom()[0];
    LDouble_t diffXsect = hbarcSqr * pow(alphaQED,3) *
                          real(ampSquared) * kinFactor;
+   return diffXsect;
+}
+
+LDouble_t TCrossSection::ePairProduction(const TLepton &eIn,
+                                         const TLepton &eOut,
+                                         const TLepton &lpOut,
+                                         const TLepton &lnOut)
+{
+   // Calculates the e+e- pair production cross section for an incident
+   // high-energy electron off an atom at a particular recoil momentum vector
+   // q. The cross section is returned as d(sigma)/(dE+ dphi+ d^3q d^3qR)
+   // where E is the energy of the final-state positron, phi is its
+   // azimuthal angle, q is the three-vector momentum transfer from the
+   // incident high-energy electron, and qR is the three-vector recoil
+   // momentum of the target. The polar angles of the pair are fixed by
+   // momentum conservation. It is assumed that the target is sufficiently
+   // massive that the amplitude is proportional to the charge form factor
+   // of the target, ie. that only the J0 nuclear current is included, and
+   // the spatial terms Ji,i=1..3 that depend on the spin structure of the
+   // target are dropped. The calculation is performed in the lab frame.
+   // This cross section is only a partial result, because it does not
+   // include the integral d^3 q over the form factor of the target.  This
+   // depends on the crystal structure of the target, and so is left to
+   // be carried out by more specialized code. Units are microbarns/GeV^7/r.
+
+   TLepton eIncoming(eIn),  *eI=&eIncoming;
+   TLepton eOutgoing(eOut), *eF=&eOutgoing;
+
+   // call the pair members leptons (lp for positive, ln for negative)
+   // anticipating one day wanting to generalize to muon pairs.
+   TLepton lpOutgoing(lpOut), *lI=&lpOutgoing;
+   TLepton lnOutgoing(lnOut), *lF=&lnOutgoing;
+
+   // Obtain the lepton state vectors
+   TDiracSpinor uI[2];
+   uI[0].SetStateU(eI->Mom(), +0.5);
+   uI[1].SetStateU(eI->Mom(), -0.5);
+   TDiracSpinor uF[2];
+   uF[0].SetStateU(eF->Mom(), +0.5);
+   uF[1].SetStateU(eF->Mom(), -0.5);
+   TDiracSpinor ulF[2];
+   ulF[0].SetStateU(lF->Mom(), +0.5);
+   ulF[1].SetStateU(lF->Mom(), -0.5);
+   TDiracSpinor vlF[2];
+   vlF[0].SetStateV(lI->Mom(), +0.5);
+   vlF[1].SetStateV(lI->Mom(), -0.5);
+
+   // Assume without checking that lF, lI are particle, antiparticle
+   const LDouble_t mLepton = lF->Mass();
+
+   TDiracMatrix dm;
+
+   // Obtain the electron propagators for the four basic diagrams
+   TFourVectorReal qElectron(eI->Mom() - eF->Mom());
+   TFourVectorReal qPair(lF->Mom() + lI->Mom());
+   TFourVectorReal qTarget(qElectron - qPair);
+   LDouble_t qElectron2 = qElectron.InvariantSqr();
+   LDouble_t qPair2 = qPair.InvariantSqr();
+   LDouble_t edenom1 = qElectron2 - 2 * qElectron.ScalarProd(lI->Mom());
+   LDouble_t edenom2 = qElectron2 - 2 * qElectron.ScalarProd(eF->Mom());
+   LDouble_t edenom3 = qPair2 + 2 * qPair.ScalarProd(eF->Mom());
+   LDouble_t edenom4 = qPair2 - 2 * qPair.ScalarProd(eI->Mom());
+   TDiracMatrix ePropagator1 = dm.Slash(qElectron - lF->Mom()) + mLepton;
+   TDiracMatrix ePropagator2 = dm.Slash(eF->Mom() - qElectron) + mLepton;
+   TDiracMatrix ePropagator3 = dm.Slash(eF->Mom() + qPair) + mLepton;
+   TDiracMatrix ePropagator4 = dm.Slash(eI->Mom() - qPair) + mLepton;
+   ePropagator1 /= edenom1;
+   ePropagator2 /= edenom2;
+   ePropagator3 /= edenom3;
+   ePropagator4 /= edenom4;
+ 
+   // Four more diagrams, from exchange of two final-state electrons
+   // note for future development: drop these diagrams for muon pairs
+   TFourVectorReal qElectronX(eI->Mom() - lF->Mom());
+   TFourVectorReal qPairX(eF->Mom() + lI->Mom());
+   LDouble_t qElectronX2 = qElectronX.InvariantSqr();
+   LDouble_t qPairX2 = qPairX.InvariantSqr();
+   LDouble_t edenom5 = qElectronX2 - 2 * qElectronX.ScalarProd(lI->Mom());
+   LDouble_t edenom6 = qElectronX2 - 2 * qElectronX.ScalarProd(lF->Mom());
+   LDouble_t edenom7 = qPairX2 + 2 * qPairX.ScalarProd(lF->Mom());
+   LDouble_t edenom8 = qPairX2 - 2 * qPairX.ScalarProd(eI->Mom());
+   TDiracMatrix ePropagator5 = dm.Slash(qElectronX - lI->Mom()) + mLepton;
+   TDiracMatrix ePropagator6 = dm.Slash(lF->Mom() - qElectronX) + mLepton;
+   TDiracMatrix ePropagator7 = dm.Slash(lF->Mom() + qPairX) + mLepton;
+   TDiracMatrix ePropagator8 = dm.Slash(eI->Mom() - qPairX) + mLepton;
+   ePropagator5 /= edenom5;
+   ePropagator6 /= edenom6;
+   ePropagator7 /= edenom7;
+   ePropagator8 /= edenom8;
+
+   // Evaluate the leading order Feynman amplitude
+   const TDiracMatrix gamma0(kDiracGamma0);
+   const TDiracMatrix gamma1(kDiracGamma1);
+   const TDiracMatrix gamma2(kDiracGamma2);
+   const TDiracMatrix gamma3(kDiracGamma3);
+   TDiracMatrix gamma[4] = {gamma0, gamma1, gamma2, gamma3};
+   Complex_t invAmp[2][2][2][2];
+   for (Int_t hi=0; hi < 2; hi++) {
+      for (Int_t hf=0; hf < 2; hf++) {
+         for (Int_t li=0; li < 2; li++) {
+            for (Int_t lf=0; hf < 2; lf++) {
+               invAmp[hi][hf][li][lf] = 0;
+               for (Int_t mu=0; mu < 4; mu++) {
+                  invAmp[hi][hf][li][lf] += 
+                    Complex_t(((mu == 0)? +1.L : -1.L) * (
+                        uF[hf].ScalarProd(gamma[mu] * uI[hi]) *
+                        ( ulF[lf].ScalarProd(gamma[mu] * ePropagator1 *
+                                            gamma0 * vlF[li])
+                        + ulF[lf].ScalarProd(gamma0 * ePropagator2 *
+                                            gamma[mu] * vlF[li])
+                        ) / qElectron2
+                      + ulF[lf].ScalarProd(gamma[mu] * vlF[li]) *
+                        ( uF[hf].ScalarProd(gamma[mu] * ePropagator3 *
+                                            gamma0 * uI[hi]) 
+                        + uF[hf].ScalarProd(gamma0  * ePropagator4 *
+                                            gamma[mu] * uI[hi])
+                        ) / qPair2
+                      - ulF[lf].ScalarProd(gamma[mu] * uI[hi]) *
+                        ( uF[hf].ScalarProd(gamma[mu] * ePropagator5 *
+                                            gamma0 * vlF[li])
+                        + uF[hf].ScalarProd(gamma0 * ePropagator6 *
+                                            gamma[mu] * vlF[li])
+                        ) / qElectronX2
+                      - ulF[lf].ScalarProd(gamma[mu] * vlF[li]) *
+                        ( uF[hf].ScalarProd(gamma[mu] * ePropagator7 *
+                                            gamma0 * uI[hi]) 
+                        + uF[hf].ScalarProd(gamma0  * ePropagator8 *
+                                            gamma[mu] * uI[hi])
+                        ) / qPairX2 )
+                    );
+               }
+            }
+         }
+      }
+   }
+
+   // Sum over spins
+   Complex_t ampSquared=0;
+   for (Int_t li=0; li < 2; li++) {
+    for (Int_t libar=0; libar < 2; libar++) {
+     for (Int_t lf=0; lf < 2; lf++) {
+      for (Int_t lfbar=0; lfbar < 2; lfbar++) {
+       for (Int_t hi=0; hi < 2; hi++) {
+        for (Int_t hibar=0; hibar < 2; hibar++) {
+         for (Int_t hf=0; hf < 2; hf++) {
+          for (Int_t hfbar=0; hfbar < 2; hfbar++) {
+             ampSquared += invAmp[hi][hf][li][lf] *
+                 std::conj(invAmp[hibar][hfbar][libar][lfbar]) *
+                           eI->SDM()[hi][hibar] *
+                           eF->SDM()[hfbar][hf] *
+                           lI->SDM()[li][libar] *
+                           lF->SDM()[lfbar][lf];
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+
+#if DEBUGGING
+   if (real(ampSquared) < 0 || fabs(ampSquared.imag()) > fabs(ampSquared / 1e8L))
+   {
+      std::cout << "Warning: bad PairProduction amplitudes:" << std::endl
+                << "  These guys should be all real positive:" << std::endl
+                << "    ampSquared = " << ampSquared << std::endl;
+   }
+#endif
+
+   // Obtain the kinematical factors:
+   //    (1) 1/flux factor from initial state 1/(2E)
+   //    (2) rho from density of final states factor
+   // where the general relativistic expression for rho is
+   //  rho = pow(2*PI_,4-3*N) delta4(Pin-Pout) [d4 P1] [d4 P2] ... [d4 PN]
+   // using differential forms [d4 P] = d4P delta(P.P - m*m) where P.P is
+   // the invariant norm of four-vector P, m is the known mass of the
+   // corresponding particle, and N is the number of final state particles.
+   //    (3) 1/pow(qRecoil,4) from the virtual photon propagator
+   //    (4) absorb three powers of 4*PI_ into pow(alphaQED,3)
+   // To get a simple expression for the density of final states,
+   // I redefined the solid angle for the outgoing electron around
+   // the momentum axis of the pair, rather than the incoming photon.
+
+   LDouble_t kinFactor = 1/pow(2*PI_,4);
+   kinFactor /= eIn.Mom()[0] * eOut.Mom()[0] * qPair.Length();
+   LDouble_t diffXsect = hbarcSqr*pow(alphaQED,4)*real(ampSquared)
+                       * kinFactor/sqr(qTarget.InvariantSqr());
    return diffXsect;
 }
 

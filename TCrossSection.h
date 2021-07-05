@@ -43,6 +43,10 @@ public:
                                      const TLepton &eOut2, 
                                      const TLepton &eOut3,
                                      const TPhoton &gOut);
+   static LDouble_t ePairProduction(const TLepton &eIn,
+                                    const TLepton &eOut,
+                                    const TLepton &lpOut,
+                                    const TLepton &lnOut);
 
    void Print(Option_t *option="");
 
