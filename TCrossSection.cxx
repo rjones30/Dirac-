@@ -1115,8 +1115,8 @@ LDouble_t TCrossSection::ePairProduction(const TLepton &eIn,
 
    // call the pair members leptons (lp for positive, ln for negative)
    // anticipating one day wanting to generalize to muon pairs.
-   TLepton lpOutgoing(lpOut), *lI=&lpOutgoing;
-   TLepton lnOutgoing(lnOut), *lF=&lnOutgoing;
+   TLepton lpOutgoing(lpOut), *lpF=&lpOutgoing;
+   TLepton lnOutgoing(lnOut), *lnF=&lnOutgoing;
 
    // Obtain the lepton state vectors
    TDiracSpinor uI[2];
@@ -1126,29 +1126,29 @@ LDouble_t TCrossSection::ePairProduction(const TLepton &eIn,
    uF[0].SetStateU(eF->Mom(), +0.5);
    uF[1].SetStateU(eF->Mom(), -0.5);
    TDiracSpinor ulF[2];
-   ulF[0].SetStateU(lF->Mom(), +0.5);
-   ulF[1].SetStateU(lF->Mom(), -0.5);
+   ulF[0].SetStateU(lnF->Mom(), +0.5);
+   ulF[1].SetStateU(lnF->Mom(), -0.5);
    TDiracSpinor vlF[2];
-   vlF[0].SetStateV(lI->Mom(), +0.5);
-   vlF[1].SetStateV(lI->Mom(), -0.5);
+   vlF[0].SetStateV(lpF->Mom(), +0.5);
+   vlF[1].SetStateV(lpF->Mom(), -0.5);
 
-   // Assume without checking that lF, lI are particle, antiparticle
-   const LDouble_t mLepton = lF->Mass();
+   // Assume without checking that lnF, lpF are lepton, antilepton
+   const LDouble_t mLepton = lnF->Mass();
 
    TDiracMatrix dm;
 
    // Obtain the electron propagators for the four basic diagrams
    TFourVectorReal qElectron(eI->Mom() - eF->Mom());
-   TFourVectorReal qPair(lF->Mom() + lI->Mom());
+   TFourVectorReal qPair(lnF->Mom() + lpF->Mom());
    TFourVectorReal qTarget(qElectron - qPair);
    LDouble_t qElectron2 = qElectron.InvariantSqr();
    LDouble_t qPair2 = qPair.InvariantSqr();
-   LDouble_t edenom1 = qElectron2 - 2 * qElectron.ScalarProd(lI->Mom());
-   LDouble_t edenom2 = qElectron2 - 2 * qElectron.ScalarProd(eF->Mom());
+   LDouble_t edenom1 = qElectron2 - 2 * qElectron.ScalarProd(lpF->Mom());
+   LDouble_t edenom2 = qElectron2 - 2 * qElectron.ScalarProd(lnF->Mom());
    LDouble_t edenom3 = qPair2 + 2 * qPair.ScalarProd(eF->Mom());
    LDouble_t edenom4 = qPair2 - 2 * qPair.ScalarProd(eI->Mom());
-   TDiracMatrix ePropagator1 = dm.Slash(qElectron - lF->Mom()) + mLepton;
-   TDiracMatrix ePropagator2 = dm.Slash(eF->Mom() - qElectron) + mLepton;
+   TDiracMatrix ePropagator1 = dm.Slash(qElectron - lpF->Mom()) + mLepton;
+   TDiracMatrix ePropagator2 = dm.Slash(lnF->Mom() - qElectron) + mLepton;
    TDiracMatrix ePropagator3 = dm.Slash(eF->Mom() + qPair) + mLepton;
    TDiracMatrix ePropagator4 = dm.Slash(eI->Mom() - qPair) + mLepton;
    ePropagator1 /= edenom1;
@@ -1158,17 +1158,17 @@ LDouble_t TCrossSection::ePairProduction(const TLepton &eIn,
  
    // Four more diagrams, from exchange of two final-state electrons
    // note for future development: drop these diagrams for muon pairs
-   TFourVectorReal qElectronX(eI->Mom() - lF->Mom());
-   TFourVectorReal qPairX(eF->Mom() + lI->Mom());
+   TFourVectorReal qElectronX(eI->Mom() - lnF->Mom());
+   TFourVectorReal qPairX(eF->Mom() + lpF->Mom());
    LDouble_t qElectronX2 = qElectronX.InvariantSqr();
    LDouble_t qPairX2 = qPairX.InvariantSqr();
-   LDouble_t edenom5 = qElectronX2 - 2 * qElectronX.ScalarProd(lI->Mom());
-   LDouble_t edenom6 = qElectronX2 - 2 * qElectronX.ScalarProd(lF->Mom());
-   LDouble_t edenom7 = qPairX2 + 2 * qPairX.ScalarProd(lF->Mom());
+   LDouble_t edenom5 = qElectronX2 - 2 * qElectronX.ScalarProd(lpF->Mom());
+   LDouble_t edenom6 = qElectronX2 - 2 * qElectronX.ScalarProd(eF->Mom());
+   LDouble_t edenom7 = qPairX2 + 2 * qPairX.ScalarProd(lnF->Mom());
    LDouble_t edenom8 = qPairX2 - 2 * qPairX.ScalarProd(eI->Mom());
-   TDiracMatrix ePropagator5 = dm.Slash(qElectronX - lI->Mom()) + mLepton;
-   TDiracMatrix ePropagator6 = dm.Slash(lF->Mom() - qElectronX) + mLepton;
-   TDiracMatrix ePropagator7 = dm.Slash(lF->Mom() + qPairX) + mLepton;
+   TDiracMatrix ePropagator5 = dm.Slash(qElectronX - lpF->Mom()) + mLepton;
+   TDiracMatrix ePropagator6 = dm.Slash(eF->Mom() - qElectronX) + mLepton;
+   TDiracMatrix ePropagator7 = dm.Slash(lnF->Mom() + qPairX) + mLepton;
    TDiracMatrix ePropagator8 = dm.Slash(eI->Mom() - qPairX) + mLepton;
    ePropagator5 /= edenom5;
    ePropagator6 /= edenom6;
@@ -1185,16 +1185,16 @@ LDouble_t TCrossSection::ePairProduction(const TLepton &eIn,
    for (Int_t hi=0; hi < 2; hi++) {
       for (Int_t hf=0; hf < 2; hf++) {
          for (Int_t li=0; li < 2; li++) {
-            for (Int_t lf=0; hf < 2; lf++) {
+            for (Int_t lf=0; lf < 2; lf++) {
                invAmp[hi][hf][li][lf] = 0;
                for (Int_t mu=0; mu < 4; mu++) {
                   invAmp[hi][hf][li][lf] += 
                     Complex_t(((mu == 0)? +1.L : -1.L) * (
                         uF[hf].ScalarProd(gamma[mu] * uI[hi]) *
-                        ( ulF[lf].ScalarProd(gamma[mu] * ePropagator1 *
-                                            gamma0 * vlF[li])
-                        + ulF[lf].ScalarProd(gamma0 * ePropagator2 *
-                                            gamma[mu] * vlF[li])
+                        ( ulF[lf].ScalarProd(gamma0 * ePropagator1 *
+                                             gamma[mu] * vlF[li])
+                        + ulF[lf].ScalarProd(gamma[mu] * ePropagator2 *
+                                             gamma0 * vlF[li])
                         ) / qElectron2
                       + ulF[lf].ScalarProd(gamma[mu] * vlF[li]) *
                         ( uF[hf].ScalarProd(gamma[mu] * ePropagator3 *
@@ -1203,16 +1203,16 @@ LDouble_t TCrossSection::ePairProduction(const TLepton &eIn,
                                             gamma[mu] * uI[hi])
                         ) / qPair2
                       - ulF[lf].ScalarProd(gamma[mu] * uI[hi]) *
-                        ( uF[hf].ScalarProd(gamma[mu] * ePropagator5 *
-                                            gamma0 * vlF[li])
-                        + uF[hf].ScalarProd(gamma0 * ePropagator6 *
+                        ( uF[hf].ScalarProd(gamma0 * ePropagator5 *
                                             gamma[mu] * vlF[li])
+                        + uF[hf].ScalarProd(gamma[mu] * ePropagator6 *
+                                            gamma0 * vlF[li])
                         ) / qElectronX2
-                      - ulF[lf].ScalarProd(gamma[mu] * vlF[li]) *
-                        ( uF[hf].ScalarProd(gamma[mu] * ePropagator7 *
-                                            gamma0 * uI[hi]) 
-                        + uF[hf].ScalarProd(gamma0  * ePropagator8 *
-                                            gamma[mu] * uI[hi])
+                      - uF[hf].ScalarProd(gamma[mu] * vlF[li]) *
+                        ( ulF[lf].ScalarProd(gamma[mu] * ePropagator7 *
+                                             gamma0 * uI[hi]) 
+                        + ulF[lf].ScalarProd(gamma0  * ePropagator8 *
+                                             gamma[mu] * uI[hi])
                         ) / qPairX2 )
                     );
                }
@@ -1235,8 +1235,8 @@ LDouble_t TCrossSection::ePairProduction(const TLepton &eIn,
                  std::conj(invAmp[hibar][hfbar][libar][lfbar]) *
                            eI->SDM()[hi][hibar] *
                            eF->SDM()[hfbar][hf] *
-                           lI->SDM()[li][libar] *
-                           lF->SDM()[lfbar][lf];
+                           lpF->SDM()[li][libar] *
+                           lnF->SDM()[lfbar][lf];
           }
          }
         }
@@ -1266,8 +1266,8 @@ LDouble_t TCrossSection::ePairProduction(const TLepton &eIn,
    //    (3) 1/pow(qRecoil,4) from the virtual photon propagator
    //    (4) absorb three powers of 4*PI_ into pow(alphaQED,3)
    // To get a simple expression for the density of final states,
-   // I redefined the solid angle for the outgoing electron around
-   // the momentum axis of the pair, rather than the incoming photon.
+   // I redefined the solid angle for the outgoing positron around
+   // the momentum axis of the pair lnOut,lpOut.
 
    LDouble_t kinFactor = 1/pow(2*PI_,4);
    kinFactor /= eIn.Mom()[0] * eOut.Mom()[0] * qPair.Length();
