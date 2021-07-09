@@ -1276,6 +1276,219 @@ LDouble_t TCrossSection::ePairProduction(const TLepton &eIn,
    return diffXsect;
 }
 
+LDouble_t TCrossSection::eTripletProduction(const TLepton &eIn,
+                                            const TLepton &eOut,
+                                            const TLepton &lpOut,
+                                            const TLepton &lnOut,
+                                            const TLepton &teIn,
+                                            const TLepton &teOut)
+{
+   // Calculates the e+e- pair production cross section for an incident
+   // high-energy electron off a target electron at a particular recoil
+   // momentum vector q. The cross section is returned as
+   //       d(sigma)/(dE+ dphi+ d^3q d^3qR)
+   // where E is the energy of the final-state positron, phi is its
+   // azimuthal angle, q is the three-vector momentum transfer from the
+   // incident high-energy electron, and qR is the three-vector recoil
+   // momentum of the target electron. The polar angles of the pair are fixed
+   // by momentum conservation.  The calculation is performed in the lab frame.
+   // This cross section is only a partial result, because it does not
+   // include the integral d^3 q over the form factor of the target. This
+   // depends on the atom in which the target electron is bound, and so is
+   // left to be applied by the user. Units are microbarns/GeV^7/r.
+
+   TLepton eIncoming(eIn),  *eI=&eIncoming;
+   TLepton eOutgoing(eOut), *eF=&eOutgoing;
+
+   // call the pair members leptons (lp for positive, ln for negative)
+   // anticipating one day wanting to generalize to muon pairs.
+   TLepton lpOutgoing(lpOut), *lpF=&lpOutgoing;
+   TLepton lnOutgoing(lnOut), *lnF=&lnOutgoing;
+
+   TLepton teIncoming(teIn), *teI=&teIncoming;
+   TLepton teOutgoing(teOut), *teF=&teOutgoing;
+
+   // Obtain the lepton state vectors
+   TDiracSpinor uI[2];
+   uI[0].SetStateU(eI->Mom(), +0.5);
+   uI[1].SetStateU(eI->Mom(), -0.5);
+   TDiracSpinor uF[2];
+   uF[0].SetStateU(eF->Mom(), +0.5);
+   uF[1].SetStateU(eF->Mom(), -0.5);
+   TDiracSpinor ulF[2];
+   ulF[0].SetStateU(lnF->Mom(), +0.5);
+   ulF[1].SetStateU(lnF->Mom(), -0.5);
+   TDiracSpinor vlF[2];
+   vlF[0].SetStateV(lpF->Mom(), +0.5);
+   vlF[1].SetStateV(lpF->Mom(), -0.5);
+   TDiracSpinor utI[2];
+   utI[0].SetStateU(teI->Mom(), +0.5);
+   utI[1].SetStateU(teI->Mom(), -0.5);
+   TDiracSpinor utF[2];
+   utF[0].SetStateU(teF->Mom(), +0.5);
+   utF[1].SetStateU(teF->Mom(), -0.5);
+
+   // Assume without checking that lnF, lpF are lepton, antilepton
+   const LDouble_t mLepton = lnF->Mass();
+
+   TDiracMatrix dm;
+
+   // Obtain the electron propagators for the six basic diagrams,
+   // each one repeated for all permutations of outgoing electrons.
+   int nperms = (mLepton == mElectron)? 6 : 2;
+   TDiracMatrix ePropagator[6][6];
+   int permorder[6] =      { +1,  -1,  +1,  -1,  +1,  -1};
+   TLepton *eFs[6] =       { eF, teF, lnF, lnF, teF,  eF};
+   TLepton *teFs[6] =      {teF,  eF,  eF, teF, lnF, lnF};
+   TLepton *lnFs[6] =      {lnF, lnF, teF,  eF,  eF, teF};
+   TDiracSpinor *uFs[6] =  { uF, utF, ulF, ulF, utF,  uF};
+   TDiracSpinor *utFs[6] = {utF,  uF,  uF, utF, ulF, ulF};
+   TDiracSpinor *ulFs[6] = {ulF, ulF, utF,  uF,  uF, utF};
+   TFourVectorReal qElectron[6];
+   TFourVectorReal qTarget[6];
+   TFourVectorReal qPair[6];
+   LDouble_t qElectron2[6];
+   LDouble_t qTarget2[6];
+   LDouble_t qPair2[6];
+   for (int p=0; p < nperms; ++p) {
+      qElectron[p] = eI->Mom() - eFs[p]->Mom();
+      qTarget[p] = teFs[p]->Mom() - teI->Mom();
+      qPair[p] = lnFs[p]->Mom() + lpF->Mom();
+      qElectron2[p] = qElectron[p].InvariantSqr();
+      qTarget2[p] = qTarget[p].InvariantSqr();
+      qPair2[p] = qPair[p].InvariantSqr();
+      ePropagator[0][p] = dm.Slash(qElectron[p] - lpF->Mom()) + mLepton;
+      ePropagator[1][p] = dm.Slash(lnFs[p]->Mom() - qElectron[p]) + mLepton;
+      ePropagator[2][p] = dm.Slash(eI->Mom() - qElectron[p]) + mLepton;
+      ePropagator[3][p] = dm.Slash(eFs[p]->Mom() + qElectron[p]) + mLepton;
+      ePropagator[4][p] = dm.Slash(teI->Mom() + qElectron[p]) + mLepton;
+      ePropagator[5][p] = dm.Slash(teFs[p]->Mom() - qElectron[p]) + mLepton;
+      ePropagator[0][p] /= qElectron2[p] - 2 * qElectron[p].ScalarProd(lpF->Mom());
+      ePropagator[1][p] /= qElectron2[p] - 2 * qElectron[p].ScalarProd(lnFs[p]->Mom());
+      ePropagator[2][p] /= qElectron2[p] - 2 * qElectron[p].ScalarProd(eI->Mom());
+      ePropagator[3][p] /= qElectron2[p] + 2 * qElectron[p].ScalarProd(eFs[p]->Mom());
+      ePropagator[4][p] /= qElectron2[p] + 2 * qElectron[p].ScalarProd(teI->Mom());
+      ePropagator[5][p] /= qElectron2[p] - 2 * qElectron[p].ScalarProd(teFs[p]->Mom());
+   }
+ 
+   // Evaluate the leading order Feynman amplitude
+   const TDiracMatrix gamma0(kDiracGamma0);
+   const TDiracMatrix gamma1(kDiracGamma1);
+   const TDiracMatrix gamma2(kDiracGamma2);
+   const TDiracMatrix gamma3(kDiracGamma3);
+   TDiracMatrix gamma[4] = {gamma0, gamma1, gamma2, gamma3};
+   Complex_t invAmp[2][2][2][2][2][2];
+   for (Int_t hi=0; hi < 2; hi++) {
+     for (Int_t hf=0; hf < 2; hf++) {
+       for (Int_t li=0; li < 2; li++) {
+         for (Int_t lf=0; lf < 2; lf++) {
+           for (Int_t ti=0; ti < 2; ti++) {
+             for (Int_t tf=0; tf < 2; tf++) {
+               invAmp[hi][hf][li][lf][ti][tf] = 0;
+               for (Int_t mu=0; mu < 4; mu++) {
+                 for (Int_t nu=0; nu < 4; nu++) {
+                   for (Int_t p=0; p < nperms; ++p) {
+                     invAmp[hi][hf][li][lf][ti][tf] += 
+                      Complex_t(((mu == 0)? +1.L : -1.L) *
+                                ((nu == 0)? +1.L : -1.L) *
+                      permorder[p] * (
+                        uFs[p][hf].ScalarProd(gamma[mu] * uI[hi]) *
+                        utFs[p][tf].ScalarProd(gamma[nu] * utI[ti]) *
+                        ( ulFs[p][lf].ScalarProd(gamma[nu] * ePropagator[0][p] *
+                                                 gamma[mu] * vlF[li])
+                        + ulFs[p][lf].ScalarProd(gamma[mu] * ePropagator[1][p] *
+                                                 gamma[nu] * vlF[li])
+                        ) / (qElectron2[p] * qTarget2[p])
+                      + ulFs[p][lf].ScalarProd(gamma[mu] * vlF[li]) *
+                        utFs[p][tf].ScalarProd(gamma[nu] * utI[ti]) *
+                        ( uFs[p][hf].ScalarProd(gamma[mu] * ePropagator[2][p] *
+                                                gamma[nu] * uI[hi]) 
+                        + uFs[p][hf].ScalarProd(gamma[nu] * ePropagator[3][p] *
+                                                gamma[mu] * uI[hi])
+                        ) / (qTarget2[p] * qPair2[p])
+                      + uFs[p][hf].ScalarProd(gamma[mu] * uI[hi]) *
+                        ulFs[p][lf].ScalarProd(gamma[nu] * vlF[li]) *
+                        ( utFs[p][tf].ScalarProd(gamma[nu] * ePropagator[4][p] *
+                                                 gamma[mu] * utI[ti])
+                        + utFs[p][tf].ScalarProd(gamma[mu] * ePropagator[5][p] *
+                                                 gamma[nu] * utI[ti])
+                        ) / (qElectron2[p] * qPair2[p])
+                      ));
+                   }
+                 }
+               }
+             }
+           }
+         }
+       }
+     }
+   }
+
+   // Sum over spins
+   Complex_t ampSquared=0;
+   for (Int_t li=0; li < 2; li++) {
+    for (Int_t libar=0; libar < 2; libar++) {
+     for (Int_t lf=0; lf < 2; lf++) {
+      for (Int_t lfbar=0; lfbar < 2; lfbar++) {
+       for (Int_t hi=0; hi < 2; hi++) {
+        for (Int_t hibar=0; hibar < 2; hibar++) {
+         for (Int_t hf=0; hf < 2; hf++) {
+          for (Int_t hfbar=0; hfbar < 2; hfbar++) {
+           for (Int_t ti=0; ti < 2; ti++) {
+            for (Int_t tibar=0; tibar < 2; tibar++) {
+             for (Int_t tf=0; tf < 2; tf++) {
+              for (Int_t tfbar=0; tfbar < 2; tfbar++) {
+                ampSquared += invAmp[hi][hf][li][lf][ti][tf] *
+                 std::conj(invAmp[hibar][hfbar][libar][lfbar][tibar][tfbar]) *
+                           eI->SDM()[hi][hibar] *
+                           eF->SDM()[hfbar][hf] *
+                           lpF->SDM()[li][libar] *
+                           lnF->SDM()[lfbar][lf] *
+                           teI->SDM()[ti][tibar] *
+                           teF->SDM()[tfbar][tf];
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+
+#if DEBUGGING
+   if (real(ampSquared) < 0 || fabs(ampSquared.imag()) > fabs(ampSquared / 1e8L))
+   {
+      std::cout << "Warning: bad PairProduction amplitudes:" << std::endl
+                << "  These guys should be all real positive:" << std::endl
+                << "    ampSquared = " << ampSquared << std::endl;
+   }
+#endif
+
+   // Obtain the kinematical factors:
+   //    (1) 1/flux factor from initial state 1/(4mE)
+   //    (2) rho from density of final states factor
+   // where the general relativistic expression for rho is
+   //  rho = pow(2*PI_,4-3*N) delta4(Pin-Pout) [d4 P1] [d4 P2] ... [d4 PN]
+   // using differential forms [d4 P] = d4P delta(P.P - m*m) where P.P is
+   // the invariant norm of four-vector P, m is the known mass of the
+   // corresponding particle, and N is the number of final state particles.
+   //    (3) absorb three powers of 4*PI_ into pow(alphaQED,3)
+   // To get a simple expression for the density of final states,
+   // I redefined the solid angle for the outgoing positron around
+   // the momentum axis of the pair lnOut,lpOut.
+
+   LDouble_t kinFactor = 1/pow(2*PI_,4);
+   kinFactor /= 4 * mElectron * teOut.Mom()[0];
+   kinFactor /= eIn.Mom()[0] * eOut.Mom()[0] * qPair[0].Length();
+   LDouble_t diffXsect = hbarcSqr*pow(alphaQED,4)*real(ampSquared)
+                       * kinFactor;
+   return diffXsect;
+}
+
 void TCrossSection::Streamer(TBuffer &buf)
 {
    // All members are static; this function is a noop.

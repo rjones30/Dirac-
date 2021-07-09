@@ -47,6 +47,12 @@ public:
                                     const TLepton &eOut,
                                     const TLepton &lpOut,
                                     const TLepton &lnOut);
+   static LDouble_t eTripletProduction(const TLepton &eIn,
+                                       const TLepton &eOut,
+                                       const TLepton &lpOut,
+                                       const TLepton &lnOut,
+                                       const TLepton &teIn,
+                                       const TLepton &teOut);
 
    void Print(Option_t *option="");
 
