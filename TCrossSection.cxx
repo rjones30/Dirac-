@@ -1359,14 +1359,14 @@ LDouble_t TCrossSection::eTripletProduction(const TLepton &eIn,
       qPair2[p] = qPair[p].InvariantSqr();
       ePropagator[0][p] = dm.Slash(qElectron[p] - lpF->Mom()) + mLepton;
       ePropagator[1][p] = dm.Slash(lnFs[p]->Mom() - qElectron[p]) + mLepton;
-      ePropagator[2][p] = dm.Slash(eI->Mom() - qElectron[p]) + mLepton;
-      ePropagator[3][p] = dm.Slash(eFs[p]->Mom() + qElectron[p]) + mLepton;
+      ePropagator[2][p] = dm.Slash(eFs[p]->Mom() + qPair[p]) + mLepton;
+      ePropagator[3][p] = dm.Slash(eI->Mom() - qPair[p]) + mLepton;
       ePropagator[4][p] = dm.Slash(teI->Mom() + qElectron[p]) + mLepton;
       ePropagator[5][p] = dm.Slash(teFs[p]->Mom() - qElectron[p]) + mLepton;
       ePropagator[0][p] /= qElectron2[p] - 2 * qElectron[p].ScalarProd(lpF->Mom());
       ePropagator[1][p] /= qElectron2[p] - 2 * qElectron[p].ScalarProd(lnFs[p]->Mom());
-      ePropagator[2][p] /= qElectron2[p] - 2 * qElectron[p].ScalarProd(eI->Mom());
-      ePropagator[3][p] /= qElectron2[p] + 2 * qElectron[p].ScalarProd(eFs[p]->Mom());
+      ePropagator[2][p] /= qPair2[p] + 2 * qPair[p].ScalarProd(eFs[p]->Mom());
+      ePropagator[3][p] /= qPair2[p] - 2 * qPair[p].ScalarProd(eI->Mom());
       ePropagator[4][p] /= qElectron2[p] + 2 * qElectron[p].ScalarProd(teI->Mom());
       ePropagator[5][p] /= qElectron2[p] - 2 * qElectron[p].ScalarProd(teFs[p]->Mom());
    }
