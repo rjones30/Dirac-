@@ -35,6 +35,7 @@ public:
    TLorentzBoost &operator=(const TLorentzBoost &source);
 
    TThreeVectorReal Beta() const;
+   LDouble_t Gamma() const;
 
    TLorentzBoost &Null();
    TLorentzBoost &Transpose();
@@ -47,6 +48,8 @@ public:
    TLorentzBoost &SetBeta(const TThreeVectorReal &beta);
    TLorentzBoost &SetBeta(const TUnitVector &bhat, const LDouble_t beta);
    TLorentzBoost &SetBeta(const TFourVectorReal &p);
+   TLorentzBoost &SetGamma(const TUnitVector &bhat, const LDouble_t gamma);
+   TLorentzBoost &SetGamma(const LDouble_t gamma);
 
    void Print(Option_t *option="");
  
@@ -103,6 +106,11 @@ inline TThreeVectorReal TLorentzBoost::Beta() const
    return beta;
 }
 
+inline LDouble_t TLorentzBoost::Gamma() const
+{
+   return fMatrix[0][0];
+}
+
 inline TLorentzBoost &TLorentzBoost::operator=(const TLorentzBoost &source)
 {
    *(TLorentzTransform *)this = (TLorentzTransform)source;
@@ -139,6 +147,12 @@ inline TLorentzBoost &TLorentzBoost::SetBeta(const LDouble_t *beta)
 {
    TThreeVectorReal betaV(beta);
    return SetBeta(betaV);
+}
+
+inline TLorentzBoost &TLorentzBoost::SetGamma(const LDouble_t gamma)
+{
+   TUnitVector bhat(Beta());
+   return SetGamma(bhat.Normalize(1), gamma);
 }
 
 #endif

@@ -83,9 +83,33 @@ TLorentzBoost &TLorentzBoost::SetBeta(const TThreeVectorReal &beta)
    fMatrix[1][1] = 1 + eta.fVector[1]*eta.fVector[1]/gammaPlusOne;
    fMatrix[2][2] = 1 + eta.fVector[2]*eta.fVector[2]/gammaPlusOne;
    fMatrix[3][3] = 1 + eta.fVector[3]*eta.fVector[3]/gammaPlusOne;
-   fMatrix[0][1] = fMatrix[1][0] = -gamma*beta.fVector[1];
-   fMatrix[0][2] = fMatrix[2][0] = -gamma*beta.fVector[2];
-   fMatrix[0][3] = fMatrix[3][0] = -gamma*beta.fVector[3];
+   fMatrix[0][1] = fMatrix[1][0] = -eta.fVector[1];
+   fMatrix[0][2] = fMatrix[2][0] = -eta.fVector[2];
+   fMatrix[0][3] = fMatrix[3][0] = -eta.fVector[3];
+   fMatrix[1][2] = fMatrix[2][1] = eta.fVector[1]*eta.fVector[2]/gammaPlusOne;
+   fMatrix[1][3] = fMatrix[3][1] = eta.fVector[1]*eta.fVector[3]/gammaPlusOne;
+   fMatrix[2][3] = fMatrix[3][2] = eta.fVector[2]*eta.fVector[3]/gammaPlusOne;
+   return *this;
+}
+
+TLorentzBoost &TLorentzBoost::SetGamma(const TUnitVector &bhat,
+                                       const LDouble_t gamma)
+{
+   if (gamma < 1) {
+      Error("TLorentzBoost::SetGamma()","attempt to boost outside light cone");
+      return SetGamma(1);
+   }
+   LDouble_t beta = sqrt(1 - 1/(gamma*gamma));
+   TThreeVectorReal eta(bhat);
+   eta.Normalize(beta*gamma);
+   LDouble_t gammaPlusOne = gamma + 1;
+   fMatrix[0][0] = gamma;
+   fMatrix[1][1] = 1 + eta.fVector[1]*eta.fVector[1]/gammaPlusOne;
+   fMatrix[2][2] = 1 + eta.fVector[2]*eta.fVector[2]/gammaPlusOne;
+   fMatrix[3][3] = 1 + eta.fVector[3]*eta.fVector[3]/gammaPlusOne;
+   fMatrix[0][1] = fMatrix[1][0] = -eta.fVector[1];
+   fMatrix[0][2] = fMatrix[2][0] = -eta.fVector[2];
+   fMatrix[0][3] = fMatrix[3][0] = -eta.fVector[3];
    fMatrix[1][2] = fMatrix[2][1] = eta.fVector[1]*eta.fVector[2]/gammaPlusOne;
    fMatrix[1][3] = fMatrix[3][1] = eta.fVector[1]*eta.fVector[3]/gammaPlusOne;
    fMatrix[2][3] = fMatrix[3][2] = eta.fVector[2]*eta.fVector[3]/gammaPlusOne;
