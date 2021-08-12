@@ -1,3 +1,6 @@
+find_package(PythonLibs 3.6 REQUIRED)
+find_package(Boost 1.53 REQUIRED COMPONENTS system python3)
+
 list(APPEND OBJECT_SOURCES
             TCrossSection.cxx
             TCrossSection_v1.cxx
@@ -23,7 +26,7 @@ foreach(SRC IN LISTS OBJECT_SOURCES)
     list(APPEND DICT_SOURCES ${DICT})
     list(APPEND PCM_FILES ${CMAKE_CURRENT_BINARY_DIR}/${PCM})
     add_custom_command(OUTPUT ${DICT}
-                       COMMAND rootcint -f ${DICT} -c ${HDR} ${LINKDEF}
+                       COMMAND rootcint -f ${DICT} -c ${CMAKE_SOURCE_DIR}/include/${HDR} ${CMAKE_SOURCE_DIR}/include/${LINKDEF}
                        DEPENDS ${SRC}
                       )
 endforeach()
@@ -35,6 +38,11 @@ add_library(Dirac SHARED
             debug.cxx
            )
 
+target_link_libraries(Dirac ${Boost_LIBRARIES} ${PythonLibs_LIBRARIES})
+
+set_target_properties(Dirac PROPERTIES VERSION ${PROJECT_VERSION}
+                                       SOVERSION ${PROJECT_VERSION_MAJOR})
+
 target_include_directories(Dirac PUBLIC
                            "${PROJECT_SOURCE_DIR}"
                            "${PROJECT_SOURCE_DIR}/include"
@@ -42,8 +50,7 @@ target_include_directories(Dirac PUBLIC
                            "${CMAKE_SOURCE_DIR}/src"
                            ${EXTRA_INCLUDES}
                           )
-set_target_properties(Dirac PROPERTIES VERSION ${PROJECT_VERSION}
-                                       SOVERSION ${PROJECT_VERSION_MAJOR})
+
 
 execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_INCLUDES OUTPUT_STRIP_TRAILING_WHITESPACE)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I ${ROOT_INCLUDES} -I ${Python3_INCLUDE_DIRS}")
