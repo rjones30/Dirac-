@@ -1,0 +1,41 @@
+
+		Build Notes for the Dirac++ Library
+	    		    Richard Jones
+	    		  August 11, 2021
+
+This document is intended as a quick-start guide for building and using the
+Dirac++ library for computing scattering cross sections.
+
+1) Check out the latest source from github.
+
+   $ git clone https://github.com/rjones30/Diracxx.git
+   
+2) Download and install the ROOT package from root.cern.ch version 6
+   or greater.
+
+3) Build the Dirac++ library.
+   Cmake version 3 is required to build the Dirac++ library from sources.
+
+   $ cd Diracxx
+   $ mkdir build
+   $ cd build
+   $ cmake3 -DCMAKE_INSTALL_PREFIX=<your_installation_area> \
+           [ other cmake option ] \
+           ..
+   $ cmake3 --build .
+   $ cmake3 --install .
+
+4) Some example Dirac++ calculators are included in the directory
+   rootmacros. The following commands illustrate how to run the
+   examples within the root application.
+   $ root -l
+   root [0] .L <your_installation_area>/x86_64/lib/libDirac.so
+   root [1] .L <your_installation_area>/x86_64/rootmacros/test.C++
+   root [2] TestFourVectorComplex()
+   root [3] TestPauliMatrix()
+   root [4] ... run more tests ...
+
+5) The rootmacros directory contains examples of root applications for
+   common QED processes like Compton scattering, bremsstrahlung, and
+   pair production on atomic targets. Load the examples within a root
+   session as illustrated above, and plot the results.

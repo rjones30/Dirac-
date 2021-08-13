@@ -1,0 +1,3 @@
+// the configured options and settings for Diracxx
+#define Diracxx_VERSION_MAJOR @Diracxx_VERSION_MAJOR@
+#define Diracxx_VERSION_MINOR @Diracxx_VERSION_MINOR@

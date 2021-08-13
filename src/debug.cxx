@@ -6,5 +6,5 @@ using namespace std;
 
 Int_t main()
 {
-   cout << Compton(1,1,0) << endl;
+   cout << demoCompton(1,1) << endl;
 }
