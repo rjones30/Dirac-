@@ -35,7 +35,6 @@ add_library(Dirac SHARED
             ${OBJECT_SOURCES}
             ${DICT_SOURCES}
             python_bindings.cxx
-            debug.cxx
            )
 
 target_link_libraries(Dirac ${Boost_LIBRARIES} ${PythonLibs_LIBRARIES})
