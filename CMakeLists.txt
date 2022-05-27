@@ -29,3 +29,6 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/include DESTINATION .)
 install(FILES ${CMAKE_BINARY_DIR}/DiracxxConfig.h DESTINATION include)
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/rootmacros DESTINATION .)
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/python DESTINATION .)
+
+# add a symlink to libDirac.so in the python directory
+install(CODE "execute_process(COMMAND ln -s ../lib/libDirac.so ${CMAKE_INSTALL_PREFIX}/python/libDirac.so)")
