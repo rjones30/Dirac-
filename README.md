@@ -43,11 +43,8 @@ support for c++11 language features.
 
 ## Building instructions
 
-The core code is compiled into a shared library libDirac.so by the
-command:
-
-    $ make
-
+See the INSTALL file for instructions on how to compile the source
+a shared library libDirac.so and installed in the local install dir.
 After this, it can be imported into a root session and used by client
 code, as illustrated here.
 
