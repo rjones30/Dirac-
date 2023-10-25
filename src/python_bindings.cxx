@@ -5,6 +5,7 @@
 // author: richard.t.jones at uconn.edu
 // version: (still under construction)
 
+#define BOOST_BIND_GLOBAL_PLACEHOLDERS 1
 #include <boost/python.hpp>
 
 #include <Double.h>
