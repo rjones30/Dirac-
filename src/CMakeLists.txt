@@ -1,9 +1,10 @@
 find_package(PythonLibs 3.6 REQUIRED)
 if (NOT DEFINED PYTHON_WITH_VERSION)
-  message("not defined")
+  message("PYTHON_WITH_VERSION not defined, defaulting to python3")
   set(PYTHON_WITH_VERSION python3)
 endif (NOT DEFINED PYTHON_WITH_VERSION)
-find_package(Boost 1.53 REQUIRED COMPONENTS system ${PYTHON_WITH_VERSION})
+#find_package(Boost 1.53 REQUIRED COMPONENTS system ${PYTHON_WITH_VERSION})
+find_package(Boost 1.53 REQUIRED COMPONENTS system)
 
 list(APPEND OBJECT_SOURCES
             TCrossSection.cxx
