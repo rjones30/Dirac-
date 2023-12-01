@@ -31,7 +31,7 @@ foreach(SRC IN LISTS OBJECT_SOURCES)
     list(APPEND DICT_SOURCES ${DICT})
     list(APPEND PCM_FILES ${CMAKE_CURRENT_BINARY_DIR}/${PCM})
     add_custom_command(OUTPUT ${DICT}
-                       COMMAND rootcint -f ${DICT} -c ${CMAKE_SOURCE_DIR}/include/${HDR} ${CMAKE_SOURCE_DIR}/include/${LINKDEF}
+                       COMMAND rootcint -f ${DICT} -c ${CMAKE_SOURCE_DIR}/include/${HDR} ${CMAKE_SOURCE_DIR}/include/${LINKDEF} 2>/dev/null
                        DEPENDS ${SRC}
                       )
 endforeach()
