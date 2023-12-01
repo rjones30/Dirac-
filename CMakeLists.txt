@@ -5,7 +5,18 @@ project(Diracxx VERSION 1.1 DESCRIPTION "Feynman diagram calculator library impl
 configure_file(DiracxxConfig.h.in DiracxxConfig.h)
 
 # specify the C++ standard
-set(CMAKE_CXX_STANDARD 17)
+if(CMAKE_CXX17_STANDARD_COMPILE_OPTION STREQUAL "-std=c++17")
+  message("compile c++ code with c++17 support")
+  set(CMAKE_CXX_STANDARD 17)
+elseif(CMAKE_CXX14_STANDARD_COMPILE_OPTION STREQUAL "-std=c++14")
+  message("compile c++ code with c++14 support")
+  set(CMAKE_CXX_STANDARD 14)
+elseif(CMAKE_CXX11_STANDARD_COMPILE_OPTION STREQUAL "-std=c++11")
+  message("compile c++ code with c++11 support")
+  set(CMAKE_CXX_STANDARD 11)
+else(CMAKE_CXX17_STANDARD_COMPILE_OPTION STREQUAL "-std=c++17")
+  message("compile c++ code with compiler default std")
+endif(CMAKE_CXX17_STANDARD_COMPILE_OPTION STREQUAL "-std=c++17")
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # require python3 to be installed
