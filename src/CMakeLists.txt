@@ -1,10 +1,25 @@
 find_package(PythonLibs 3.6 REQUIRED)
 if (NOT DEFINED PYTHON_WITH_VERSION)
-  message("PYTHON_WITH_VERSION not defined, defaulting to python3")
-  set(PYTHON_WITH_VERSION python3)
+    if (_Python3_VERSION_MAJOR EQUAL 3 AND _Python3_VERSION_MINOR EQUAL 9)
+        set(PYTHON_WITH_VERSION "python39")
+    elseif (_Python3_VERSION_MAJOR EQUAL 3 AND _Python3_VERSION_MINOR EQUAL 6)
+        set(PYTHON_WITH_VERSION "python3")
+    else (_Python3_VERSION_MAJOR EQUAL 3 AND _Python3_VERSION_MINOR EQUAL 9)
+        message("PYTHON_WITH_VERSION not defined, defaulting to python3")
+        set(PYTHON_WITH_VERSION python3)
+    endif (_Python3_VERSION_MAJOR EQUAL 3 AND _Python3_VERSION_MINOR EQUAL 9)
 endif (NOT DEFINED PYTHON_WITH_VERSION)
-#find_package(Boost 1.53 REQUIRED COMPONENTS system ${PYTHON_WITH_VERSION})
-find_package(Boost 1.53 REQUIRED COMPONENTS system)
+
+# In case you need to check what python environment variables are available
+# here, uncomment the code below and repeat the cmake command.
+#
+#get_cmake_property(_variableNames VARIABLES)
+#list (SORT _variableNames)
+#foreach (_variableName ${_variableNames})
+#    message(STATUS "${_variableName}=${${_variableName}}")
+#endforeach()
+
+find_package(Boost 1.53 REQUIRED COMPONENTS system ${PYTHON_WITH_VERSION})
 
 list(APPEND OBJECT_SOURCES
             TCrossSection.cxx
