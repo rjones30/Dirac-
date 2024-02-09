@@ -20,7 +20,13 @@ endif(CMAKE_CXX17_STANDARD_COMPILE_OPTION STREQUAL "-std=c++17")
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # require python to be installed
-find_package(Python REQUIRED COMPONENTS Interpreter Development)
+if(FORCE_PYTHON2)
+  message("choosing python2 over python3...")
+  find_package(Python2 REQUIRED COMPONENTS Interpreter Development)
+  set(Python_INCLUDE_DIRS ${Python2_INCLUDE_DIRS})
+else(FORCE_PYTHON2)
+  find_package(Python REQUIRED COMPONENTS Interpreter Development)
+endif(FORCE_PYTHON2)
 
 # build libDirac from sources
 add_subdirectory(src)
