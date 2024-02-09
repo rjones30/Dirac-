@@ -79,13 +79,7 @@ target_include_directories(Dirac PUBLIC
 
 execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-if (Python_VERSION_MAJOR EQUAL 2)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ROOT_CFLAGS} -I ${Python2_INCLUDE_DIRS}")
-elseif (Python_VERSION_MAJOR EQUAL 3)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ROOT_CFLAGS} -I ${Python3_INCLUDE_DIRS}")
-else (Python_VERSION_MAJOR EQUAL 2)
-    message( FATAL_ERROR "Python_VERSION_MAJOR not set, cannot continue")
-endif (Python_VERSION_MAJOR EQUAL 2)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ROOT_CFLAGS} -I ${Python_INCLUDE_DIRS}")
 
 install(TARGETS Dirac
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
